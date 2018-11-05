@@ -1,0 +1,425 @@
+This is the psuedocode for our code
+Our code will be heavily based on functions for increased readability and managing of code
+Documentation WILL BE HEAVILY ENFORCED 
+- just follow my format forn ow i'll change if we are told to do so
+
+Begin with initializing and global variables and obviously the import
+- import statements
+
+Define any global variables
+- I believe there will be none in our case
+
+TASK MAIN() {
+	
+	initialize variables that must be within task main scope
+	int players* = {2000, 2000, 2000, 2000};
+	bool isPlayerPlaying* = {false, false, false ,false};
+	//colours -> red, green, blue, yellow;
+	
+	//initialize mech and sensors
+	configureSensors();
+	//begin application with start menu
+	int numPlayers = startupGame();
+
+	//keep looping until last player left
+	while (numPlayers > 1)
+	{
+		wait for someone to swipe card through card reader
+		int playerNum = playerSwipe();
+		CHECK FOR VALID COLOUR
+		display and get option: DEPOSIT, WITHDRAW, TRANSFER, LEAVE
+		int option = displayOptions();
+
+		check options for which function to do
+		if (option == 1)
+		{
+			deposit(players, playerNum);
+		}
+		else if (option == 2)
+		{
+			withdraw(players, playerNum);
+		}
+		else if (option == 3)
+		{
+			transfer(playerNum, players, isPlayerPlaying);
+		}
+		else
+		{
+			leave[players[playerNum]];
+			numPlayers--;
+		}
+	}
+}
+
+
+**EXAMPLE FUNCTION DOCUMENTATION**
+/*
+This function sets the number of players and initializes their beginning balance (colours not determined yet)
+Parameters: int balances[], bool playing []
+Variables: none
+Return: numPlayers
+*/
+int startGame(int balances[], bool playing[])
+{
+	prompt user for number of players
+	update boolean array
+	return number of players (must be valid)
+}
+
+
+void configureSensors()
+{
+	configure all of the sensors to be used
+}
+
+
+int playerSwipe(bool isPlaying*){
+	
+	enum PLAYERCOLOURS = {RED, GREEN, BLUE, YELLOW}
+	while (colour sensor doesn't read valid colours);
+	while (playerNum != -1)
+	{
+		if (red colour sensed)
+			if (checkStatus(RED, isPlaying))
+			{
+				playerNum = 0;
+			}
+			
+		.
+		.
+		.
+	}
+	return playerNum;
+} 
+
+
+bool checkStatus(int colour, bool isPlaying*)
+{
+	return isPlaying*(colour);
+}
+
+
+void displayOptions()
+{
+	format output so it corresponds to value on buttons
+
+              DEPOSIT
+     WITHDRAW         TRANSFER
+     		   LEAVE
+
+	get button press, return number 
+	if (left button pressed)
+		return 2;
+	.
+	.
+	.
+}
+
+
+void deposit(int players*, int playerNum)
+{
+	prompt user to bring bills
+	once they click button, pull bills in
+	moveConveyer(POSITVE);
+
+	keep sensing bills, and updating balance as each is read
+	while (colour sensor on arm doesn't see black(or whatever colour no bills is))
+	{
+		players*(playerNum) += senseBill()
+	}
+}
+
+
+void moveConveyer(int power)
+{
+	start conveyer motor
+	stop conveyer motor
+}
+
+
+int senseBill()
+{
+	sense the bill, configure what colour that bill is and return value
+	then complete mechanical task
+
+	EXPERIMENTAL DATA OF COLOURS NEEDED
+	long redVal = 0, greenVal = 0; blueVal = 0;
+	getAverageRGB(redVal, greenVal, blueVal);
+
+	int balanceInc = 0;
+	//if $1 bill (white)
+	if (redVal > 250 && greenVal > 250 && blueVal > 250)
+	{
+		balanceInc = 1;
+		billType = 0;
+	}
+	else if (redVal > 250 && greenVal > 240 && blueVal > 240)
+	{
+		balanceInc = 5;
+		billType = 1;
+	}
+	.
+	.
+	.
+	else
+	{
+		balanceInc = 0;
+	}
+
+	//mechanically move arm
+	if (balanceInc > 0)
+	{
+		depositBill(billType);
+	}
+
+	return balanceInc;
+}
+
+
+void getAverageRGB(long& redVal, long& greenVal, long& blueVal)
+{
+	use the algorithm we made in tutorials to get average rgb values
+}
+
+
+void despositBill(int billType)
+{
+	int encLimit = 0;
+	pickupBill();
+	encLimit = moveArm(billType);
+	dropBill();
+	centerArm(encLimit);
+}
+
+
+pickupBill()
+{
+	drop arm using vertical axis motor
+	activate suction cup method thing
+	raise arm using vertical axis motor
+}
+
+
+int moveArm(int billType)
+{
+	long locations* = {28, 21, 14, 7, 7, 14, 21};
+	
+	//check whether moving left or right
+	encoderLimit = locations*(billType) (* -1 if left);
+
+	move motors so arm is in designated location
+
+	return encoderLimit;
+}
+
+
+dropBill()
+{
+	lower arm
+	deactivate suction system
+	raise arm
+}
+
+
+centerArm(int encoderLimit)
+{
+	reverse sign of encoderLimit
+	
+	set motors so arm goes opposite direction until reaching new encoder limit
+}
+
+
+void withdraw(int players*, int playerNum)
+{
+	int billWithdraws* = {0, 0, 0, 0, 0, 0, 0};
+	get number of each bill user wants
+	int withdraw = receiveWithdrawBills(players, playerNum, billWithdraws);
+	balance -= withdraw;
+
+	movebills out
+	moveConveyer(NEGATIVE);
+	billWithdraws* = {0,0,0,0,0,0,0};
+}
+
+
+int receiveWithdrawOptions(int players*, int playerNum, int billWithdraws*)
+{
+	displayLowerOptions(players, playerNum, billWithdraws);
+
+	int totalWithdraw = calcWithdraw(billWithdraws);
+
+	for (int bill = 0; bill < 7; bill++)
+	{
+		if (billWithdraws*(bill) > 0)
+		{
+			for (int numBills =0; numBill < billWithdraws*(bill); numBills++)
+			{
+				moveArm(bill);
+				pickupBill();
+				centerArm();
+				numBills++;
+			}
+		}
+	}
+
+	return totalWithdraw;
+
+}
+
+void displayLowerOptions(int players*, int playerNum, int billWithdraws*)
+{
+	display the lower options and wait for button clicks
+
+				 		next page -> 
+		 $1			$5		   $10
+		 			$20
+
+		TOTAL: ########### (calcWithdraw(billWithdraws))
+
+		bool isDone = false
+		while (!isDone)
+		{
+			if (getButtonPress(buttonLeft) && isValidWithdraw(players, playerNum, calcWithdraw(billWithdraws), 1)
+			{
+				billWithdraws*(0)++;
+			}
+			else if
+			.
+			.
+			.
+			else if (getButtonPress(buttonUp))
+			{
+				isDone = displayHigherOptions(billWithdraws);
+			}
+		}
+}
+
+
+int calcWithdraw(int billWithdraws*)
+{
+	int totalWithdraw = 0;
+	for (int bill = 0; bill < 7; bill ++)
+		totalWithdraw += billWithdraws*(bill);
+	return totalWithdraw;
+}
+
+
+bool isValidWithdraw(int players*, int playerNum, int withdrawTotal, int withdrawAdd)
+{
+	if (players*(playerNum) < withdrawTotal + withdrawAdd || withdrawTotal + withdrawAdd > 500)
+	{
+		displayString("Withdrawal limit exceeded, cannot add more money");
+		return false;
+	}
+	return true;
+}
+
+
+bool displayHigherOptions(int palyers*, int palyerNum, int billWithdraws*)
+{
+	ESSENTIALLY THE SAME AS DISPLAYLOWEROPTIONS, EXCEPT IT'S WITH HIGHER BILLS
+	display the lower options and wait for button clicks
+
+				 		last page -> 
+		 $50		$100	   $500
+		 			CONFIRM
+
+		TOTAL: ########### (calcWithdraw(billWithdraws))
+
+		bool isDone = false;
+		bool isHigherOptionsDone = false;
+
+		while (!isHigherOptionsDone)
+		{
+			if (getButtonPress(buttonLeft) && isValidWithdraw(players, playerNum, calcWithdraw(billWithdraws), 1)
+			{
+				billWithdraws*(4)++;
+			}
+			else if
+			.
+			.
+			.
+			else if (getButtonPress(buttonUp))
+			{
+				return false;
+			}
+			else if (getButtonPress(buttonDown))
+			{
+				return true;
+			}
+		}
+}
+
+
+void transfer(int transferer, int balance*, bool isPlaying*)
+{
+	display who to transfer to and pick
+	int transferee = -1;
+	bool stillTransfer = true;
+	while (transfee == -1 && stillTransfer)
+	if (buttonPres(buttonUP))
+	{
+		if (checkStatus(0, isPlaying))
+		{
+			transferAmount(balance*())
+		}
+	}
+}
+
+
+void transferAmount(int& transfererBalance, int& transfereeBalance)
+{	
+	int transferAmount = getAmount();
+	transfererBalance -= transferAmount;
+	transfereeBalance += transferAmount;
+}
+
+
+int getAmount()
+{
+	int transferBills* = {0, 0, 0, 0, 0, 0, 0};
+	displayLowerOptions()
+	int transferAmount = calcWithdraw(transferBills);
+	return transferAmount;
+}
+
+
+void leaveGame(playerNum, int players*, bool isPlayerPlaying*)
+{
+	prompt for confirmation, then continue or exit
+
+	deposit(players, playerNum);
+
+	isPlayerPlaying*(playerNum) = false;
+}
+
+******************************************
+FOR THE RECORDING FUNCTIONS, WE CAN CHOOSE TO WRITE TO SEPERATE FILES OR ALL IN SAME FILE
+(has been left predominantly empty because of this...)
+FILO I/O IS ALSO NOT CONFIRMED (ITS AN ADD-ON)
+******************************************
+
+void recordDesposit(int players*, int playerNum)
+{
+	write player numbers, along with current balance
+
+	CAN MAKE A PREDEPOSIT RECORD AS WELL for complete info
+}
+
+
+void recordWithdraw(int players*, int playerNum)
+{
+	same concept as recordDeposit
+}
+
+
+void recordTransfer(int players*, int transferer, int transferee)
+{
+	write player number of transfer, thier balance, and transferee and their balance
+}
+
+
+void recordLeave(int players*, int playerNum)
+{
+	write player num of person who quit
+}
