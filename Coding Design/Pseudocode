@@ -12,8 +12,8 @@ Define any global variables
 TASK MAIN() {
 	
 	initialize variables that must be within task main scope
-	int players* = {2000, 2000, 2000, 2000};
-	bool isPlayerPlaying* = {false, false, false ,false};
+	int players[4] = {2000, 2000, 2000, 2000};
+	bool isPlayerPlaying[] = {false, false, false ,false};
 	//colours -> red, green, blue, yellow;
 	
 	//initialize mech and sensors
@@ -125,7 +125,7 @@ void deposit(int players*, int playerNum)
 	keep sensing bills, and updating balance as each is read
 	while (colour sensor on arm doesn't see black(or whatever colour no bills is))
 	{
-		players*(playerNum) += senseBill()
+		players[playerNum] += senseBill()
 	}
 }
 
@@ -231,18 +231,21 @@ centerArm(int encoderLimit)
 
 void withdraw(int players*, int playerNum)
 {
-	int billWithdraws* = {0, 0, 0, 0, 0, 0, 0};
+	int billWithdraws[7] = {0, 0, 0, 0, 0, 0, 0};
 	get number of each bill user wants
 	int withdraw = receiveWithdrawBills(players, playerNum, billWithdraws);
 	balance -= withdraw;
 
 	movebills out
 	moveConveyer(NEGATIVE);
-	billWithdraws* = {0,0,0,0,0,0,0};
+	for (int i = 0; i < 7; i++)
+	{
+	    billWithdraws[i]=0;
+	}
 }
 
 
-int receiveWithdrawOptions(int players*, int playerNum, int billWithdraws*)
+int receiveWithdrawOptions(int players*, int playerNum, int billWithdraws)
 {
 	displayLowerOptions(players, playerNum, billWithdraws);
 
@@ -250,9 +253,9 @@ int receiveWithdrawOptions(int players*, int playerNum, int billWithdraws*)
 
 	for (int bill = 0; bill < 7; bill++)
 	{
-		if (billWithdraws*(bill) > 0)
+		if (billWithdraws[bill] > 0)
 		{
-			for (int numBills =0; numBill < billWithdraws*(bill); numBills++)
+			for (int numBills =0; numBill < billWithdraws[bill]; numBills++)
 			{
 				moveArm(bill);
 				pickupBill();
@@ -281,7 +284,7 @@ void displayLowerOptions(int players*, int playerNum, int billWithdraws*)
 		{
 			if (getButtonPress(buttonLeft) && isValidWithdraw(players, playerNum, calcWithdraw(billWithdraws), 1)
 			{
-				billWithdraws*(0)++;
+				billWithdraws[0]++;
 			}
 			else if
 			.
@@ -299,14 +302,14 @@ int calcWithdraw(int billWithdraws*)
 {
 	int totalWithdraw = 0;
 	for (int bill = 0; bill < 7; bill ++)
-		totalWithdraw += billWithdraws*(bill);
+		totalWithdraw += billWithdraws[bill];
 	return totalWithdraw;
 }
 
 
 bool isValidWithdraw(int players*, int playerNum, int withdrawTotal, int withdrawAdd)
 {
-	if (players*(playerNum) < withdrawTotal + withdrawAdd || withdrawTotal + withdrawAdd > 500)
+	if (players[playerNum] < withdrawTotal + withdrawAdd || withdrawTotal + withdrawAdd > 500)
 	{
 		displayString("Withdrawal limit exceeded, cannot add more money");
 		return false;
@@ -331,9 +334,9 @@ bool displayHigherOptions(int palyers*, int palyerNum, int billWithdraws*)
 
 		while (!isHigherOptionsDone)
 		{
-			if (getButtonPress(buttonLeft) && isValidWithdraw(players, playerNum, calcWithdraw(billWithdraws), 1)
+			if (getButtonPress(buttonLeft) && isValidWithdraw[player], playerNum, calcWithdraw(billWithdraws), 1)
 			{
-				billWithdraws*(4)++;
+				billWithdraws[4]++;
 			}
 			else if
 			.
@@ -390,7 +393,7 @@ void leaveGame(playerNum, int players*, bool isPlayerPlaying*)
 
 	deposit(players, playerNum);
 
-	isPlayerPlaying*(playerNum) = false;
+	isPlayerPlaying[playerNum] = false;
 }
 
 ******************************************
