@@ -1,6 +1,5 @@
 
 
-
 int senseBill(S1) //I havent edited very much of Wais sensebil function as it relies on experiemental data which i dont have to work with parts i havent seen yet
 {
 	sense the bill, configure what colour that bill is and return value
@@ -37,12 +36,21 @@ int senseBill(S1) //I havent edited very much of Wais sensebil function as it re
 }
 
 void pickUpBill(int BillIndex,double * encoderarray[]){
-	//drop end effector to pick up bill
-	motor[motorA]=10; // move the gantry to desired location
+	motor[MOTOR_VERT]=10;
+	while (nMotorEncoder[MOTOR_VERT]<MOTOR_VERT_LIMIT);
+	motor[MOTOR_VERT]=0;
+	motor[MOTOR_SUCC] = 10;
+	while (nMotorEncoder[MOTOR_SUCC]<MOTOR_SUCC_LIMIT);
+	motor[MOTOR_SUCC] = 0;
+	motor[MOTOR_CARR]=10; // move the gantry to desired location
 	while nMotorEncoder[MOTOR_CARR]<encoderarray[BillIndex]);
 	motor[MOTOR_CARR]=0;
+	motor[MOTOR_SUCC] = -10;
+	wait1Msec(500);
+	motor[MOTOR_SUCC] = 0;
 	
-	//drop bill using end effector
+	
+	
 
 	
 	
