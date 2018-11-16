@@ -1,28 +1,50 @@
-bool withdraw(int& playerBalance, int* transactionBills, bool& continue, bool isWithdraw)
-{
-	//process withdraw transaction
-	int withdraw = receiveWithdrawBills(playerBalance, transactionBills, continue);
-	//update account
-	playerBalance -= withdraw;
-	//check if withdraw or transfer
-	if (isWithdraw)
-	{
-		//move bills out for user
-		moveConveyer(POSITIVE_CONVEYER);
-		moveBillsOut(transactionBills);
-	}
+//need to declare function stubs so functions are declared ahead of time
+bool withdraw(int& playerBalance, int* transactionBills, bool& doesContinue, bool isWithdraw){}
+int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& doesContinue){}
+void moveBillsOut(int* transactionBills){}
+void cancelTransaction(int* transactionBills, bool& doesContinue){}
+void clearChosenBills(int* transactionBills){}
+void getLowerOptions(int& playerBalance, int* billWithdraws){}
+void displayLowerOptions(int* billWithdraws){}
+void checkCancelOrClear(int* transactionBills, bool& doesContinue){}
+void moveConveyer(int power);
 
-	continue 
+
+
+
+bool withdraw(int& playerBalance, int* transactionBills, bool& doesContinue, bool isWithdraw)
+{
+	doesContinue = false;
+	//process withdraw transaction
+	int withdraw = receiveWithdrawBills(playerBalance, transactionBills, doesContinue);
+	//if uwer confirms transaction
+	if (!doesContinue)
+	{
+		//update account
+		playerBalance -= withdraw;
+		//check if withdraw or transfer
+		if (isWithdraw)
+		{
+			//move bills out for user
+			moveConveyer(50);		//POSITIVE_CONVEYER = 50
+			moveBillsOut(transactionBills);
+		}
+	}
+	//if user denies transaction
+	else
+	{
+		doesContinue = false;
+	}
 }
 
-int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& continue)
+int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& doesContinue)
 {
 	//lower options screen
-	displayLowerOptions(playerBalance, transactionBills, continue);
+	getLowerOptions(playerBalance, transactionBills, doesContinue);
 
 	int totalWithdraw = calcWithdraw(billWithdraws);
 
-	for (int bill = 0; bill < 7; bill++)
+	for (int bill = 0; bill < BILL_TYPES; bill++)
 	{
 		if (billWithdraws[bill] > 0)
 		{
@@ -40,7 +62,7 @@ int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& contin
 
 void moveBillsOut(int* transactionBills)
 {
-	for (int bill = 0; bill < 7; bill++)
+	for (int bill = 0; bill < BILL_TYPES; bill++)
 	{
 		if (transactionBills[bill] > 0)
 		{
@@ -55,9 +77,162 @@ void moveBillsOut(int* transactionBills)
 	}
 }
 
-void cancelTransaction(int * transactionBills)
+void cancelTransaction(int* transactionBills, bool& doesContinue)
 {
-	clear transaction array
-	set continue = true; (starts out false)
-	set condition that exits displayLowerOptions, modified version for displayHigherOptions
+	for (int bill = 0; bill < BILL_TYPES; bill++)
+	{
+		transactionBills[bill] = 0;
+	}
+	doesContinue = true;
+	//set condition that exits displayLowerOptions, modified version for displayHigherOptions
 }
+
+void clearChosenBills(int* transactionBills)
+{
+	for (int bill = 0; bill < BILL_TYPES; bill++)
+	{
+		transactionBills[bill] = 0;
+	}
+}
+
+void getLowerOptions(int playerBalance, int* billWithdraws, bool& doesContinue)
+{
+
+		bool isDone = false;
+		while (!isDone)
+		{
+			while (!getButtonPress(buttonAny));
+			
+			//check cancel or clear
+			checkCancelOrClear(transactionBills, doesContinue);
+			
+			//check other single button options
+			if (getButtonPress(buttonUp) &&  isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 1) && doesContinue) {
+				billWithdraws[0]++;
+			}
+			else if (getButtonPress(buttonLeft) && isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 5) && doesContinue)
+			{
+				billWithdraws[1]++;
+			}
+			else if (getButtonPress(buttonRight) && isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 10) && doesContinue)
+			{
+				billWithdraws[2]++;
+			}
+			else if (getButtonPress(buttonDown) && isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 20) && doesContinue)
+			{
+				billWithdraws[3]++;
+			}
+			else if (getButtonPress(buttonEmter) && doesContinue))
+			{
+				isDone = getHigherOptions(playerBalances, billWithdraws, doesContinue);
+			}
+		}
+}
+
+bool getHigherOptions(int& playerBalances, int* billWithdraws, bool& doesContinue)
+{
+	bool isHigherOptionsDone = false;
+	while (!isHigherOptionsDone)
+		{
+			while (!getButtonPress(buttonAny));
+			
+			//check cancel or clear
+			checkCancelOrClear(transactionBills, doesContinue);
+			
+			//check other single button options
+			if (getButtonPress(buttonUp) &&  isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 50) && doesContinue) {
+				billWithdraws[4]++;
+			}
+			else if (getButtonPress(buttonLeft) && isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 100) && doesContinue)
+			{
+				billWithdraws[5]++;
+			}
+			else if (getButtonPress(buttonRight) && isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 500) && doesContinue)
+			{
+				billWithdraws[6]++;
+			}
+			//this button returns back to original screen
+			else if (getButtonPress(buttonDown) && doesContinue))
+			{
+				isHigherOptionsDone = true;
+				//return true;	   i might have to move this to end of function.... if this is allowed then get rid of line above
+			}
+			
+			//check whether user quit transaction or simply reset, and decide to stay depending on result
+			if (!doesContinue)
+			{
+				isHigherOptionsDone = true;
+				//return false;		same problem as the above return true statment
+			}
+			///i may be able to integrate these last two if statements
+		}
+		return doesContinue;
+}
+
+void displayLowerOptions(int* billWithdraws)
+{
+	eraseDisplay();
+	displayString(1, "WITHDRAWAL LOWER OPTIONS");
+	displayString(3, "$1 bills");
+	displayString(4, "$5 bills");
+	displayString(5, "$10 bills");
+	displayString(6, "$20 bills");
+	displayString(8, "TOTAL WITHDRAW: %d", calcWithdraw(billWithdraws));
+}
+
+void checkCancelOrClear(int* transactionBills, bool& doesContinue)
+{
+	bool isOptionChosen = false;
+	//check if want to quit
+	if (getButtonPress(buttonLeft) || getButtonPress(buttonRight) || getButtonPress(buttonUp) || getButtonPress(buttonDown))
+	{
+		//check if they quir  ie top and bot buttons
+		while(getButtonPress(buttonUp) && !isOptionChosen)
+		{
+			if (getButtonPress(buttonDown))
+			{
+				cancelTransaction(transactionBills, doesContinue);
+				isOptionChosen = true;
+			}
+		}
+		while(getButtonPress(buttonDown) && !isOptionChosen)
+		{
+			if (getButtonPress(buttonUp))
+			{
+				cancelTransaction(transactionBills, doesContinue);
+				isOptionChosen = true;
+			}
+		}
+		
+		//check if they want to clear withdraw amount
+		while(getButtonPress(buttonRight) && !isOptionChosen)
+		{
+			if (getButtonPress(buttonLeft))
+			{
+				clearChosenBills(transactionBills);
+				isOptionChosen = true;
+			}
+		}
+		while(getButtonPress(buttonLeft) && !isOptionChosen)
+		{
+			if (getButtonPress(buttonRight))
+			{
+				clearChosenBills(transactionBills);
+				isOptionChosen = true;
+			}
+		}
+	}
+}
+
+int calcWithdraw(int* transactionBills)
+{
+	int totalWithdraw = 0;
+	int billValues[BILL_TYPES] = {1, 5, 10, 20, 50, 100, 500};
+	for (int bill = 0; bill < 7; bill ++)
+		totalWithdraw += billWithdraws[bill] * billValues[bill];
+	return totalWithdraw;
+}
+
+int main()
+
+
