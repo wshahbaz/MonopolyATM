@@ -1,1 +1,63 @@
-This is Wais' file to update code to before committing to the main branch
+bool withdraw(int& playerBalance, int* transactionBills, bool& continue, bool isWithdraw)
+{
+	//process withdraw transaction
+	int withdraw = receiveWithdrawBills(playerBalance, transactionBills, continue);
+	//update account
+	playerBalance -= withdraw;
+	//check if withdraw or transfer
+	if (isWithdraw)
+	{
+		//move bills out for user
+		moveConveyer(POSITIVE_CONVEYER);
+		moveBillsOut(transactionBills);
+	}
+
+	continue 
+}
+
+int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& continue)
+{
+	//lower options screen
+	displayLowerOptions(playerBalance, transactionBills, continue);
+
+	int totalWithdraw = calcWithdraw(billWithdraws);
+
+	for (int bill = 0; bill < 7; bill++)
+	{
+		if (billWithdraws[bill] > 0)
+		{
+			for (int numBills =0; numBill < billWithdraws[bill]; numBills++)
+			{
+				moveArm(bill);
+				pickupBill();
+				centerArm();
+				numBills++;
+			}
+		}
+	}
+	return totalWithdraw;
+}
+
+void moveBillsOut(int* transactionBills)
+{
+	for (int bill = 0; bill < 7; bill++)
+	{
+		if (transactionBills[bill] > 0)
+		{
+			for (int numBills =0; numBills < transactionBills[bill]; numBills++)
+			{
+				moveArm(bill);
+				pickupBill();
+				centerArm();
+				numBills++;
+			}
+		}
+	}
+}
+
+void cancelTransaction(int * transactionBills)
+{
+	clear transaction array
+	set continue = true; (starts out false)
+	set condition that exits displayLowerOptions, modified version for displayHigherOptions
+}
