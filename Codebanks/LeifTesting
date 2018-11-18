@@ -82,11 +82,11 @@ void displayMainMenu(int currPlayer, int * accountBalance)
 {
 	eraseDisplay();
 	displayString(2, "Currently processing transactions for player %d, account Balance: %d", currPlayer, accountBalance[currPlayer]);
-	displayString(4, "1: Withdraw")
-	displayString(5, "2: Deposit")
-	displayString(6, "3: Transfer")
-	displayString(7, "4: Declare Bankrupcty")
-	displayString(8, "5: Cancel Transaction")
+	displayString(4, "1: Withdraw");
+	displayString(5, "2: Deposit");
+	displayString(6, "3: Transfer");
+	displayString(7, "4: Declare Bankrupcty");
+	displayString(8, "5: Cancel Transaction");
 }
 
 void declareBankruptcy(int currentPlayer, int & numPlayers, bool * isPlaying, int * accountBalance, bool & continueTransaction)
@@ -97,7 +97,7 @@ void declareBankruptcy(int currentPlayer, int & numPlayers, bool * isPlaying, in
 	displayString(4, "1: Yes, my friends have screwed me over...");
 	displayString(5, "2: No, get me out of here!");
 	
-	while(!(getButtonPress(buttonUp) || getButtonPress(buttonLeft));
+	while(!(getButtonPress(buttonUp) || getButtonPress(buttonLeft)));
 	
 	if (getButtonPress(buttonUp))
 	{
@@ -123,7 +123,7 @@ void promptContinue(bool & continueTransaction)
 	displayString(4, "1: Yes");
 	displayString(5, "2: No");
 	
-	while (!(getButtonPress(buttonUp) || getButtonPress(buttonLeft));
+	while (!(getButtonPress(buttonUp) || getButtonPress(buttonLeft)));
 	
 	if (getButtonPress(buttonUp))
 		while (getButtonPress(buttonUp));
