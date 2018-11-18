@@ -1,0 +1,92 @@
+void configureSensors()
+{
+	
+SensorType[S4]=sensorEV3_Color;
+wait1Msec(50);
+SensorMode[S4]=modeEV3Color_Color;
+wait1Msec(50);
+time1[T1]=0;
+nMotorEncoder[motorA]= 0;
+SensorType[S2] = sensorEV3_Ultrasonic;
+}
+
+
+
+
+int senseBill(S1) //I havent edited very much of Waiss sensebil function as it relies on experiemental data which i dont have to work with parts i havent seen yet
+{
+	sense the bill, configure what colour that bill is and return value
+	then complete mechanical task
+
+	EXPERIMENTAL DATA OF COLOURS NEEDED
+	long redVal = 0, greenVal = 0; blueVal = 0;
+	getAverageRGB(redVal, greenVal, blueVal);
+
+	int balanceInc = 0;
+	//if $1 bill (white)
+	if (redVal > 250 && greenVal > 250 && blueVal > 250)
+	{
+		balanceInc = 1;
+		billType = 0;
+	}
+	else if (redVal > 250 && greenVal > 240 && blueVal > 240)
+	{
+		balanceInc = 5;
+		billType = 1;
+	}
+	else
+	{
+		balanceInc = 0;
+	}
+
+	//mechanically move arm
+	if (balanceInc > 0)
+	{
+		depositBill(billType);
+	}
+
+	return balanceInc;
+}
+
+void pickUpBill(int BillIndex,double * encoderarray[]){
+	//drop end effector to pick up bill
+	motor[motorA]=10; // move the gantry to desired location
+	while nMotorEncoder[motorA]<encoderarray[BillIndex]);
+	motor[motorA]=0;
+	
+	//drop bill using end effector
+
+	
+	
+
+
+
+
+
+void deposit(int *accountarray[], int playerNum, double * encoderarray[], int * billvalue[])
+{continue = true;
+
+	while(continue == true){
+  eraseDisplay();
+	displayString(2,"Please Enter a bill to be deposited and click the centre button");
+	while(!getButtonPress(buttonEnter));
+	while(getButtonPress(buttonEnter));
+	moveConveyer(CONVEYER_NEGATIVE);
+	index = sensebill(S1);// this function will return the index in both the bill value array and the motor encoder limit array
+	moveConveyer();
+	pickupbill(index);// not sure which motors are attached to end effector or exactly how it functions at the moment
+	accountarray[playerNum]+=billvalue[index];
+
+	
+	
+
+	
+	displayString(2,"Press the down button to exit deposit");
+	if(getButtonPress(buttonDown))
+			continue=false;
+}
+}
+	
+
+
+
