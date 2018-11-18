@@ -33,8 +33,9 @@ bool withdraw(int& playerBalance, int* transactionBills, bool& doesContinue, boo
 	//if user denies transaction
 	else
 	{
-		doesContinue = false;
+		doesContinue = true;
 	}
+	return doesContinue;
 }
 
 int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& doesContinue)
@@ -101,31 +102,40 @@ void getLowerOptions(int playerBalance, int* billWithdraws, bool& doesContinue)
 		bool isDone = false;
 		while (!isDone)
 		{
+			//wait for button press
 			while (!getButtonPress(buttonAny));
 			
 			//check cancel or clear
-			checkCancelOrClear(transactionBills, doesContinue);
-			
+			if (checkCancelOrClear(transactionBills, doesContinue))
+			{
+				//if player cancels transaction
+				if (!doesContinue)
+				{
+					isDone = true;
+				}
+			}
 			//check other single button options
-			if (getButtonPress(buttonUp) &&  isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 1) && doesContinue) {
+			else if (getButtonPress(buttonUp) &&  isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 1)) {
 				billWithdraws[0]++;
 			}
-			else if (getButtonPress(buttonLeft) && isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 5) && doesContinue)
+			else if (getButtonPress(buttonLeft) && isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 5))
 			{
 				billWithdraws[1]++;
 			}
-			else if (getButtonPress(buttonRight) && isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 10) && doesContinue)
+			else if (getButtonPress(buttonRight) && isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 10))
 			{
 				billWithdraws[2]++;
 			}
-			else if (getButtonPress(buttonDown) && isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 20) && doesContinue)
+			else if (getButtonPress(buttonDown) && isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 20))
 			{
 				billWithdraws[3]++;
 			}
-			else if (getButtonPress(buttonEmter) && doesContinue))
+			else if (getButtonPress(buttonEnter))
 			{
-				isDone = getHigherOptions(playerBalances, billWithdraws, doesContinue);
+				isDone = getHigherOptions(playerBalances, billWithdraws, doesContinue);	
 			}
+			//wait for user to release button
+			while(getButtonPress(buttonAny));
 		}
 }
 
@@ -137,34 +147,33 @@ bool getHigherOptions(int& playerBalances, int* billWithdraws, bool& doesContinu
 			while (!getButtonPress(buttonAny));
 			
 			//check cancel or clear
-			checkCancelOrClear(transactionBills, doesContinue);
-			
+			if (checkCancelOrClear(transactionBills, doesContinue))
+			{
+				//if player cancels transaction
+				if (!doesContinue)
+				{
+					isHigherOptionsDone = true;
+				}
+			}
 			//check other single button options
-			if (getButtonPress(buttonUp) &&  isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 50) && doesContinue) {
+			else if (getButtonPress(buttonUp) &&  isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 50)) {
 				billWithdraws[4]++;
 			}
-			else if (getButtonPress(buttonLeft) && isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 100) && doesContinue)
+			else if (getButtonPress(buttonLeft) && isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 100))
 			{
 				billWithdraws[5]++;
 			}
-			else if (getButtonPress(buttonRight) && isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 500) && doesContinue)
+			else if (getButtonPress(buttonRight) && isValidTransaction(playerBalance, calcWithdraw(billWithdraws), 500))
 			{
 				billWithdraws[6]++;
 			}
 			//this button returns back to original screen
-			else if (getButtonPress(buttonDown) && doesContinue))
+			else if (getButtonPress(buttonDown))
 			{
 				isHigherOptionsDone = true;
-				//return true;	   i might have to move this to end of function.... if this is allowed then get rid of line above
 			}
-			
-			//check whether user quit transaction or simply reset, and decide to stay depending on result
-			if (!doesContinue)
-			{
-				isHigherOptionsDone = true;
-				//return false;		same problem as the above return true statment
-			}
-			///i may be able to integrate these last two if statements
+			//wait for user to stop pressing button
+			while(getButtonPress(buttonAny));
 		}
 		return doesContinue;
 }
@@ -180,13 +189,35 @@ void displayLowerOptions(int* billWithdraws)
 	displayString(8, "TOTAL WITHDRAW: %d", calcWithdraw(billWithdraws));
 }
 
+void displayHigherOptions(int* billWithdraws)
+{
+	eraseDisplay();
+	displayString(1, "WITHDRAWAL HIGHER OPTIONS");
+	displayString(3, "$50 bills");
+	displayString(4, "$100 bills");
+	displayString(5, "$500 bills");
+	displayString(8, "TOTAL WITHDRAW: %d", calcWithdraw(billWithdraws));
+}
+
+bool isValidTransaction(int& playerBalance, int totalWithdraw, int bill)
+{
+	if (playerBalance < totalWithdraw + bill)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
 void checkCancelOrClear(int* transactionBills, bool& doesContinue)
 {
 	bool isOptionChosen = false;
 	//check if want to quit
 	if (getButtonPress(buttonLeft) || getButtonPress(buttonRight) || getButtonPress(buttonUp) || getButtonPress(buttonDown))
 	{
-		//check if they quir  ie top and bot buttons
+		//check if they quit  ie top and bot buttons
 		while(getButtonPress(buttonUp) && !isOptionChosen)
 		{
 			if (getButtonPress(buttonDown))
