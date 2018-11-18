@@ -1,101 +1,18 @@
-red 54 5 6
-red 59 6 6
-red 49 5 5
-red 50 5 6
-red 52 5 6
-red 51 5 6
-red 60 6 6
-red 71 7 7
-red 66 6 7
-red 63 6 7
-red 65 6 7
-red 58 6 6
-red 60 6 6
-red 60 6 7
-orange 106 12 12
-orange 108 12 12
-orange 101 12 12
-orange 108 12 12
-orange 96 12 11
-orange 98 12 12
-orange 104 12 12
-orange 104 12 12
-orange 104 12 12
-orange 105 12 12
-orange 106 12 12
-orange 100 10 10
-purple 28 17 32
-purple 28 17 32
-purple 28 17 32
-purple 30 18 33
-purple 32 19 35
-purple 31 19 35
-purple 33 20 36
-purple 36 21 37
-purple 35 21 37
-purple 33 20 36
-purple 32 19 35
-pink 77 15 31
-pink 81 15 32
-pink 85 16 32
-pink 88 16 33
-pink 91 15 31
-pink 90 15 31
-pink 72 10 21
-pink 90 14 31
-pink 87 15 32
-pink 82 15 32
-pink 72 14 30
-pink 89 15 33
-pink 85 15 32
-pink 79 15 31
-pink 76 14 31
-pink 64 12 27
-pink 53 10 24
-pink 61 12 26
-blue 8 29 50
-blue 9 34 56
-blue 9 31 53
-blue 9 32 54
-blue 11 38 61
-blue 12 40 64
-blue 12 41 66
-blue 12 40 65
-blue 10 36 59
-blue 11 37 60
-blue 10 34 56
-brown 12 6 7
-brown 12 7 7
-brown 13 7 7
-brown 14 7 8
-brown 14 7 8
-brown 12 6 7
-brown 12 6 7
-brown 13 7 7
-brown 12 7 7
-yellow 101 71 38
-yellow 96 69 37
-yellow 88 64 35
-yellow 95 68 37
-yellow 97 69 37
-yellow 91 66 36
-yellow 84 61 34
-yellow 95 68 37
-yellow 88 64 35
-yellow 84 61 34
-yellow 84 62 34
-yellow 79 58 32
-yellow 77 57 31
-yellow 78 57 32
-yellow 77 57 32
-green 8 21 12
-green 8 22 13
-green 8 22 13
-green 7 20 11
-green 8 22 13
-green 10 27 15
-green 11 29 16
-green 10 26 14
-green 10 27 15
-green 10 27 15
-green 10 26 14
+MAXIMUMS
+    RED:  71    7    7
+  GREEN:  11   29   16
+   BLUE:  12   41   66
+   PINK:  91   16   33
+  BROWN:  14    7    8
+ PURPLE:  36   21   37
+ ORANGE:  108   12   12
+ YELLOW:  101   71   38
+MINIMUMS
+    RED:  49    5    5
+  GREEN:  7   20   11
+   BLUE:  8   29   50
+   PINK:  53   10   21
+  BROWN:  12    6    7
+ PURPLE:  28   17   32
+ ORANGE:  96   10   10
+ YELLOW:  77   57   31
