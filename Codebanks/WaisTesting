@@ -6,8 +6,11 @@ void cancelTransaction(int* transactionBills, bool& doesContinue){}
 void clearChosenBills(int* transactionBills){}
 void getLowerOptions(int& playerBalance, int* billWithdraws){}
 void displayLowerOptions(int* billWithdraws){}
+void displayHigherOptions(int* billWithdraws){}
 void checkCancelOrClear(int* transactionBills, bool& doesContinue){}
 void moveConveyer(int power);
+bool isValidTransaction(int& playerBalance, int totalWithdraw, int bill){}
+
 
 
 
