@@ -1,15 +1,15 @@
 //need to declare function stubs so functions are declared ahead of time
-bool withdraw(int& playerBalance, int* transactionBills, bool& doesContinue, bool isWithdraw)
-int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& doesContinue){}
-void moveBillsOut(int* transactionBills){}
-void cancelTransaction(int* transactionBills, bool& doesContinue){}
-void clearChosenBills(int* transactionBills){}
-void getLowerOptions(int& playerBalance, int* billWithdraws){}
-void displayLowerOptions(int* billWithdraws){}
-void displayHigherOptions(int* billWithdraws){}
-void checkCancelOrClear(int* transactionBills, bool& doesContinue){}
+bool withdraw(int& playerBalance, int* transactionBills, bool& doesContinue, bool isWithdraw);
+int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& doesContinue);
+void moveBillsOut(int* transactionBills);
+void cancelTransaction(int* transactionBills, bool& doesContinue);
+void clearChosenBills(int* transactionBills);
+void getLowerOptions(int& playerBalance, int* billWithdraws);
+void displayLowerOptions(int* billWithdraws);
+void displayHigherOptions(int* billWithdraws);
+void checkCancelOrClear(int* transactionBills, bool& doesContinue);
 void moveConveyer(int power);
-bool isValidTransaction(int& playerBalance, int totalWithdraw, int bill){}
+bool isValidTransaction(int& playerBalance, int totalWithdraw, int bill);
 
 
 
