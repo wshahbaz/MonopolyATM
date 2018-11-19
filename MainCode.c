@@ -1,8 +1,16 @@
 const int START_BALANCE = 1500;
-const int MAX_PLAYERS = 4;
-const int COLOUR_CARD = 0;
-const int COLOUR_BILL = 1;
-const int TOUCH_ENC_ZERO = 2;
+const int MAX_PLAYERS = 5;
+
+//Motors
+const int GANTRY_MOTOR = 0;
+const int VERT_ACTUATOR_MOTOR = 1;
+const int END_EFFECTOR_MOTOR = 2;
+const int CONVEYER_MOTOR = 3;
+
+//Sensors
+const int COLOUR_CARD = 0;	//port S1
+const int COLOUR_BILL = 1;	//port S2
+const int TOUCH_ENC_ZERO = 2;		//port S3
 
 
 void sensorConfig()
@@ -26,60 +34,63 @@ void setupPlayers(int & numPlayers, int * accountBalance, bool * isPlaying)
 
 	displayString(2,"Enter number of players");
 
+	//wait for button press
 	while(!getButtonPress(buttonUp) && !getButtonPress(buttonLeft) && !getButtonPress(buttonRight) && !getButtonPress(buttonDown)){}
 
 	if(getButtonPress(buttonUp))
 	{
-		while (getButtonPress(buttonUp)){}
+		while (getButtonPress(buttonAny)){}
 		numPlayers = 1;
 	}
 
 	else if(getButtonPress(buttonLeft))
 	{
-		while (getButtonPress(buttonLeft)){}
+		while (getButtonPress(buttonAny)){}
 		numPlayers = 2;
 	}
 
 	else if(getButtonPress(buttonRight))
 	{
-		while (getButtonPress(buttonRight)){}
+		while (getButtonPress(buttonAny)){}
 		numPlayers = 3;
 	}
 
 	else
 	{
-		while (getButtonPress(buttonDown)){}
+		while (getButtonPress(buttonAny)){}
 		numPlayers = 4;
 	}
 
-	for (int index = 0; index < numPlayers; index++)
+	//update player balance and playing arrays
+	for (int index = 1; index < numPlayers; index++)
 	{
 		isPlaying[index] = true;
 		accountBalance[index] = START_BALANCE;
 	}
 }
 
-void setCurrPlayer(int & currPlayer, bool * isPlaying)
+void setCurrPlayer(int& currPlayer, bool* isPlaying)
 {
 	int readPlayer = -1;
 	currPlayer = -1;
+	//keep reading until seeing valid player
 	while(currPlayer == -1)
 	{
 		if (SensorValue[COLOUR_CARD] == (int)colorRed)
-			readPlayer = 0;
-		else if (SensorValue[COLOUR_CARD] == (int)colorBlue)
 			readPlayer = 1;
-		else if (SensorValue[COLOUR_CARD] == (int)colorYellow)
+		else if (SensorValue[COLOUR_CARD] == (int)colorBlue)
 			readPlayer = 2;
-		else if (SensorValue[COLOUR_CARD] == (int)colorGreen)
+		else if (SensorValue[COLOUR_CARD] == (int)colorYellow)
 			readPlayer = 3;
+		else if (SensorValue[COLOUR_CARD] == (int)colorGreen)
+			readPlayer = 4;
 
-		if (readPlayer != -1 && isPlaying[readPlayer] == 1)
+		if (readPlayer != -1 && isPlaying[readPlayer] == true)
 			currPlayer = readPlayer;
 	}
 }
 
-void displayMainMenu(int currPlayer, int * accountBalance)
+void displayMainMenu(int currPlayer, int* accountBalance)
 {
 	eraseDisplay();
 	displayString(2, "Currently processing transactions for player %d, account Balance: %d", currPlayer, accountBalance[currPlayer]);
@@ -90,71 +101,78 @@ void displayMainMenu(int currPlayer, int * accountBalance)
 	displayString(8, "5: Cancel Transaction");
 }
 
-void declareBankruptcy(int currentPlayer, int & numPlayers, bool * isPlaying, int * accountBalance, bool & continueTransaction)
+void declareBankruptcy(int currentPlayer, int& numPlayers, bool* isPlaying, int* accountBalance, bool& continueTransaction)
 {
 	eraseDisplay();
 
 	displayString(2,"Are you sure you want to declare bankruptcy and leave the game?");
-	displayString(4, "1: Yes, my friends have screwed me over...");
-	displayString(5, "2: No, get me out of here!");
+	displayString(4, "1: Yes");
+	displayString(5, "2: No");
 
-	while(!getButtonPress(buttonUp) || getButtonPress(buttonLeft)){}
+	//wait for user to make decision
+	while(!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)){}
 
 	if (getButtonPress(buttonUp))
 	{
-		while(getButtonPress(buttonUp)){}
+		while(getButtonPress(buttonAny)){}
 
 		eraseDisplay();
-		displayString(2,"You have fallen to the almighty hand of capitalism!");
+		/*
+		run deposit function to get cash
+		displayString(2, "Deposit any remaining cash at hand");
+		wait1Msec(1500);
+		depositCash( . . . )
+		*/
+		displayString(2,"Better luck next time");
+		wait1Msec(1500);
 
 		isPlaying[currentPlayer] = false;
 		accountBalance[currentPlayer] = 0;
 		numPlayers--;
 		continueTransaction = false;
 	}
-
 	else
-		while (getButtonPress(buttonLeft)){}
+		while (getButtonPress(buttonAny)){}
 }
 
-void promptContinue(bool & continueTransaction)
+void promptContinue(bool& continueTransaction)
 {
 	eraseDisplay();
 	displayString(2,"Do you want to continue with your transactions?");
 	displayString(4, "1: Yes");
 	displayString(5, "2: No");
 
-	while (!getButtonPress(buttonUp) || getButtonPress(buttonLeft)){}
+	while (!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)){}
 
 	if (getButtonPress(buttonUp))
-		while (getButtonPress(buttonUp)){}
+		while (getButtonPress(buttonAny)){}
 
 	else
 	{
-		while (getButtonPress(buttonLeft)){}
+		while (getButtonPress(buttonAny)){}
 		continueTransaction = false;
 	}
 }
 
-void doTransaction(int currentPlayer, int & numPlayers, bool * isPlaying, int * accountBalance, bool & continueTransaction)
+void doTransaction(int currentPlayer, int& numPlayers, bool* isPlaying, int* accountBalance, bool& continueTransaction)
 {
 	while(!getButtonPress(buttonAny)){}
 
 	if(getButtonPress(buttonUp))
 	{
-		while (getButtonPress(buttonUp)){}
+		while (getButtonPress(buttonAny)){}
 		//withdraw(parameters);
 	}
 
 	else if(getButtonPress(buttonLeft))
 	{
-		while (getButtonPress(buttonLeft)){}
+		while (getButtonPress(buttonAny)){}
 		//deposit(parameters);
 	}
 
 	else if(getButtonPress(buttonRight))
 	{
-		while (getButtonPress(buttonRight)){}
+		while (getButtonPress(buttonAny)){}
 		//transfer(parameters);
 	}
 
@@ -171,15 +189,17 @@ void doTransaction(int currentPlayer, int & numPlayers, bool * isPlaying, int * 
 	}
 }
 
-void declareWinner(bool * isPlaying)
+void declareWinner(bool* isPlaying)
 {
 	eraseDisplay();
 
 	for (int index = 0; index < 4; index++)
 		if (isPlaying[index] == 1)
 			displayString(2, "Player %d has won the Monopoly!", index);
-
-	wait10Msec(1000);
+	wait10Msec(2000);
+	eraseDisplay();
+	displayString("Now please deposit any remaining cash into the atm");
+	//deposit (parameters)
 }
 
 task main()
@@ -187,8 +207,8 @@ task main()
 	sensorConfig();
 
 	int numPlayers = 0;
-	bool isPlaying[MAX_PLAYERS] = {false, false, false, false};
-	int accountBalance[MAX_PLAYERS] = {0,0,0,0};
+	bool isPlaying[MAX_PLAYERS] = {true, false, false, false, false};
+	int accountBalance[MAX_PLAYERS] = {MAX_CASH, 0,0,0,0};
 
 	setupPlayers(numPlayers, accountBalance, isPlaying);
 
@@ -207,7 +227,7 @@ task main()
 			doTransaction(currPlayer, numPlayers, isPlaying, accountBalance, continueTransaction);
 			if(continueTransaction)
 				promptContinue(continueTransaction);
-		} while (continueTransaction == 1);
+		} while (continueTransaction);
 	}
 
 	declareWinner(isPlaying);
