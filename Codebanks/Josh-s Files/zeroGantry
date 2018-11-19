@@ -1,0 +1,15 @@
+
+void zeroGantry()
+{
+	motor[motorA] = -40;
+	while(SensorValue(S1)!=1){}
+	motor[motorA]=0;
+	
+}
+
+task main()
+{
+zeroGantry();
+
+
+}
