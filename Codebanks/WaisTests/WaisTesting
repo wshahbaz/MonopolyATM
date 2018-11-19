@@ -99,7 +99,7 @@ void clearChosenBills(int* transactionBills)
 	}
 }
 
-void getLowerOptions(int playerBalance, int* billWithdraws, bool& doesContinue)
+void getLowerOptions(int& playerBalance, int* billWithdraws, bool& doesContinue)
 {
 
 		bool isDone = false;
@@ -258,7 +258,7 @@ void checkCancelOrClear(int* transactionBills, bool& doesContinue)
 	}
 }
 
-int calcWithdraw(int* transactionBills)
+int calcTransactionAmount(int* transactionBills)
 {
 	int totalWithdraw = 0;
 	int billValues[BILL_TYPES] = {1, 5, 10, 20, 50, 100, 500};
@@ -267,6 +267,4 @@ int calcWithdraw(int* transactionBills)
 	return totalWithdraw;
 }
 
-int main()
-
-
+int main(){}
