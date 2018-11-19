@@ -1,5 +1,5 @@
 //need to declare function stubs so functions are declared ahead of time
-bool withdraw(int& playerBalance, int* transactionBills, bool& doesContinue, bool isWithdraw){}
+bool withdraw(int& playerBalance, int* transactionBills, bool& doesContinue, bool isWithdraw)
 int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& doesContinue){}
 void moveBillsOut(int* transactionBills){}
 void cancelTransaction(int* transactionBills, bool& doesContinue){}
