@@ -1,0 +1,280 @@
+//MaxandMinFinder
+
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <cmath>
+#include <cstdlib>
+#include <string>
+#include <algorithm>
+
+//colors being used are
+// PINK, YELLOW, ORANGE, BLUE, GREEN, RED, BROWN, PURPLE
+using namespace std;
+const int ROW = 3;
+const int COL = 50;
+
+int maxarray(int array[ROW]){
+    int max = -1;
+    for (int count = 0;count<COL; count++){
+        if (array[count]>max  && array[count]<296)
+            max = array[count];
+    }
+    return  max;
+}
+
+
+
+int minarray(int array[]){
+    int min= 300;
+    for (int count = 0;count<COL; count++){
+        if (array[count]<min && array[count]>-1 )
+            min = array[count];
+    }
+    return min;
+}
+
+int avgVal(int array[]){
+	int count = 0, sum = 0;
+	for(int index = 0; index < COL; index++)
+		if(array[index] != -1){
+			count++;
+			sum += array[index];
+		}
+	return sum/count;
+}
+
+void populateAvgArray(int colorArray[ROW][COL], int AvgArray[ROW]){
+	for (int index = 0; index < ROW; index++)
+		AvgArray[index] = avgVal(colorArray[index]);
+}
+
+void populateRatioArray(int colorArray[ROW][COL], int ratioArray[ROW][COL], int avgArray[ROW]){
+	int maxRow = 0;
+	for (int index = 1; index < ROW; index++)
+		if(avgArray[index] > avgArray[maxRow])
+			maxRow = index;
+	cout << "MAXROW: " << maxRow << endl;
+	for (int col = 0; col < COL; col++)
+		for (int row = 0; row < ROW; row++){
+			if(colorArray[0][col] != 300){
+				ratioArray[row][col] = (int) ((double)colorArray[row][col]/(double)colorArray[maxRow][col]*100.0); 
+				cout << row << " , " << (int) ((double)colorArray[row][col]/(double)colorArray[maxRow][col]*100.0) << endl;
+			}
+			else
+				ratioArray[row][col] = -1;
+		}
+		
+}
+
+void populatearrays(ifstream & fin, string color, int colorarray[][COL]){
+    int red, blue, green;
+    int count = 0;
+    string curcol;
+    while(fin>>curcol>>red>>green>>blue){
+        if (string(color)==string(curcol)){
+            colorarray[0][count]=red;
+            colorarray[1][count]=green;
+            colorarray[2][count]=blue;
+            count++;
+
+
+        }
+
+    }
+
+}
+
+void setnull(int array[ROW][COL]){
+    for (int r = 0; r<ROW;r++)
+        for (int c = 0; c<COL;c++)
+            array[r][c]=-1;
+}
+
+void setmax(int array[ROW][COL]){
+    for (int r = 0; r<ROW;r++)
+        for (int c = 0; c<COL;c++)
+            if(array[r][c]==-1)
+                array[r][c]=300;
+}
+
+
+
+
+int main() {
+
+    string color;
+
+    int pinks[ROW][COL];
+    int reds[ROW][COL];
+    int greens[ROW][COL];
+    int oranges[ROW][COL];
+    int blues[ROW][COL];
+    int browns[ROW][COL];
+    int purples[ROW][COL];
+    int yellows[ROW][COL];
+    setnull(pinks);
+    setnull(reds);
+    setnull(greens);
+    setnull(oranges);
+    setnull(blues);
+    setnull(browns);
+    setnull(purples);
+    setnull(yellows);
+
+
+    ifstream fin("RGB_Values.txt");
+    if(!fin)
+        cout<<"unable to open";
+    string red = "red";
+    string yellow = "yellow";
+    string green = "green";
+    string purple = "purple";
+    string brown = "brown";
+    string pink = "pink";
+    string orange = "orange";
+    string blue = "blue";
+    populatearrays(fin, blue, blues);
+
+    ifstream pfin("RGB_Values.txt");
+
+
+    populatearrays(pfin, pink, pinks);
+    fin.close();
+    ifstream ofin("RGB_Values.txt");
+    populatearrays(ofin, orange, oranges);
+    ifstream gfin("RGB_Values.txt");
+
+
+
+    populatearrays(gfin, green, greens);
+    ifstream bfin("RGB_Values.txt");
+
+
+    populatearrays(bfin, brown, browns);
+    ifstream pufin("RGB_Values.txt");
+
+    populatearrays(pufin, purple, purples);
+    ifstream yfin("RGB_Values.txt");
+
+    populatearrays(yfin, yellow, yellows);
+    ifstream rfin("RGB_Values.txt");
+
+    populatearrays(rfin, red, reds);
+
+
+    ofstream fout("RGB_MAXMIN_Values.txt");
+
+    fout<<"MAXIMUMS"<<endl;
+
+
+    fout<<setw(10)<<"RED:  "<<maxarray(reds[0])<<setw(5)<<maxarray(reds[1])<<setw(5)<<maxarray(reds[2])<<endl;
+    fout<<setw(10)<<"GREEN:  "<<maxarray(greens[0])<<setw(5)<<maxarray(greens[1])<<setw(5)<<maxarray(greens[2])<<endl;
+    fout<<setw(10)<<"BLUE:  "<<maxarray(blues[0])<<setw(5)<<maxarray(blues[1])<<setw(5)<<maxarray(blues[2])<<endl;
+    fout<<setw(10)<<"PINK:  "<<maxarray(pinks[0])<<setw(5)<<maxarray(pinks[1])<<setw(5)<<maxarray(pinks[2])<<endl;
+    fout<<setw(10)<<"BROWN:  "<<maxarray(browns[0])<<setw(5)<<maxarray(browns[1])<<setw(5)<<maxarray(browns[2])<<endl;
+    fout<<setw(10)<<"PURPLE:  "<<maxarray(purples[0])<<setw(5)<<maxarray(purples[1])<<setw(5)<<maxarray(purples[2])<<endl;
+    fout<<setw(10)<<"ORANGE:  "<<maxarray(oranges[0])<<setw(5)<<maxarray(oranges[1])<<setw(5)<<maxarray(oranges[2])<<endl;
+    fout<<setw(10)<<"YELLOW:  "<<maxarray(yellows[0])<<setw(5)<<maxarray(yellows[1])<<setw(5)<<maxarray(yellows[2])<<endl;
+
+
+	int avgPinks[ROW];
+	int avgReds[ROW];
+	int avgGreens[ROW];
+	int avgOranges[ROW];
+	int avgBlues[ROW];
+	int avgBrowns[ROW];
+	int avgPurples[ROW];
+	int avgYellows[ROW];
+	
+	populateAvgArray(pinks, avgPinks);
+	populateAvgArray(reds, avgReds);
+	populateAvgArray(greens, avgGreens);
+	populateAvgArray(oranges, avgOranges);
+	populateAvgArray(blues, avgBlues);
+	populateAvgArray(browns, avgBrowns);
+	populateAvgArray(purples, avgPurples);
+	populateAvgArray(yellows, avgYellows);
+	
+	fout << "AVERAGES" << endl;
+	fout<<setw(10)<<"RED:  "<<avgReds[0]<<setw(5)<<avgReds[1]<<setw(5)<<avgReds[2]<<endl;
+	fout<<setw(10)<<"GREEN:  "<<avgGreens[0]<<setw(5)<<avgGreens[1]<<setw(5)<<avgGreens[2]<<endl;
+	fout<<setw(10)<<"BLUE:  "<<avgBlues[0]<<setw(5)<<avgBlues[1]<<setw(5)<<avgBlues[2]<<endl;
+	fout<<setw(10)<<"PINK:  "<<avgPinks[0]<<setw(5)<<avgPinks[1]<<setw(5)<<avgPinks[2]<<endl;
+	fout<<setw(10)<<"BROWN:  "<<avgBrowns[0]<<setw(5)<<avgBrowns[1]<<setw(5)<<avgBrowns[2]<<endl;
+	fout<<setw(10)<<"PURPLE:  "<<avgPurples[0]<<setw(5)<<avgPurples[1]<<setw(5)<<avgPurples[2]<<endl;
+	fout<<setw(10)<<"ORANGE:  "<<avgOranges[0]<<setw(5)<<avgOranges[1]<<setw(5)<<avgOranges[2]<<endl;
+	fout<<setw(10)<<"YELLOW:  "<<avgYellows[0]<<setw(5)<<avgYellows[1]<<setw(5)<<avgYellows[2]<<endl;
+	
+    setmax(pinks);
+    setmax(reds);
+    setmax(greens);
+    setmax(oranges);
+    setmax(blues);
+    setmax(browns);
+    setmax(purples);
+    setmax(yellows);
+
+    fout<<"MINIMUMS"<<endl;
+    fout<<setw(10)<<"RED:  "<<minarray(reds[0])<<setw(5)<<minarray(reds[1])<<setw(5)<<minarray(reds[2])<<endl;
+    fout<<setw(10)<<"GREEN:  "<<minarray(greens[0])<<setw(5)<<minarray(greens[1])<<setw(5)<<minarray(greens[2])<<endl;
+    fout<<setw(10)<<"BLUE:  "<<minarray(blues[0])<<setw(5)<<minarray(blues[1])<<setw(5)<<minarray(blues[2])<<endl;
+    fout<<setw(10)<<"PINK:  "<<minarray(pinks[0])<<setw(5)<<minarray(pinks[1])<<setw(5)<<minarray(pinks[2])<<endl;
+    fout<<setw(10)<<"BROWN:  "<<minarray(browns[0])<<setw(5)<<minarray(browns[1])<<setw(5)<<minarray(browns[2])<<endl;
+    fout<<setw(10)<<"PURPLE:  "<<minarray(purples[0])<<setw(5)<<minarray(purples[1])<<setw(5)<<minarray(purples[2])<<endl;
+    fout<<setw(10)<<"ORANGE:  "<<minarray(oranges[0])<<setw(5)<<minarray(oranges[1])<<setw(5)<<minarray(oranges[2])<<endl;
+    fout<<setw(10)<<"YELLOW:  "<<minarray(yellows[0])<<setw(5)<<minarray(yellows[1])<<setw(5)<<minarray(yellows[2])<<endl;
+
+	int ratioPinks[ROW][COL];
+    int ratioReds[ROW][COL];
+    int ratioGreens[ROW][COL];
+    int ratioOranges[ROW][COL];
+    int ratioBlues[ROW][COL];
+    int ratioBrowns[ROW][COL];
+    int ratioPurples[ROW][COL];
+    int ratioYellows[ROW][COL];
+    
+    populateRatioArray(pinks, ratioPinks, avgPinks);
+    populateRatioArray(reds, ratioReds, avgReds);
+    populateRatioArray(greens, ratioGreens, avgGreens);
+    populateRatioArray(oranges, ratioOranges, avgOranges);
+    populateRatioArray(blues, ratioBlues, avgBlues);
+    populateRatioArray(browns, ratioBrowns, avgBrowns);
+    populateRatioArray(purples, ratioPurples, avgPurples);
+    populateRatioArray(yellows, ratioYellows, avgYellows);
+
+	fout << "MAXIMUM RATIOS" << endl;
+	fout<<setw(10)<<"RED:  "<<maxarray(ratioReds[0])<<setw(5)<<maxarray(ratioReds[1])<<setw(5)<<maxarray(ratioReds[2])<<endl;
+	fout<<setw(10)<<"GREEN:  "<<maxarray(ratioGreens[0])<<setw(5)<<maxarray(ratioGreens[1])<<setw(5)<<maxarray(ratioGreens[2])<<endl;
+	fout<<setw(10)<<"BLUE:  "<<maxarray(ratioBlues[0])<<setw(5)<<maxarray(ratioBlues[1])<<setw(5)<<maxarray(ratioBlues[2])<<endl;
+	fout<<setw(10)<<"PINK:  "<<maxarray(ratioPinks[0])<<setw(5)<<maxarray(ratioPinks[1])<<setw(5)<<maxarray(ratioPinks[2])<<endl;
+	fout<<setw(10)<<"BROWN:  "<<maxarray(ratioBrowns[0])<<setw(5)<<maxarray(ratioBrowns[1])<<setw(5)<<maxarray(ratioBrowns[2])<<endl;
+	fout<<setw(10)<<"PURPLE:  "<<maxarray(ratioPurples[0])<<setw(5)<<maxarray(ratioPurples[1])<<setw(5)<<maxarray(ratioPurples[2])<<endl;
+	fout<<setw(10)<<"ORANGE:  "<<maxarray(ratioOranges[0])<<setw(5)<<maxarray(ratioOranges[1])<<setw(5)<<maxarray(ratioOranges[2])<<endl;
+	fout<<setw(10)<<"YELLOW:  "<<maxarray(ratioYellows[0])<<setw(5)<<maxarray(ratioYellows[1])<<setw(5)<<maxarray(ratioYellows[2])<<endl;
+	
+	setmax(ratioPinks);
+    setmax(ratioReds);
+    setmax(ratioGreens);
+    setmax(ratioOranges);
+    setmax(ratioBlues);
+    setmax(ratioBrowns);
+    setmax(ratioPurples);
+    setmax(ratioYellows);
+	
+	
+	fout << "MINIMUM RATIOS" << endl;
+	fout<<setw(10)<<"RED:  "<<minarray(ratioReds[0])<<setw(5)<<minarray(ratioReds[1])<<setw(5)<<minarray(ratioReds[2])<<endl;
+	fout<<setw(10)<<"GREEN:  "<<minarray(ratioGreens[0])<<setw(5)<<minarray(ratioGreens[1])<<setw(5)<<minarray(ratioGreens[2])<<endl;
+	fout<<setw(10)<<"BLUE:  "<<minarray(ratioBlues[0])<<setw(5)<<minarray(ratioBlues[1])<<setw(5)<<minarray(ratioBlues[2])<<endl;
+	fout<<setw(10)<<"PINK:  "<<minarray(ratioPinks[0])<<setw(5)<<minarray(ratioPinks[1])<<setw(5)<<minarray(ratioPinks[2])<<endl;
+	fout<<setw(10)<<"BROWN:  "<<minarray(ratioBrowns[0])<<setw(5)<<minarray(ratioBrowns[1])<<setw(5)<<minarray(ratioBrowns[2])<<endl;
+	fout<<setw(10)<<"PURPLE:  "<<minarray(ratioPurples[0])<<setw(5)<<minarray(ratioPurples[1])<<setw(5)<<minarray(ratioPurples[2])<<endl;
+	fout<<setw(10)<<"ORANGE:  "<<minarray(ratioOranges[0])<<setw(5)<<minarray(ratioOranges[1])<<setw(5)<<minarray(ratioOranges[2])<<endl;
+	fout<<setw(10)<<"YELLOW:  "<<minarray(ratioYellows[0])<<setw(5)<<minarray(ratioYellows[1])<<setw(5)<<minarray(ratioYellows[2])<<endl;
+
+	system("PAUSE");
+
+
+    return 0;
+}
