@@ -18,7 +18,7 @@ const int TOUCH_ENC_ZERO = 2;		//port S3
 
 //function prototypes
 //need to declare function stubs so functions are declared ahead of time
-bool withdraw(int& playerBalance, int* transactionBills, bool& doesContinue, bool isWithdraw);
+void withdraw(int& playerBalance, int* transactionBills, bool& doesContinue, bool isWithdraw);
 int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& doesContinue);
 //void moveBillsOut(int* transactionBills);		josh's function
 void cancelTransaction(int* transactionBills, bool& doesContinue);
@@ -265,7 +265,7 @@ void declareWinner(bool* isPlaying)
 }
 
 
-bool withdraw(int& playerBalance, int* transactionBills, bool& doesContinue, bool isWithdraw)
+void withdraw(int& playerBalance, int* transactionBills, bool& doesContinue, bool isWithdraw)
 {
 	doesContinue = false;
 	//process withdraw transaction
@@ -277,20 +277,10 @@ bool withdraw(int& playerBalance, int* transactionBills, bool& doesContinue, boo
 		//update account
 		playerBalance -= withdraw;
 		//check if withdraw or transfer
-		if (isWithdraw)
-		{
-			//move bills out for user
-			//###moveConveyer(50);		//POSITIVE_CONVEYER = 50
-			//###moveBillsOut(transactionBills);
-		}
+		//move bills out for user
+		//###moveConveyer(50);		//POSITIVE_CONVEYER = 50
+		//###moveBillsOut(transactionBills)
 	}
-	//if user denies transaction
-	/////NOTE: JOSH CAN YOU GO OVER THE WITHDRAW FUNCITON AND CHECK IF THIS ELSE IS REDUNDANT :)
-	else
-	{
-		doesContinue = true;
-	}
-	return doesContinue;
 }
 
 int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& doesContinue)
@@ -449,7 +439,7 @@ bool getHigherOptions(int& playerBalance, int* transactionBills, bool& doesConti
 				if (isClearOrCancel(transactionBills))
 				{
 					cancelTransaction(transactionBills, doesContinue);
-		      isTransactionDone = true;
+		      		isTransactionDone = true;
 				}
 				//check if can add bill to withdrawal
 				else if (isValidTransaction(playerBalance, calcTransactionAmount(transactionBills), 500))
