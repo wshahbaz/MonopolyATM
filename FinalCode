@@ -24,8 +24,8 @@ int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& doesCo
 void cancelTransaction(int* transactionBills, bool& doesContinue);
 void clearChosenBills(int* transactionBills);
 void getLowerOptions(int& playerBalance, int* transactionBills, bool& doesContinue);
-void displayLowerOptions(int* transactionBills);
-void displayHigherOptions(int* transactionBills);
+void displayLowerOptions(int* transactionBills, int playerBalance);
+void displayHigherOptions(int* transactionBills, int playerBalance);
 //bool checkCancelOrClear(int* transactionBills, bool& doesContinue);
 //void moveConveyer(int power);		josh's code
 bool isValidTransaction(int& playerBalance, int totalTransaction, int bill);
@@ -51,7 +51,6 @@ void sensorConfig()
 void setupPlayers(int & numPlayers, int * accountBalance, bool * isPlaying)
 {
 	eraseDisplay();
-
 	displayString(2,"Enter number of players");
 	displayString(4,"2 Player");
 	displayString(5,"3 Player");
@@ -61,32 +60,25 @@ void setupPlayers(int & numPlayers, int * accountBalance, bool * isPlaying)
 	//wait for button press
 	while(!getButtonPress(buttonUp) && !getButtonPress(buttonLeft) && !getButtonPress(buttonRight) && !getButtonPress(buttonDown)){}
 
-
 	if(getButtonPress(buttonLeft))
 	{
 		while (getButtonPress(buttonAny)){}
 		numPlayers = 2;
-		eraseDisplay();
-		displayString(2, "TWO PLAYER OPTION SELECTED");
-		wait1Msec(1000);
+		displayText_Wait("TWO PLAYER OPTION SELECTED");
 	}
 
 	else if(getButtonPress(buttonRight))
 	{
 		while (getButtonPress(buttonAny)){}
 		numPlayers = 3;
-		eraseDisplay();
-		displayString(2, "THREE PLAYER OPTION SELECTED");
-		wait1Msec(1000);
+		displayText_Wait("THREE PLAYER OPTION SELECTED");
 	}
 
 	else
 	{
 		while (getButtonPress(buttonAny)){}
 		numPlayers = 4;
-		eraseDisplay();
-		displayString(2, "FOUR PLAYER OPTION SELECTED");
-		wait1Msec(1000);
+		displayText_Wait("FOUR PLAYER OPTION SELECTED");
 	}
 
 	//update player balance and playing arrays
@@ -178,15 +170,14 @@ void declareBankruptcy(int currentPlayer, int& numPlayers, bool* isPlaying, int*
 	{
 		while(getButtonPress(buttonAny)){}
 
-		eraseDisplay();
+		displayText_Wait("BETTER LUCK NEXT TIME");
 		/*
 		run deposit function to get cash
 		displayString(2, "Deposit any remaining cash at hand");
 		wait1Msec(1500);
 		depositCash( . . . )
 		*/
-		displayString(2,"Better luck next time");
-		wait1Msec(1500);
+		
 
 		isPlaying[currentPlayer] = false;
 		accountBalance[currentPlayer] = 0;
@@ -226,9 +217,7 @@ void doTransaction(int currentPlayer, int& numPlayers, bool* isPlaying, int* acc
 	if(getButtonPress(buttonUp))
 	{
 		while (getButtonPress(buttonAny)){}
-		eraseDisplay();
-		displayString(2,"WITHDRAW");
-		wait1Msec(DISPLAY_WAIT);
+		displayText_Wait("WITHDRAW");
 		isWithdraw = true;
 		int playerBalance = accountBalance[currentPlayer];
 		withdraw(playerBalance, transactionBills, continueTransaction, isWithdraw);
@@ -238,24 +227,21 @@ void doTransaction(int currentPlayer, int& numPlayers, bool* isPlaying, int* acc
 	else if(getButtonPress(buttonLeft))
 	{
 		while (getButtonPress(buttonAny)){}
-		displayString(2,"DEPOSIT");
-		wait1Msec(DISPLAY_WAIT);
+		displayText_Wait("DEPOSIT");
 		//deposit(parameters);
 	}
 
 	else if(getButtonPress(buttonRight))
 	{
 		while (getButtonPress(buttonAny)){}
-		displayString(2,"TRANSFER");
-		wait1Msec(DISPLAY_WAIT);
+		displayText_Wait("TRANSFER");
 		//transfer(parameters);
 	}
 
 	else if(getButtonPress(buttonDown))
 	{
 		while (getButtonPress(buttonDown)){}
-		displayString(2,"BANKRUPTCY");
-		wait1Msec(DISPLAY_WAIT);
+		displayText_Wait("BANKRUPTCY");
 		declareBankruptcy(currentPlayer, numPlayers, isPlaying, accountBalance, continueTransaction);
 	}
 
@@ -272,11 +258,10 @@ void declareWinner(bool* isPlaying)
 
 	for (int index = 0; index < 4; index++)
 		if (isPlaying[index] == 1)
-			displayString(2, "Player %d has won the Monopoly!", index);
+			displayString(2, "PLAYER %d WON MONOPOLY!", index);
 	wait1Msec(2000);
-	eraseDisplay();
-	displayString(2, "Please deposit remainaing cash");
-	//deposit (parameters)
+	displayText_Wait("DEPOSIT REMAINING CASH")
+	//####deposit (parameters)
 }
 
 
@@ -288,9 +273,7 @@ bool withdraw(int& playerBalance, int* transactionBills, bool& doesContinue, boo
 	//if user confirms transaction
 	if (!doesContinue)
 	{
-	  eraseDisplay();
-	  displayString(2, "WITHDRAWAL COMPLETE");
-	  wait1Msec(DISPLAY_WAIT);
+	  displayText_Wait("WITHDRAWAL COMPLETE")
 		//update account
 		playerBalance -= withdraw;
 		//check if withdraw or transfer
@@ -302,6 +285,7 @@ bool withdraw(int& playerBalance, int* transactionBills, bool& doesContinue, boo
 		}
 	}
 	//if user denies transaction
+	/////NOTE: JOSH CAN YOU GO OVER THE WITHDRAW FUNCITON AND CHECK IF THIS ELSE IS REDUNDANT :)
 	else
 	{
 		doesContinue = true;
@@ -316,6 +300,7 @@ int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& doesCo
 
 	int totalWithdraw = calcTransactionAmount(transactionBills);
 
+	//ie moveBillsOut function right here
 	for (int bill = 0; bill < BILL_TYPES; bill++)
 	{
 		if (transactionBills[bill] > 0)
@@ -355,9 +340,7 @@ void cancelTransaction(int* transactionBills, bool& doesContinue)
 	{
 		transactionBills[bill] = 0;
 	}
-	eraseDisplay();
-	displayString(2, "TRANSACTION CANCELLED");
-	wait1Msec(DISPLAY_WAIT*3/4);	
+	displayText_Wait("TRANSACTION CANCELLED")	
 	//set condition that exits displayLowerOptions, modified version for displayHigherOptions
 	doesContinue = true;
 }
@@ -368,9 +351,7 @@ void clearChosenBills(int* transactionBills)
 	{
 		transactionBills[bill] = 0;
 	}
-	eraseDisplay();
-	displayString(2, "TRANSACTION CLEARED");
-	wait1Msec(DISPLAY_WAIT*3/4);
+	displayText_Wait("TRANSACTION CLEARED")
 }
 
 void getLowerOptions(int& playerBalance, int* transactionBills, bool& doesContinue)
@@ -378,7 +359,7 @@ void getLowerOptions(int& playerBalance, int* transactionBills, bool& doesContin
 		bool isDone = false;
 		while (!isDone)
 		{
-			displayLowerOptions(transactionBills);
+			displayLowerOptions(transactionBills, playerBalance);
 			//wait for button press
 			while (!getButtonPress(buttonAny)){}
 			
@@ -394,6 +375,7 @@ void getLowerOptions(int& playerBalance, int* transactionBills, bool& doesContin
 				{
 					clearChosenBills(transactionBills);
 				}
+				//update bills otherwise
 				else if (isValidTransaction(playerBalance, calcTransactionAmount(transactionBills), 5))
 				{
 					transactionBills[1]++;
@@ -408,7 +390,7 @@ void getLowerOptions(int& playerBalance, int* transactionBills, bool& doesContin
 					cancelTransaction(transactionBills, doesContinue);
 					isDone = true;
 				}
-				//or add bill to withdrawal
+				//update bills otherwise
 				else if (isValidTransaction(playerBalance, calcTransactionAmount(transactionBills), 10))
 				{
 					transactionBills[2]++;
@@ -418,9 +400,12 @@ void getLowerOptions(int& playerBalance, int* transactionBills, bool& doesContin
 			{
 				transactionBills[3]++;
 			}
+			//if user wants to go to higher options screen
 			else if (getButtonPress(buttonDown))
 			{
-				displayString(10, "GOING TO HIGHER OPTIONS SCREEN");
+				/*getHigherOptions is similar to getLowerOptions
+				but returns true if user clicks "go back button" and 
+				false if user clicks "confirm transaction" button*/
 				isDone = getHigherOptions(playerBalance, transactionBills, doesContinue);	
 			}
 			//wait for user to release button
@@ -430,7 +415,7 @@ void getLowerOptions(int& playerBalance, int* transactionBills, bool& doesContin
 
 bool getHigherOptions(int& playerBalance, int* transactionBills, bool& doesContinue)
 {
-	displayHigherOptions(transactionBills);
+	displayHigherOptions(transactionBills, playerBalance);
 	while (getButtonPress(buttonAny)){}
 	
 	bool isHigherOptionsDone = false;
@@ -488,7 +473,7 @@ bool getHigherOptions(int& playerBalance, int* transactionBills, bool& doesConti
 		return isTransactionDone;
 }
 
-void displayLowerOptions(int* transactionBills)
+void displayLowerOptions(int* transactionBills, int playerBalance)
 {
 	eraseDisplay();
 	displayString(1, "WITHDRAWAL LOWER OPTIONS");
@@ -496,17 +481,27 @@ void displayLowerOptions(int* transactionBills)
 	displayString(4, "$5 bills");
 	displayString(5, "$10 bills");
 	displayString(6, "$20 bills");
-	displayString(8, "TOTAL WITHDRAW: %d", calcTransactionAmount(transactionBills));
+	displayString(7, "GO TO HIGHER OPTIONS");
+	displayString(9, "TOTAL WITHDRAW: %d", calcTransactionAmount(transactionBills));
+	displayString(10, "CASH REMAINING: %d", calcRemainingCash(calcTransactionAmount(transactionBills), playerBalance));
 }
 
-void displayHigherOptions(int* transactionBills)
+void displayHigherOptions(int* transactionBills, int playerBalance)
 {
 	eraseDisplay();
 	displayString(1, "WITHDRAWAL HIGHER OPTIONS");
 	displayString(3, "$50 bills");
 	displayString(4, "$100 bills");
 	displayString(5, "$500 bills");
-	displayString(8, "TOTAL WITHDRAW: %d", calcTransactionAmount(transactionBills));
+	displayString(6, "CONFIRM TRANSACTION");
+	displayString(7, "GO TO LOWER OPTIONS");
+	displayString(9, "TOTAL WITHDRAW: %d", calcTransactionAmount(transactionBills));
+	displayString(10, "CASH REMAINING: %d", calcRemainingCash(calcTransactionAmount(transactionBills), playerBalance));
+}
+
+int calcRemainingCash(int transactionAmont, int playerBalance)
+{
+	return balance - transactionAmont;
 }
 
 bool isValidTransaction(int& playerBalance, int totalTransaction, int bill)
@@ -601,6 +596,19 @@ int calcTransactionAmount(int* transactionBills)
 	return totalTransaction;
 }
 
+void displayText_Wait(string text)
+{
+	eraseDisplay();
+	displayString(2, text);
+	wait1Msec(DISPLAY_WAIT);
+}
+
+void displayText_NoWait(string text)
+{
+	eraseDisplay();
+	displayString(2, text);
+}
+
 task main()
 {
 	sensorConfig();
@@ -613,8 +621,7 @@ task main()
 
 	while(numPlayers > 1)
 	{
-		eraseDisplay();
-		displayString(2, "PLEASE SWIPE CARD");
+		displayText_NoWait("PLEASE SWIPE CARD");
 
 		int currPlayer = -1;
 		setCurrPlayer(currPlayer,isPlaying);
