@@ -1,58 +1,60 @@
+void zeroGantry()
+{
+	motor[motorA] = -40;
+	while(SensorValue(S1)!=1){}
+	motor[motorA]=0;
+}
+
 void GantryTransverse(int position)
 {
-	if (position==0)// send to middle and color sensor
-	{
-		motor[motorA]=30;
-		while(nMotorEncoder[motorA]*PI*1.75/180.0<7){}
-		motor[motorA]=0;
-		wait10Msec(100);
-	}
+	zeroGantry();
+	nMotorEncoder[motorA]=0;
 	if (position==1)
 	{
-		motor[motorA]=30;
-		while(nMotorEncoder[motorA]*PI*1.75/180.0<26){}
+		motor[motorA]=40;
+		while(nMotorEncoder[motorA]*PI*3/180.0<6.25){}
 		motor[motorA]=0;
 		wait10Msec(100);
 	}
-	if (position==2)
+	else if (position==2)
 	{
-		motor[motorA]=30;
-		while(nMotorEncoder[motorA]*PI*1.75/180.0<26){}
+		motor[motorA]=40;
+		while(nMotorEncoder[motorA]*PI*3/180.0<12.5){}
 		motor[motorA]=0;
 		wait10Msec(100);
 	}
-	if (position==3)
+	else if (position==3)
 	{
-		motor[motorA]=30;
-		while(nMotorEncoder[motorA]*PI*1.75/180.0<26){}
+		motor[motorA]=40;
+		while(nMotorEncoder[motorA]*PI*3/180.0<22.5){}
 		motor[motorA]=0;
 		wait10Msec(100);
 	}
-	if (position==4)
+	else if (position==4)
 	{
-		motor[motorA]=30;
-		while(nMotorEncoder[motorA]*PI*1.75/180.0<26){}
+		motor[motorA]=50;
+		while(nMotorEncoder[motorA]*PI*3/180.0<32.6){}//21.5+9.6+1.5
 		motor[motorA]=0;
 		wait10Msec(100);
 	}
-	if (position==5)
+	else if (position==5)
 	{
-		motor[motorA]=30;
-		while(nMotorEncoder[motorA]*PI*1.75/180.0<26){}
+		motor[motorA]=50;
+		while(nMotorEncoder[motorA]*PI*3/180.0<38.6){}//21.5+9.6+7.5
 		motor[motorA]=0;
 		wait10Msec(100);
 	}
-	if (position==6)
+	else if (position==6)
 	{
-		motor[motorA]=30;
-		while(nMotorEncoder[motorA]*PI*1.75/180.0<26){}
+		motor[motorA]=50;
+		while(nMotorEncoder[motorA]*PI*3/180.0<44.6){}//21.5+9.6+6+7.5
 		motor[motorA]=0;
 		wait10Msec(100);
 	}
-	if (position==7)
+	else if (position==7)
 	{
-		motor[motorA]=30;
-		while(nMotorEncoder[motorA]*PI*1.75/180.0<26){}
+		motor[motorA]=50;
+		while(nMotorEncoder[motorA]*PI*3/180.0<50.6){}//21.5+9.6+6+6+7.5
 		motor[motorA]=0;
 		wait10Msec(100);
 	}
@@ -60,8 +62,13 @@ void GantryTransverse(int position)
 
 
 
+
 task main()
 {
+	for(int count=1; count<8;count++)
+		GantryTransverse(count);
+
+	
 
 
 
