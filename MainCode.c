@@ -1,5 +1,6 @@
 const int START_BALANCE = 1500;
 const int MAX_PLAYERS = 5;
+const int MAX_CASH = 10000;
 
 //Motors
 const int GANTRY_MOTOR = 0;
@@ -33,32 +34,40 @@ void setupPlayers(int & numPlayers, int * accountBalance, bool * isPlaying)
 	eraseDisplay();
 
 	displayString(2,"Enter number of players");
+	displayString(4,"2 Player");
+	displayString(5,"3 Player");
+	displayString(6,"4 Player");
+
 
 	//wait for button press
 	while(!getButtonPress(buttonUp) && !getButtonPress(buttonLeft) && !getButtonPress(buttonRight) && !getButtonPress(buttonDown)){}
 
-	if(getButtonPress(buttonUp))
-	{
-		while (getButtonPress(buttonAny)){}
-		numPlayers = 1;
-	}
 
-	else if(getButtonPress(buttonLeft))
+	if(getButtonPress(buttonLeft))
 	{
 		while (getButtonPress(buttonAny)){}
 		numPlayers = 2;
+		eraseDisplay();
+		displayString(2, "TWO PLAYER OPTION SELECTED");
+		wait1Msec(1000);
 	}
 
 	else if(getButtonPress(buttonRight))
 	{
 		while (getButtonPress(buttonAny)){}
 		numPlayers = 3;
+		eraseDisplay();
+		displayString(2, "THREE PLAYER OPTION SELECTED");
+		wait1Msec(1000);
 	}
 
 	else
 	{
 		while (getButtonPress(buttonAny)){}
 		numPlayers = 4;
+		eraseDisplay();
+		displayString(2, "FOUR PLAYER OPTION SELECTED");
+		wait1Msec(1000);
 	}
 
 	//update player balance and playing arrays
@@ -198,7 +207,7 @@ void declareWinner(bool* isPlaying)
 			displayString(2, "Player %d has won the Monopoly!", index);
 	wait10Msec(2000);
 	eraseDisplay();
-	displayString("Now please deposit any remaining cash into the atm");
+	displayString(2, "Now please deposit any remaining cash into the atm");
 	//deposit (parameters)
 }
 
