@@ -1,0 +1,68 @@
+void GantryTransverse(int position)
+{
+	if (position==0)// send to middle and color sensor
+	{
+		motor[motorA]=30;
+		while(nMotorEncoder[motorA]*PI*1.75/180.0<7){}
+		motor[motorA]=0;
+		wait10Msec(100);
+	}
+	if (position==1)
+	{
+		motor[motorA]=30;
+		while(nMotorEncoder[motorA]*PI*1.75/180.0<26){}
+		motor[motorA]=0;
+		wait10Msec(100);
+	}
+	if (position==2)
+	{
+		motor[motorA]=30;
+		while(nMotorEncoder[motorA]*PI*1.75/180.0<26){}
+		motor[motorA]=0;
+		wait10Msec(100);
+	}
+	if (position==3)
+	{
+		motor[motorA]=30;
+		while(nMotorEncoder[motorA]*PI*1.75/180.0<26){}
+		motor[motorA]=0;
+		wait10Msec(100);
+	}
+	if (position==4)
+	{
+		motor[motorA]=30;
+		while(nMotorEncoder[motorA]*PI*1.75/180.0<26){}
+		motor[motorA]=0;
+		wait10Msec(100);
+	}
+	if (position==5)
+	{
+		motor[motorA]=30;
+		while(nMotorEncoder[motorA]*PI*1.75/180.0<26){}
+		motor[motorA]=0;
+		wait10Msec(100);
+	}
+	if (position==6)
+	{
+		motor[motorA]=30;
+		while(nMotorEncoder[motorA]*PI*1.75/180.0<26){}
+		motor[motorA]=0;
+		wait10Msec(100);
+	}
+	if (position==7)
+	{
+		motor[motorA]=30;
+		while(nMotorEncoder[motorA]*PI*1.75/180.0<26){}
+		motor[motorA]=0;
+		wait10Msec(100);
+	}
+}
+
+
+
+task main()
+{
+
+
+
+}
