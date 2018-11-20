@@ -4,45 +4,48 @@ const enum tSensors COLOR_CARD = S1;
 const enum tSensors COLOR_BILL = S2;
 const enum tSensors TOUCH_ENC_ZERO = S3;
 
-int senseCard(tSensors colorSensor)
+int senseCard()
 {
 	long red, green, blue;
-	getColorRGB(colorsensor, red, green, blue);
+	getColorRGB(COLOR_CARD, red, green, blue);
 	red=blue=green=0;
-	getColorRGB(colorsensor, red, green, blue);
-	
-	int colorCount[5] = {0,0,0,0};
+	getColorRGB(COLOR_CARD, red, green, blue);
+
+	int colorCount[5] = {0,0,0,0,0};
 
 	int numReadings = 0;
-	
+
 	while (numReadings < 10){
 		//pink
-			if(red<=120&&red>=2 && green<=35/100.0*red&&green>=5/100.0*red && blue<=60/100.0*red&&blue>=30/100.0*red)
-				colorCount[0]++;
+			if(red<=140&&red>=30 && green<=150/100.0*red&&green>=36/100.0*red && blue<=70/100.0*red&&blue>=20/100.0*red)
+				colorCount[1]++;
 		//blue
-			else if(red<=35/100.0*blue&&red>=5/100.0*blue && green<=100/100.0*blue&&green>=40/100.0*blue && blue<=100&&blue>=3)
+			else if(red<=110/100.0*blue&&red>=38/100.0*blue && green<=80/100.0*blue&&green>=50/100.0*blue && blue<=30&&blue>=15)
+				colorCount[2]++;
+		//red
+			else if(red<=80&&red>=30 && green<=100/100.0*red&&green>=10/100.0*red && blue<=20/100.0*red&&blue>=5/100.0*red)
 				colorCount[3]++;
-		//orange
-			else if(red<=120&&red>=7 && green<=30/100.0*red&&green>=5/100.0*red && blue<=35/100.0*red&&blue>=10/100.0*red)
+		//green
+			else if(red<=100/100.0*blue&&red>=5/100.0*blue && green<=80/100.0*blue&&green>=60/100.0*blue && blue<=80&&blue>=40)
 				colorCount[4]++;
-		//yellow
-			else if(red<=130&&red>=10 && green<=90/100.0*red&&green>=60/100.0*red && blue<=65/100.0*red&&blue>=30/100.0*red)
-				colorCount[5]++;
+		//brown
+				else if(red<=15&&red>=2 && green<=100/100.0*red&&green>=60/100.0*red && blue<=100/100.0*red&&blue>=60/100.0*red)
+				colorCount[0]++;
 	numReadings++;
 	}
 
 	int maxColorCount = 0;
 	int maxColorIndex = 0;
-	
+
 	for (int index = 0; index < 3; index++)
 		if (colorCount[index] > maxColorCount){
 			maxColorCount = colorCount[index];
 			maxColorIndex = index;
 		}
-		
+
 	if (maxColorCount > 0)
 		return maxColorIndex;
-	return 7;
+	return -1;
 }
 
 void sensorConfig()
