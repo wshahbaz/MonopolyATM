@@ -29,7 +29,7 @@ int senseCard()
 			else if(red<=70/100.0*green&&red>=50/100.0*green && green<=80&&green>=20 && blue<=70/100.0*green&&blue>=50/100.0*green)
 				colorCount[4]++;
 		//brown
-				else if(red<=15&&red>=2 && green<=100/100.0*red&&green>=60/100.0*red && blue<=100/100.0*red&&blue>=60/100.0*red)
+				else if(red<=15&&red>=2 && green<=70/100.0*red&&green>=40/100.0*red && blue<=70/100.0*red&&blue>=40/100.0*red)
 				colorCount[0]++;
 	numReadings++;
 	}
