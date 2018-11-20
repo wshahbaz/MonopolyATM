@@ -1,81 +1,139 @@
+const int NUMBILLS = 7, MAXPLAYER = 5, DISPLAYSTART = 5;
 
-bool transfer(int transferer, int numPlayers, int * balance[], bool * isPlaying[], int * transferBills[])
+//function prototypes
+void waitButtonPress(int playersInGame);
+void buttonPressValid(int playersInGame);
+int getTransferee(int playersInGame, int * transferOption);
+void transferAmount(int transferor, int transferee, int * playerBalance, bool & isTransferCancelled);
+int getTransferAmount(int * playerBalance, bool & isTransferCancelled);
+void displayTransferOptions(int transferor, int * transferOption, bool * isPlaying);
+
+
+//main transfer function
+bool transfer(int transferor, int playersInGame, int * playerBalance, bool * isPlaying,)
+/*displays transfer options based on number of players in game
+user is prompted to enter transferee based on button input
+if user presses Enter button, transfer function is exited
+if user presses valid transferee, user is prompted for transfer amount
+...
+*/
 {
-	int transferee = 0, numOptions = 0;
-	int player[MAXPLAYER];
-	for (int index = 0; index < MAXPLAYER; index++)
+	int transferee = 0;//initialize variable
+	bool isTransferCancelled = false;//initialize variale
+	int transferOption[MAXPLAYER];//declare array for transfer options
+	
+	for (int index = 0; index < MAXPLAYER; index++)//initialize array for transfer options
 	{
-		player[index] = 0;
+		transferOption[index] = 0;
 	}
-	displayTransferOptions(transferer, numPlayers, player, isPlaying);
-	transferee = getTransferRecipient(numPlayers, player);
-	if (transferee = -1)
-	{
-		return 0;
-	}
-	else
-	{
-		transferAmount(balance[transferer], balance[transferee], balance, transferBills);
-	}
-		return 0;
+	
+	displayTransferOptions(transferor, transferOption, isPlaying);//calls functions to display transfer options
+	transferee = getTransferee(playersInGame, transferOption);//calls functions to get valid user input for transferee
+	
+	if (transferee != -1)//checks if Enter button is pressed
+		transferAmount(transferor, transferee, playerBalance, isTransferCancelled);//if Enter button is not pressed, calls function to transfer inputted amount to tranferee
+	
+	if(isTransferCancelled)//checks if transfer was called while picking transfer amount
+		return true;
+
+	return false;
 }
 
-void displayTransferDestinations(int transferer, int numPlayers, int * player[], bool * isPlaying[])
+void buttonPressValid(int playersInGame)
+/*after button press, checks if input is valid based on number of players in game
+if number of players < 3, Right button and Down button are invalid
+if number of players < 4, Down button is invalid
+Up button and Left button are always valid since atleast two options will always be available*/
 {
-	int index = 0, row = DISPLAYSTART;//menu display start line
-	for(int num = 0; num < numPlayers; num++)
+	if(playersInGame < 3 && getButtonPress(buttonRight))
+	//checking if number of players in game is less than 3 and Right button is pressed
 	{
-		if(num != transferer && isPlaying[num])
+		while (getButtonPress(buttonAny)){}//waits for button release
+		waitButtonPress(playersInGame);//calls function to wait for button press and then check validity again
+	}
+	else if (playersInGame < 4 && getButtonPress(buttonDown))
+	//checking if number of players in game is less than 3 and Down button is pressed
+	{
+		while (getButtonPress(buttonAny)){}//waits for button release
+		waitButtonPress(playersInGame);//calls function to wait for button press and then check validity again
+	}
+}
+
+void waitButtonPress(int playersInGame)
+{
+	while(!getButtonPress(buttonAny)){}//waits for button press
+	buttonPressValid(playersInGame);//calls function to check for validity
+}
+
+int getTransferee(int playersInGame, int * transferOption)
+{
+	int transferee = -1;//initializes variable
+	
+	waitButtonPress(playersInGame);//waits for valid button press
+	eraseDisplay();
+
+	if (getButtonPress(buttonUp))
+		transferee = transferOption[0];//Up button is designated to transfer option at index 0
+	else if (getButtonPress(buttonLeft))
+		transferee = transferOption[1];//Left button is designated to transfer option at index 0
+	else if (getButtonPress(buttonRight))
+		transferee = transferOption[2];//Right button is designated to transfer option at index 0
+	else if (getButtonPress(buttonDown))
+		transferee = transferOption[3];//Down button is designated to transfer option at index 0
+	while(getButtonPress(buttonAny)){}//waits for button release
+
+	return transferee;//returns option picked based on button input
+}
+
+void transferAmount(int transferor, int transferee, int * playerBalance, bool & isTransferCancelled)
+//updates appropriate balances based on transfer amount
+{
+	int transferAmount = getTransferAmount(playerBalance, isTransferCancelled);//calls function to get transfer amount
+	playerBalance[transferor] -= transferAmount;//subtracts amount from transferer balance
+	playerBalance[transferee] += transferAmount;//adds amount to transfer recipient balance
+}
+
+int getTransferAmount(int * playerBalance, bool & isTransferCancelled)
+//gets user input for transfer amount
+{
+	int transferBills[NUMBILLS];//declare array for bills 
+	
+	for (int index = 0; index < NUMBILLS; index++)//initialize array for transfer bills
+	{
+		transferBills[index] = 0;
+	}
+	
+	displayLowerOptions(playerBalance, transferBills, isTransferCancelled);//calls function to display bill options, get user input, check validity of input
+	int transferAmount = calcTransaction(transferBills);//calls function to calculate transfer amount
+	
+	return transferAmount;
+}
+
+void displayTransferOptions(int transferor, int * transferOption, bool * isPlaying)
+{
+	int index = 0, row = DISPLAYSTART;//initialize variables
+	
+	for(int option = 0; option < MAXPLAYER; option++)
+	{
+		if(option != transferor && isPlaying[option])
 		{
-			if(num == 0)
+			if(option == 0)
 			{
 				displayString(row, "Monopoly");
 				row ++;
-				player[index] = num;
+				transferOption[index] = option;
 				index ++;
 			}
 			else
 			{
-				displayString(row, "Player %d", num);
+				displayString(row, "Player %d", option);
 				row ++;
-				player[index] = num;
+				transferOption[index] = option;
 				index ++;
 			}
 		}
 	}
 }
 
-int getTransferRecipient(int numOptions, int * player[])
-{
-	int transferee = -1;
-	
-	while (!getButtonPress(buttonAny) || (numOptions < 3 && getButtonPress(buttonRight)) || (numOptions < 4 && getButtonPress(buttonDown)))
-	{}
-	if (getButtonPress(buttonUp))
-		transferee = player[0];
-	else if (getButtonPress(buttonLeft))
-		transferee = player[1];
-	else if (getButtonPress(buttonRight))
-		transferee = player[2];
-	else if (getButtonPress(buttonDown))
-		transferee = player[3];
-	while(getButtonPress(buttonAny))
-	{}
-	
-	return transferee;
-}
-
-void transferAmount(int transferer, int transferee, int * balance[], int * transferBills[])
-{
-	transferAmount = getAmount(transferBills);
-	balance[transferer] -= transferAmount;
-	balance[transferee] += transferAmount;
-}
-
-int getAmount(int * transferBills[])
-{
-	displayLowerOptions(transferBills);
-	int transferAmount = calcTransaction(transferBills);
-	return transferAmount;
-}
-
+task main()
+{}
