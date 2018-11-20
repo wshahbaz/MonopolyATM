@@ -32,28 +32,28 @@ void GantryTransverse(int position)
 	}
 	else if (position==4)
 	{
-		motor[motorA]=50;
+		motor[motorA]=40;
 		while(nMotorEncoder[motorA]*PI*3/180.0<32.6){}//21.5+9.6+1.5
 		motor[motorA]=0;
 		wait10Msec(100);
 	}
 	else if (position==5)
 	{
-		motor[motorA]=50;
+		motor[motorA]=40;
 		while(nMotorEncoder[motorA]*PI*3/180.0<38.6){}//21.5+9.6+7.5
 		motor[motorA]=0;
 		wait10Msec(100);
 	}
 	else if (position==6)
 	{
-		motor[motorA]=50;
+		motor[motorA]=40;
 		while(nMotorEncoder[motorA]*PI*3/180.0<44.6){}//21.5+9.6+6+7.5
 		motor[motorA]=0;
 		wait10Msec(100);
 	}
 	else if (position==7)
 	{
-		motor[motorA]=50;
+		motor[motorA]=40;
 		while(nMotorEncoder[motorA]*PI*3/180.0<50.6){}//21.5+9.6+6+6+7.5
 		motor[motorA]=0;
 		wait10Msec(100);
