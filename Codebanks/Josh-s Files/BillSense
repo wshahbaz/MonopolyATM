@@ -43,40 +43,60 @@ int Sensebill(tSensors colorsensor)
 	getColorRGB(colorsensor, red, green, blue);
 	red=blue=green=0;
 	getColorRGB(colorsensor, red, green, blue);
+	
+	int colorCount[7] = {0,0,0,0,0,0,0};
 
-//red
-	if(red<=80&&red>=3 && green<=15/100.0*red&&green>=5/100.0*red && blue<=30/100.0*red&&blue>=10/100.0*red)
-		return 5;
-//green
-	else if(red<=50/100.0*green&&red>=20/100.0*green && green<=40&&green>=3 && blue<=85/100.0*green&&blue>=40/100.0*green)
-		return 4;
-//blue
-	else if(red<=35/100.0*blue&&red>=5/100.0*blue && green<=77/100.0*blue&&green>=40/100.0*blue && blue<=100&&blue>=3)
-		return 3;
-//pink
-	else if(red<=120&&red>=7 && green<=35/100.0*red&&green>=5/100.0*red && blue<=60/100.0*red&&blue>=40/100.0*red)
-		return 0;
-//purple
-	else if(red<=120/100.0*blue&&red>=70/100.0*blue && green<=100/100.0*blue&&green>=54/100.0*blue && blue<=60&&blue>=5)
-		return 7;
-//orange
-	else if(red<=120&&red>=7 && green<=30/100.0*red&&green>=5/100.0*red && blue<=35/100.0*red&&blue>=10/100.0*red)
-		return 2;
-//yellow
-	else if(red<=130&&red>=10 && green<=90/100.0*red&&green>=60/100.0*red && blue<=65/100.0*red&&blue>=30/100.0*red)
-		return 1;
-//brown
-	else if(red<=25&&red>=2 && green<=17&&green>=1 && blue<=18&&blue>=1)
-		return 6;
-//black
-else
-	return 8;
+	int numReadings = 0;
+	
+	while (numReadings < 10){
+		//red
+		//	if(red<=80&&red>=3 && green<=20/100.0*red&&green>=10/100.0*red && blue<=30/100.0*red&&blue>=15/100.0*red)
+		//		return ##;
+		//pink
+			if(red<=120&&red>=2 && green<=35/100.0*red&&green>=5/100.0*red && blue<=60/100.0*red&&blue>=30/100.0*red)
+				colorCount[0]++;
+		//purple
+			else if(red<=100/100.0*blue&&red>=60/100.0*blue && green<=70/100.0*blue&&green>=30/100.0*blue && blue<=60&&blue>=12)
+				colorCount[1]++;
+		//brown
+			else if(red<=15&&red>=2 && green<=100/100.0*red&&green>=60/100.0*red && blue<=100/100.0*red&&blue>=60/100.0*red)
+				colorCount[2]++;
+		//blue
+			else if(red<=35/100.0*blue&&red>=5/100.0*blue && green<=100/100.0*blue&&green>=40/100.0*blue && blue<=100&&blue>=3)
+				colorCount[3]++;
+		//orange
+			else if(red<=120&&red>=7 && green<=30/100.0*red&&green>=5/100.0*red && blue<=35/100.0*red&&blue>=10/100.0*red)
+				colorCount[4]++;
+		//yellow
+			else if(red<=130&&red>=10 && green<=90/100.0*red&&green>=60/100.0*red && blue<=65/100.0*red&&blue>=30/100.0*red)
+				colorCount[5]++;
+		//green
+			else if(red<=50/100.0*green&&red>=20/100.0*green && green<=40&&green>=3 && blue<=85/100.0*green&&blue>=40/100.0*green)
+				colorCount[6]++;
+		//black
+		//else
+			//colorCount[7]++;
+	numReadings++;
+	}
+
+	int maxColorCount = 0;
+	int maxColorIndex = 0;
+	
+	for (int index = 0; index < 7; index++)
+		if (colorCount[index] > maxColorCount){
+			maxColorCount = colorCount[index];
+			maxColorIndex = index;
+		}
+		
+	if (maxColorCount > 0)
+		return maxColorIndex;
+	return 7;
 }
 
 
 task main()
 {
-	string colorindex[] = {"PINK  ", "YELLOW", "ORANGE", "BLUE  ", "GREEN ", "RED   ", "BROWN ", "PURPLE","BLACK "};
+	string colorindex[] = {"$1    ", "$5    ", "$10   ", "$20   ", "$50   ", "$100  ", "$500  ", "BLACK","BLACK "};
 
 	SensorType[S3] = sensorEV3_Color;
 
@@ -92,7 +112,6 @@ task main()
 		red=blue=green=0;
 		getColorRGB(S3, red, green, blue);
 
-
 		displayString(2,"%s",colorindex[Sensebill(S3)]);
 		displayString(3,"%d   ",red);
 		displayString(4,"%d    ",green);
@@ -100,8 +119,6 @@ task main()
 
 		if(getButtonPress(buttonLeft))
 			eraseDisplay();
-
-
 	}
 }
 
