@@ -1,0 +1,22 @@
+void pickUpBill():
+//motora=suction
+//motorb= end effector
+
+{
+	motor[motorB]=10;
+	while(nMotorEncoder[motorB]*pi*1.75/180.0<DUM){}
+	motor[motorB]=0;
+	motor[motorA] = 10;
+	while(nMotorEncoder[motorB]*pi*1.75/180.0<DUM){}
+	motor[motorA]=0;
+	motor[motorB]=-10;
+	while(nMotorEncoder[motorB]*pi*1.75/180.0>0){}
+	motor[motorB]=0;
+	
+	
+task main()
+{
+
+
+
+}
