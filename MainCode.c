@@ -22,14 +22,12 @@ const int TOUCH_ENC_ZERO = 2;		//port S3
 //need to declare function stubs so functions are declared ahead of time
 void withdraw(int& playerBalance, int* transactionBills, bool& doesContinue);
 int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& doesContinue);
-//void moveBillsOut(int* transactionBills);		josh's function
+//void moveBillsOut(int* transactionBills);
 void cancelTransaction(int* transactionBills, bool& doesContinue);
 void clearChosenBills(int* transactionBills);
 void getLowerOptions(int playerBalance, int* transactionBills, bool& doesContinue);
 void displayLowerOptions(int* transactionBills, int playerBalance);
 void displayHigherOptions(int* transactionBills, int playerBalance);
-//bool checkCancelOrClear(int* transactionBills, bool& doesContinue);
-//void moveConveyer(int power);		josh's code
 bool isValidTransaction(int playerBalance, int totalTransaction, int bill);
 int calcTransactionAmount(int* transactionBills);
 bool getHigherOptions(int playerBalance, int* transactionBills, bool& doesContinue);
@@ -44,6 +42,7 @@ int getTransferee(int playersInGame, int * transferOption);
 void transferAmount(int transferor, int transferee, int * accountBalance, bool & isTransferCancelled);
 int getTransferAmount(int playerBalance, bool & isTransferCancelled);
 void displayTransferOptions(int transferor, int * transferOption, bool * isPlaying);
+
 
 void sensorConfig()
 {
@@ -292,9 +291,10 @@ void withdraw(int& playerBalance, int* transactionBills, bool& doesContinue)
 	  displayText_Wait("WITHDRAWAL COMPLETE");
 		//update account
 		playerBalance -= withdraw;
+		//move bills out
+		moveBillsOut(transactionBills);
 		//move bills out for user
-		//###moveConveyer(50);		//POSITIVE_CONVEYER = 50
-		//###moveBillsOut(transactionBills);
+		conveyerSend(false);
 	}
 }
 
@@ -304,24 +304,9 @@ int receiveWithdrawBills(int playerBalance, int* transactionBills, bool& doesCon
 	getLowerOptions(playerBalance, transactionBills, doesContinue);
 
 	int totalWithdraw = calcTransactionAmount(transactionBills);
-
-	//ie moveBillsOut function right here
-	for (int bill = 0; bill < BILL_TYPES; bill++)
-	{
-		if (transactionBills[bill] > 0)
-		{
-			for (int numBills = 0; numBills < transactionBills[bill]; numBills++)
-			{
-				/*moveArm(bill);
-				pickupBill();
-				centerArm();
-				numBills++;*/
-			}
-		}
-	}
 	return totalWithdraw;
 }
-/*
+
 void moveBillsOut(int* transactionBills)
 {
 	for (int bill = 0; bill < BILL_TYPES; bill++)
@@ -330,14 +315,11 @@ void moveBillsOut(int* transactionBills)
 		{
 			for (int numBills =0; numBills < transactionBills[bill]; numBills++)
 			{
-				moveArm(bill);
-				pickupBill();
-				centerArm();
-				numBills++;
+				masterTransverse(bill, 3);
 			}
 		}
 	}
-}*/
+}
 
 void cancelTransaction(int* transactionBills, bool& doesContinue)
 {
@@ -521,56 +503,6 @@ bool isValidTransaction(int playerBalance, int totalTransaction, int bill)
 	}
 }
 
-/*
-bool checkCancelOrClear(int* transactionBills, bool& doesContinue)
-{
-	bool isOptionChosen = false;
-	//check if want to quit
-	if (getButtonPress(buttonLeft) || getButtonPress(buttonRight) || getButtonPress(buttonUp) || getButtonPress(buttonDown))
-	{
-		//check if they quit  ie top and bot buttons
-		while(getButtonPress(buttonUp) && !isOptionChosen)
-		{
-			if (getButtonPress(buttonDown))
-			{
-				cancelTransaction(transactionBills, doesContinue);
-				isOptionChosen = true;
-			}
-			displayString(10, "up button stuck");
-		}
-		while(getButtonPress(buttonDown) && !isOptionChosen)
-		{
-			if (getButtonPress(buttonUp))
-			{
-				cancelTransaction(transactionBills, doesContinue);
-				isOptionChosen = true;
-			}
-			displayString(10, "down button stuck");
-		}
-
-		//check if they want to clear withdraw amount
-		while(getButtonPress(buttonRight) && !isOptionChosen)
-		{
-			if (getButtonPress(buttonLeft))
-			{
-				clearChosenBills(transactionBills);
-				isOptionChosen = true;
-			}
-			displayString(10, "right button stuck");
-		}
-		while(getButtonPress(buttonLeft) && !isOptionChosen)
-		{
-			if (getButtonPress(buttonRight))
-			{
-				clearChosenBills(transactionBills);
-				isOptionChosen = true;
-			}
-			displayString(10, "left button stuck");
-		}
-	}
-	return isOptionChosen;
-}
-*/
 
 bool isClearOrCancel(int* transactionBills)
 {
@@ -579,7 +511,7 @@ bool isClearOrCancel(int* transactionBills)
 	{
 		if (time1[T1] > 3000)
 		{
-			displayString(10, "RELEASE BUTTON");
+			displayString(12, "RELEASE BUTTON TO CONTINUE");
 		}
 	}
 	if (time1[T1] > 3000)
@@ -604,14 +536,14 @@ int calcTransactionAmount(int* transactionBills)
 void displayText_Wait(string* text)
 {
 	eraseDisplay();
-	displayString(2, "Do this %s", text);
+	displayString(2, "%s", text);
 	wait1Msec(DISPLAY_WAIT);
 }
 
 void displayText_NoWait(string* text)
 {
 	eraseDisplay();
-	displayString(2, "Do this %s", text);
+	displayString(2, "%s", text);
 }
 
 //main transfer function
@@ -635,8 +567,16 @@ void transfer(int transferor, int playersInGame, int * playerBalance, bool * isP
 	displayTransferOptions(transferor, transferOption, isPlaying);		//calls functions to display transfer options
 	transferee = getTransferee(playersInGame, transferOption);		//calls functions to get valid user input for transferee
 
-	if (transferee != -1)		//checks if Enter button is pressed
-		transferAmount(transferor, transferee, playerBalance, doesContinue);		//if Enter button is not pressed, calls function to transfer inputted amount to tranferee
+	//checks if Enter button is pressed
+	if (transferee != -1)
+	{
+		//if Enter button is not pressed, calls function to transfer inputted amount to tranferee
+		transferAmount(transferor, transferee, playerBalance, doesContinue);
+	}
+	if (!doesContinue)
+	{
+		displayText_Wait("TRANSFER COMPLETE");
+	}
 
 }
 
@@ -689,10 +629,12 @@ int getTransferee(int playersInGame, int * transferOption)
 //updates appropriate balances based on transfer amount
 void transferAmount(int transferor, int transferee, int * accountBalance, bool & isTransferCancelled)
 {
+	displayText_Wait("PICK YOUR BILLS");
 	int transferorBalance = accountBalance[transferor];
 	int transferAmount = getTransferAmount(transferorBalance, isTransferCancelled);		//calls function to get transfer amount
 	accountBalance[transferor] -= transferAmount;		//subtracts amount from transferer balance
 	accountBalance[transferee] += transferAmount;		//adds amount to transfer recipient balance
+
 }
 
 int getTransferAmount(int playerBalance, bool & isTransferCancelled)
@@ -735,6 +677,143 @@ void displayTransferOptions(int transferor, int * transferOption, bool * isPlayi
 			}
 		}
 	}
+}
+
+void zeroGantry()
+{
+	motor[GANTRY_MOTOR] = -40;
+	while(SensorValue(S1)!=1){}
+	motor[GANTRY_MOTOR]=0;
+}
+
+void GantryTransverse(int position)
+{
+	zeroGantry();
+	nMotorEncoder[GANTRY_MOTOR]=0;
+	if (position==1)
+	{
+		motor[GANTRY_MOTOR]=40;
+		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<6.25){}
+		motor[GANTRY_MOTOR]=0;
+		wait10Msec(50);
+	}
+	else if (position==2)
+	{
+		motor[GANTRY_MOTOR]=40;
+		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<12.5){}
+		motor[GANTRY_MOTOR]=0;
+		wait10Msec(50);
+	}
+	else if (position==3)
+	{
+		motor[GANTRY_MOTOR]=40;
+		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<22.7){}
+		motor[GANTRY_MOTOR]=0;
+		wait10Msec(50);
+	}
+	else if (position==4)
+	{
+		motor[GANTRY_MOTOR]=40;
+		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<32.6){}//21.5+9.6+1.5
+		motor[GANTRY_MOTOR]=0;
+		wait10Msec(50);
+	}
+	else if (position==5)
+	{
+		motor[GANTRY_MOTOR]=40;
+		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<38.8){}//21.5+9.6+7.5
+		motor[GANTRY_MOTOR]=0;
+		wait10Msec(50);
+	}
+	else if (position==6)
+	{
+		motor[GANTRY_MOTOR]=40;
+		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<44.9){}//21.5+9.6+6+7.5
+		motor[GANTRY_MOTOR]=0;
+		wait10Msec(50);
+	}
+	else if (position==7)
+	{
+		motor[GANTRY_MOTOR]=40;
+		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<50.8){}//21.5+9.6+6+6+7.5
+		motor[GANTRY_MOTOR]=0;
+		wait10Msec(50);
+	}
+}
+
+void pickUpBill()
+//motora=suction
+//motorb= end effector
+{
+	nMotorEncoder[VERT_ACTUATOR_MOTOR]=0;
+	nMotorEncoder[END_EFFECTOR_MOTOR]=0;
+
+	motor[VERT_ACTUATOR_MOTOR]=-30;
+	while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0>-14){}
+	motor[VERT_ACTUATOR_MOTOR]=0;
+
+	motor[END_EFFECTOR_MOTOR] = -40;
+	while(nMotorEncoder[END_EFFECTOR_MOTOR]*PI/180.0>-1.8){}
+	motor[END_EFFECTOR_MOTOR]=0;
+	motor[VERT_ACTUATOR_MOTOR]=30;
+	while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0<0){}
+	motor[VERT_ACTUATOR_MOTOR]=0;
+	wait10Msec(50);
+}
+
+void dropBill(){
+	nMotorEncoder[VERT_ACTUATOR_MOTOR]=0;
+	motor[VERT_ACTUATOR_MOTOR]=-30;
+	while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0>-7){}
+	motor[VERT_ACTUATOR_MOTOR]=0;
+	motor[END_EFFECTOR_MOTOR]=40;
+	while(nMotorEncoder[END_EFFECTOR_MOTOR]*PI/180.0<1.5){}
+	motor[END_EFFECTOR_MOTOR]=0;
+	wait10Msec(30);
+
+	motor[VERT_ACTUATOR_MOTOR]=30;
+	while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0<0){}
+	motor[VERT_ACTUATOR_MOTOR]=0;
+	motor[END_EFFECTOR_MOTOR] = -20;
+	while(nMotorEncoder[END_EFFECTOR_MOTOR]*PI/180.0>0){}
+	motor[END_EFFECTOR_MOTOR]=0;
+	wait10Msec(50);
+}
+
+void mastertransverse(int initial, int final)
+{
+	GantryTransverse(initial);
+	pickUpBill();
+	GantryTransverse(final);
+	dropBill();
+}
+
+void conveyorSend(bool position)
+{
+	if (position)
+	{
+		//moving tray to
+		motor[CONVEYER_MOTOR]=30;
+		while(nMotorEncoder[CONVEYER_MOTOR]*PI*1.75/180.0<7){}
+		motor[CONVEYER_MOTOR]=0;
+		wait10Msec(100);
+	}
+	else
+	{
+		//moving tray to
+		motor[CONVEYER_MOTOR]=30;
+		while(nMotorEncoder[CONVEYER_MOTOR]*PI*1.75/180.0<26){}
+		motor[CONVEYER_MOTOR]=0;
+		wait10Msec(100);
+	}
+}
+
+void conveyorReturn()
+{
+	motor[CONVEYER_MOTOR]=-30;
+	while(nMotorEncoder[CONVEYER_MOTOR]*PI*2.75/180.0>0){}
+	motor[CONVEYER_MOTOR]=0;
+	wait10Msec(100);
 }
 
 task main()
