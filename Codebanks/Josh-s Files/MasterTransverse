@@ -47,14 +47,14 @@ void GantryTransverse(int position)
 	else if (position==6)
 	{
 		motor[motorA]=40;
-		while(nMotorEncoder[motorA]*PI*3/180.0<44.9){}//21.5+9.6+6+7.5
+		while(nMotorEncoder[motorA]*PI*3/180.0<44.7){}//21.5+9.6+6+7.5
 		motor[motorA]=0;
 		wait10Msec(50);
 	}
 	else if (position==7)
 	{
 		motor[motorA]=40;
-		while(nMotorEncoder[motorA]*PI*3/180.0<50.3){}//21.5+9.6+6+6+7.5
+		while(nMotorEncoder[motorA]*PI*3/180.0<50.5){}//21.5+9.6+6+6+7.5
 		motor[motorA]=0;
 		wait10Msec(50);
 	}
@@ -115,16 +115,21 @@ void mastertransverse(int initial, int final)
 }
 task main()
 {
-	/*
-for (int count=1;count<8;count++)
-{
-	GantryTransverse(count);
-	pickUpBill();
-}
-*/
-//for (int count=0;count<3;count++)
-//	mastertransverse(3,count);
-//for (int count=4;count<8;count++)
-	mastertransverse(3,7);
+for (int count=0;count<3;count++)
+	mastertransverse(count,3);
+for (int count=4;count<8;count++)
+	mastertransverse(count,3);
+
+		wait10Msec(1000);
+for (int count=0;count<3;count++)
+	mastertransverse(3,count);
+for (int count=4;count<8;count++)
+	mastertransverse(3,count);
+
+
+	
+
+	
+	
 
 }
