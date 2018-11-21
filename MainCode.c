@@ -2,7 +2,6 @@ const int START_BALANCE = 1500;
 const int MAX_PLAYERS = 5;
 const int MAX_CASH = 10000;
 const int BILL_TYPES = 7;
-const int NUMBILLS = 7;
 const int DISPLAYSTART = 2;
 
 const int DISPLAY_WAIT = 1000;
@@ -42,13 +41,20 @@ int getTransferee(int playersInGame, int * transferOption);
 void transferAmount(int transferor, int transferee, int * accountBalance, bool & isTransferCancelled);
 int getTransferAmount(int playerBalance, bool & isTransferCancelled);
 void displayTransferOptions(int transferor, int * transferOption, bool * isPlaying);
-
+void moveBillsOut(int* transactionBills);
+void masterTransverse(int initial, int final);
+void conveyorSend(bool isColourLocation);
+void conveyorReturn();
+int senseBill(tSensors colorsensor);
+int senseCard();
+void deposit(currentPlayer, accountBalance, continueTransaction);
+void processTransaction(int* transactionBills);
 
 void sensorConfig()
 {
 	SensorType[COLOUR_CARD] = sensorEV3_Color;
 	wait1Msec(50);
-	SensorMode[COLOUR_CARD] = modeEV3Color_Color;
+	SensorMode[COLOUR_CARD] = modeEV3Color_RGB_Raw;
 	wait1Msec(50);
 
 	SensorType[COLOUR_BILL] = sensorEV3_Color;
@@ -100,6 +106,9 @@ void setupPlayers(int & numPlayers, int * accountBalance, bool * isPlaying)
 	}
 }
 
+/*****************
+THIS IS THE PREVIOUS CARD READING FUNCTION, WAITING TESTS FOR NEW FUNCTION
+******************
 int senseCard()
 {
 	long red, green, blue;
@@ -139,6 +148,108 @@ int senseCard()
 	if (maxColorCount > 0)
 		return maxColorIndex;
 	return -1;
+}
+*/
+
+//new card colour sensing function
+int senseCard()
+{
+	long red, green, blue;
+	getColorRGB(COLOR_CARD, red, green, blue);
+	red=blue=green=0;
+	getColorRGB(COLOR_CARD, red, green, blue);
+
+	int colorCount[5] = {0,0,0,0,0};
+
+	int numReadings = 0;
+
+	while (numReadings < 10){
+		//pink
+			if(red<=140&&red>=30 && green<=150/100.0*red&&green>=36/100.0*red && blue<=70/100.0*red&&blue>=20/100.0*red)
+				colorCount[1]++;
+		//blue
+			else if(red<=60/100.0*blue&&red>=38/100.0*blue && green<=70/100.0*blue&&green>=50/100.0*blue && blue<=30&&blue>=15)
+				colorCount[2]++;
+		//red
+			else if(red<=80&&red>=30 && green<=20/100.0*red&&green>=3/100.0*red && blue<=20/100.0*red&&blue>=5/100.0*red)
+				colorCount[3]++;
+		//green
+			else if(red<=70/100.0*green&&red>=50/100.0*green && green<=80&&green>=20 && blue<=70/100.0*green&&blue>=50/100.0*green)
+				colorCount[4]++;
+		//brown
+				else if(red<=15&&red>=2 && green<=70/100.0*red&&green>=40/100.0*red && blue<=70/100.0*red&&blue>=40/100.0*red)
+				colorCount[0]++;
+	numReadings++;
+	}
+
+	int maxColorCount = 0;
+	int maxColorIndex = 0;
+
+	for (int index = 0; index < 5; index++)
+		if (colorCount[index] > maxColorCount){
+			maxColorCount = colorCount[index];
+			maxColorIndex = index;
+		}
+
+	if (maxColorCount > 0)
+		return maxColorIndex;
+	return -1;
+}
+
+int senseBill(tSensors colorsensor)
+{
+	long red, green, blue;
+	getColorRGB(colorsensor, red, green, blue);
+	red=blue=green=0;
+	getColorRGB(colorsensor, red, green, blue);
+
+	int colorCount[7] = {0,0,0,0,0,0,0};
+
+	int numReadings = 0;
+
+	while (numReadings < 10){
+		//red
+		//	if(red<=80&&red>=3 && green<=20/100.0*red&&green>=10/100.0*red && blue<=30/100.0*red&&blue>=15/100.0*red)
+		//		return ##;
+		//pink
+			if(red<=120&&red>=2 && green<=35/100.0*red&&green>=5/100.0*red && blue<=60/100.0*red&&blue>=30/100.0*red)
+				colorCount[0]++;
+		//purple
+			else if(red<=100/100.0*blue&&red>=60/100.0*blue && green<=70/100.0*blue&&green>=30/100.0*blue && blue<=60&&blue>=12)
+				colorCount[1]++;
+		//brown
+			else if(red<=15&&red>=2 && green<=100/100.0*red&&green>=60/100.0*red && blue<=100/100.0*red&&blue>=60/100.0*red)
+				colorCount[2]++;
+		//blue
+			else if(red<=35/100.0*blue&&red>=5/100.0*blue && green<=100/100.0*blue&&green>=40/100.0*blue && blue<=100&&blue>=3)
+				colorCount[3]++;
+		//orange
+			else if(red<=120&&red>=7 && green<=30/100.0*red&&green>=5/100.0*red && blue<=35/100.0*red&&blue>=10/100.0*red)
+				colorCount[4]++;
+		//yellow
+			else if(red<=130&&red>=10 && green<=90/100.0*red&&green>=60/100.0*red && blue<=65/100.0*red&&blue>=30/100.0*red)
+				colorCount[5]++;
+		//green
+			else if(red<=50/100.0*green&&red>=20/100.0*green && green<=40&&green>=3 && blue<=85/100.0*green&&blue>=40/100.0*green)
+				colorCount[6]++;
+		//black
+		//else
+			//colorCount[7]++;
+	numReadings++;
+	}
+
+	int maxColorCount = 0;
+	int maxColorIndex = 0;
+
+	for (int index = 0; index < 7; index++)
+		if (colorCount[index] > maxColorCount){
+			maxColorCount = colorCount[index];
+			maxColorIndex = index;
+		}
+
+	if (maxColorCount > 0)
+		return maxColorIndex;
+	return 7;
 }
 
 void setCurrPlayer(int& currPlayer, bool* isPlaying)
@@ -218,10 +329,6 @@ void promptContinue(bool& continueTransaction)
 	}
 }
 
-void updateBankAccount(int* accountBalance, int currentPlayer, int playerBalance)
-{
-	accountBalance[currentPlayer] = playerBalance;
-}
 
 void doTransaction(int currentPlayer, int& numPlayers, bool* isPlaying, int* accountBalance, bool& continueTransaction)
 {
@@ -242,7 +349,7 @@ void doTransaction(int currentPlayer, int& numPlayers, bool* isPlaying, int* acc
 	{
 		while (getButtonPress(buttonAny)){}
 		displayText_Wait("DEPOSIT");
-		//deposit(parameters);
+		deposit(currentPlayer, accountBalance, continueTransaction);
 	}
 
 	else if(getButtonPress(buttonRight))
@@ -279,6 +386,63 @@ void declareWinner(bool* isPlaying)
 	//####deposit (parameters)
 }
 
+void despotit(int currentPlayer, int* accountBalance, bool& doesContinue)
+{
+	doesContinue = false;
+	int depositAmount = 0;
+	int transactionBills[BILL_TYPES] = {0, 0, 0, 0, 0, 0, 0};
+
+	//prompt user for bills
+	displayString(2, "DEPOSIT");
+	displayString(4, "PLACE BILLS ON TRAY");
+	displayString(5, "PRESS ENTER TO CONTINUE");
+	displayString(6, "PRESS DOWN TO CANCEL");
+
+	//wait for user
+	while (!getButtonPress(buttonEnter) && !getButtonPress(buttonDown)){}
+	//if wants to continue
+	if (getButtonPress(buttonEnter))
+	{
+		processDeposit(transactionBills);
+	}
+	else
+	{
+		doesContinue = true;
+	}
+
+	if (!doesContinue)
+	{
+		depositAmount = calcTransactionAmount(transactionBills);
+		accountBalance[currentPlayer] -= depositAmount;
+	}
+}
+
+void processTransaciton(int* transactionBills)
+{
+	int billScan = -1;
+
+	//"zero" everything before starting processing
+	zeroGantry();
+	conveyerSend(true);
+
+	//while the colour sensor doesn't sense black when scanning for colours
+	//scan bill, move bill to tray, repeat
+	while (billScan !=7)
+	{
+		billScan = senseBill(COLOUR_BILL);
+		if (billScan != 7)
+		{
+			//proceed with picking up bill and moving
+			conveyorReturn();
+			masterTransverse(NEED LOCAL POSITION, NEED SENSEBILL AND GANTRY TRAVERVSE ACCOUNTING FOR MIDDLE);
+			conveyorSend(true);
+		}
+	}
+	conveyerReturn();
+}
+
+
+
 
 void withdraw(int& playerBalance, int* transactionBills, bool& doesContinue)
 {
@@ -291,10 +455,10 @@ void withdraw(int& playerBalance, int* transactionBills, bool& doesContinue)
 	  displayText_Wait("WITHDRAWAL COMPLETE");
 		//update account
 		playerBalance -= withdraw;
-		//move bills out
+		//move bills out of bins into main tray
 		moveBillsOut(transactionBills);
 		//move bills out for user
-		conveyerSend(false);
+		conveyorSend(false);
 	}
 }
 
@@ -780,7 +944,7 @@ void dropBill(){
 	wait10Msec(50);
 }
 
-void mastertransverse(int initial, int final)
+void masterTransverse(int initial, int final)
 {
 	GantryTransverse(initial);
 	pickUpBill();
@@ -788,11 +952,11 @@ void mastertransverse(int initial, int final)
 	dropBill();
 }
 
-void conveyorSend(bool position)
+void conveyorSend(bool isColourLocation)
 {
-	if (position)
+	if (isColourLocation)
 	{
-		//moving tray to
+		//moving tray to colour sensor
 		motor[CONVEYER_MOTOR]=30;
 		while(nMotorEncoder[CONVEYER_MOTOR]*PI*1.75/180.0<7){}
 		motor[CONVEYER_MOTOR]=0;
@@ -800,7 +964,7 @@ void conveyorSend(bool position)
 	}
 	else
 	{
-		//moving tray to
+		//moving tray to user
 		motor[CONVEYER_MOTOR]=30;
 		while(nMotorEncoder[CONVEYER_MOTOR]*PI*1.75/180.0<26){}
 		motor[CONVEYER_MOTOR]=0;
@@ -808,6 +972,7 @@ void conveyorSend(bool position)
 	}
 }
 
+//this function brings tray back into enclosure
 void conveyorReturn()
 {
 	motor[CONVEYER_MOTOR]=-30;
