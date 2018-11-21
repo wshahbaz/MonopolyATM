@@ -43,12 +43,16 @@ int getTransferAmount(int playerBalance, bool & isTransferCancelled);
 void displayTransferOptions(int transferor, int * transferOption, bool * isPlaying);
 void moveBillsOut(int* transactionBills);
 void masterTransverse(int initial, int final);
+void pickUpBill();
+void GantryTransverse(int position);
+void	dropBill();
+void zeroGantry();
 void conveyorSend(bool isColourLocation);
 void conveyorReturn();
 int senseBill(tSensors colorsensor);
 int senseCard();
-void deposit(currentPlayer, accountBalance, continueTransaction);
-void processTransaction(int* transactionBills);
+void deposit(int currentPlayer, int* accountBalance, bool& doesContinue);
+void processDeposit(int* transactionBills);
 
 void sensorConfig()
 {
@@ -155,9 +159,9 @@ int senseCard()
 int senseCard()
 {
 	long red, green, blue;
-	getColorRGB(COLOR_CARD, red, green, blue);
+	getColorRGB(COLOUR_CARD, red, green, blue);
 	red=blue=green=0;
-	getColorRGB(COLOR_CARD, red, green, blue);
+	getColorRGB(COLOUR_CARD, red, green, blue);
 
 	int colorCount[5] = {0,0,0,0,0};
 
@@ -386,7 +390,7 @@ void declareWinner(bool* isPlaying)
 	//####deposit (parameters)
 }
 
-void despotit(int currentPlayer, int* accountBalance, bool& doesContinue)
+void deposit(int currentPlayer, int* accountBalance, bool& doesContinue)
 {
 	doesContinue = false;
 	int depositAmount = 0;
@@ -414,16 +418,17 @@ void despotit(int currentPlayer, int* accountBalance, bool& doesContinue)
 	{
 		depositAmount = calcTransactionAmount(transactionBills);
 		accountBalance[currentPlayer] -= depositAmount;
+		displayText_Wait("DEPOSIT COMPLETE");
 	}
 }
 
-void processTransaciton(int* transactionBills)
+void processDeposit(int* transactionBills)
 {
 	int billScan = -1;
 
 	//"zero" everything before starting processing
 	zeroGantry();
-	conveyerSend(true);
+	conveyorSend(true);
 
 	//while the colour sensor doesn't sense black when scanning for colours
 	//scan bill, move bill to tray, repeat
@@ -434,15 +439,20 @@ void processTransaciton(int* transactionBills)
 		{
 			//proceed with picking up bill and moving
 			conveyorReturn();
-			masterTransverse(NEED LOCAL POSITION, NEED SENSEBILL AND GANTRY TRAVERVSE ACCOUNTING FOR MIDDLE);
+			//account for intake/outtake tray taking up a spot
+			if (billScan > 2)
+			{
+				masterTransverse(billScan+1, 3);
+			}
+			else
+			{
+				masterTransverse(billScan, 3);
+			}
 			conveyorSend(true);
 		}
 	}
-	conveyerReturn();
+	conveyorReturn();
 }
-
-
-
 
 void withdraw(int& playerBalance, int* transactionBills, bool& doesContinue)
 {
@@ -804,9 +814,9 @@ void transferAmount(int transferor, int transferee, int * accountBalance, bool &
 int getTransferAmount(int playerBalance, bool & isTransferCancelled)
 //gets user input for transfer amount
 {
-	int transferBills[NUMBILLS];		//declare array for bills
+	int transferBills[BILL_TYPES];		//declare array for bills
 
-	for (int index = 0; index < NUMBILLS; index++)		//initialize array for transfer bills
+	for (int index = 0; index < BILL_TYPES; index++)		//initialize array for transfer bills
 	{
 		transferBills[index] = 0;
 	}
@@ -846,7 +856,7 @@ void displayTransferOptions(int transferor, int * transferOption, bool * isPlayi
 void zeroGantry()
 {
 	motor[GANTRY_MOTOR] = -40;
-	while(SensorValue(S1)!=1){}
+	while(SensorValue(TOUCH_ENC_ZERO)!=1){}
 	motor[GANTRY_MOTOR]=0;
 }
 
