@@ -1,0 +1,26 @@
+void endGame(int currPlayer, int *playerBalances)         // Request all bills be deposited into the tray, redistribute into slots, state any discrepancies in the count
+{
+	displayText_NoWait("return maximum 20 bills to tray");
+	conveyorSend(USER_PICKUP);
+	displayText_NoWait("Press Enter when all money has be placed in the tray");
+	while(!getButtonPress(buttonAny));
+	while(getButtonPress(buttonEnter));
+	//conveyorSend(COLOUR_SENSE_LOCATION);
+	bool keepCollecting =true;
+	while(playerBalances[0]<MAX_CASH&&keepCollecting)
+	{
+		deposit(currplayer, playerBalances);
+		displayText_NoWait("Press enter to stop collecting money and any other button to continue");
+		while(!getButtonPress(buttonAny));
+		while(getButtonPress(buttonAny))
+			{
+			if (getButtonPress(buttonEnter))
+				keepCollecting = false;
+			else if (getButtonPress(buttonAny)&&!getButtonPress(buttonEnter))
+				keepCollecting = true;
+			}
+		
+	}
+	displayText_NoWait("Thank you for playing");
+	
+}
