@@ -1,11 +1,21 @@
 const int START_BALANCE = 1500;
 const int MAX_PLAYERS = 5;
-const int MAX_CASH = 10000;
+const int MAX_CASH = 13720;
 const int NUM_BINS = 8;
-const int TRAY_LOCATION = 3;
 const int DISPLAYSTART = 2;
 
 const int DISPLAY_WAIT = 1000;
+
+//Bill indices
+const int BILL_1 = 0;
+const int BILL_5 = 1;
+const int BILL_10 = 2;
+//This is used in the specifc case of going to bin location
+const int OUTPUT_TRAY_LOCATION = 3;
+const int BILL_20 = 4;
+const int BILL_50 = 5;
+const int BILL_100 = 6;
+const int BILL_500 = 7;
 
 //Motors
 const int GANTRY_MOTOR = 0;
@@ -17,6 +27,10 @@ const int CONVEYER_MOTOR = 3;
 const int COLOUR_CARD = 0;	//port S1
 const int COLOUR_BILL = 1;	//port S2
 const int TOUCH_ENC_ZERO = 2;		//port S3
+
+//Tray lcoations
+const int USER_PICKUP = 0;
+const int COLOUR_SENSE_LOCATION = 1;
 
 //function prototypes
 //need to declare function stubs so functions are declared ahead of time
@@ -54,11 +68,11 @@ void pickUpBill();
 void GantryTransverse(int position);
 void	dropBill();
 void zeroGantry();
-void conveyorSend(bool isColourLocation);
+void sendTray(int trayLocation);
 void conveyorReturn();
 int senseBill(tSensors colorsensor);
 int senseCard();
-void deposit(int currentPlayer, int* accountBalance);
+void deposit(int currPlayer, int* accountBalance);
 void processDeposit(int* transactionBills);
 
 void sensorConfig()
@@ -230,15 +244,22 @@ void setCurrPlayer(int& currPlayer, bool* isPlaying)
 void displayMainMenu(int currPlayer, int* accountBalance)
 {
 	eraseDisplay();
-	displayString(2, "Player %d, Balance: %d", currPlayer, accountBalance[currPlayer]);
-	displayString(4, "1: Withdraw");
-	displayString(5, "2: Deposit");
-	displayString(6, "3: Transfer");
-	displayString(7, "4: Declare Bankrupcty");
-	displayString(8, "5: Cancel Transaction");
+	if (currPlayer != 0){
+		displayString(2, "Player %d, Balance: %d", currPlayer, accountBalance[currPlayer]);
+		displayString(4, "1: Withdraw");
+		displayString(5, "2: Deposit");
+		displayString(6, "3: Transfer");
+		displayString(7, "4: Declare Bankrupcty");
+		displayString(8, "5: Cancel Transaction");
+	}
+	else{
+		displayString(2, "MONOPOLY MAN, Balance: %d", accountBalance[currPlayer]);
+		displayString(4, "1: Transfer");
+		displayString(5, "2: Cancel Trancation");
+	}
 }
 
-void declareBankruptcy(int currentPlayer, int& numPlayers, bool* isPlaying, int* accountBalance, bool& continueTransaction)
+void declareBankruptcy(int currPlayer, int& numPlayers, bool* isPlaying, int* accountBalance, bool& continueTransaction)
 {
 	eraseDisplay();
 
@@ -250,37 +271,39 @@ void declareBankruptcy(int currentPlayer, int& numPlayers, bool* isPlaying, int*
 	while(!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)){}
 
 	if (getButtonPress(buttonUp))
-	{
-		while(getButtonPress(buttonAny)){}
-
-		displayText_Wait("BETTER LUCK NEXT TIME");
-		/*
-		run deposit function to get cash
-		displayString(2, "Deposit any remaining cash at hand");
-		wait1Msec(1500);
-		depositCash( . . . )
-		*/
-
-
-		isPlaying[currentPlayer] = false;
-		accountBalance[currentPlayer] = 0;
-		numPlayers--;
-		continueTransaction = false;
+		{
+			while(getButtonPress(buttonAny)){}
+	
+			displayText_Wait("BETTER LUCK NEXT TIME");
+			/*
+			run deposit function to get cash
+			displayString(2, "Deposit any remaining cash at hand");
+			wait1Msec(1500);
+			depositCash( . . . )
+			*/
+	
+			isPlaying[currPlayer] = false;
+			accountBalance[currPlayer] = 0;
+			numPlayers--;
+			continueTransaction = false;
+		}
+		else
+			while (getButtonPress(buttonAny)){}
 	}
-	else
-		while (getButtonPress(buttonAny)){}
-}
 
-void promptContinue(bool& continueTransaction)
+void promptContinue(bool& continueTransaction, bool assumeContinue)
 {
 	eraseDisplay();
-	displayString(2,"Continue Transaction?");
+	if (assumeContinue)
+		displayString(2,"CONTINUE TRANSACTION?")
+	else
+		displayString(2,"CONFIRM CANCEL");
 	displayString(4, "1: Yes");
 	displayString(5, "2: No");
 
 	while (!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)){}
 
-	if (getButtonPress(buttonUp))
+	if (getButtonPress(buttonUp) && assumeContinue || getButtonPress(buttonLeft) && !assumeContinue)
 		while (getButtonPress(buttonAny)){}
 
 	else
@@ -289,49 +312,70 @@ void promptContinue(bool& continueTransaction)
 		continueTransaction = false;
 	}
 }
-
-
-void doTransaction(int currentPlayer, int& numPlayers, bool* isPlaying, int* accountBalance, bool& continueTransaction)
+	
+	
+void doTransaction(int currPlayer, int& numPlayers, bool* isPlaying, int* accountBalance, bool& continueTransaction)
 {
 	int transactionBills[NUM_BINS] = {0, 0, 0, 0, 0, 0, 0, 0};
-
-	while(!getButtonPress(buttonAny)){}
-
-	if(getButtonPress(buttonUp))
-	{
-		while (getButtonPress(buttonAny)){}
-		displayText_Wait("WITHDRAW");
-		int playerBalance = accountBalance[currentPlayer];
-		withdraw(playerBalance, transactionBills);
-		accountBalance[currentPlayer] = playerBalance;
+	
+	//for regular players
+	if(currPlayer != 0){
+		while(!getButtonPress(buttonAny)){}
+	
+		if(getButtonPress(buttonUp))
+		{
+			while (getButtonPress(buttonAny)){}
+			displayText_Wait("WITHDRAW");
+			int playerBalance = accountBalance[currPlayer];
+			withdraw(playerBalance, transactionBills);
+			accountBalance[currPlayer] = playerBalance;
+		}
+	
+		else if(getButtonPress(buttonLeft))
+		{
+			while (getButtonPress(buttonAny)){}
+			displayText_Wait("DEPOSIT");
+			deposit(currPlayer, accountBalance);
+		}
+	
+		else if(getButtonPress(buttonRight))
+		{
+			while (getButtonPress(buttonAny)){}
+			displayText_Wait("TRANSFER");
+			transfer(currPlayer, numPlayers, accountBalance, isPlaying);
+			//transfer(parameters);
+		}
+	
+		else if(getButtonPress(buttonDown))
+		{
+			while (getButtonPress(buttonDown)){}
+			displayText_Wait("BANKRUPTCY");
+			declareBankruptcy(currPlayer, numPlayers, isPlaying, accountBalance, continueTransaction);
+		}
+	
+		else
+		{
+			while (getButtonPress(buttonEnter)){}
+			promptContinue(continueTransaction, false);
+		}
 	}
-
-	else if(getButtonPress(buttonLeft))
-	{
-		while (getButtonPress(buttonAny)){}
-		displayText_Wait("DEPOSIT");
-		deposit(currentPlayer, accountBalance);
-	}
-
-	else if(getButtonPress(buttonRight))
-	{
-		while (getButtonPress(buttonAny)){}
-		displayText_Wait("TRANSFER");
-		transfer(currentPlayer, numPlayers, accountBalance, isPlaying);
-		//transfer(parameters);
-	}
-
-	else if(getButtonPress(buttonDown))
-	{
-		while (getButtonPress(buttonDown)){}
-		displayText_Wait("BANKRUPTCY");
-		declareBankruptcy(currentPlayer, numPlayers, isPlaying, accountBalance, continueTransaction);
-	}
-
-	else
-	{
-		while (getButtonPress(buttonEnter)){}
-		promptContinue(continueTransaction);
+	
+	//for the monopoly man
+	else{
+		while(!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)){}
+		
+		if(getButtonPress(buttonUp))
+		{
+			while (getButtonPress(buttonAny)){}
+			displayText_Wait("TRANSFER");
+			transfer(currPlayer, numPlayers, accountBalance, isPlaying);
+			//transfer(parameters);
+		}
+		
+		else{
+			while (getButtonPress(buttonLeft)){}
+			
+		}
 	}
 }
 
@@ -347,7 +391,7 @@ void declareWinner(bool* isPlaying)
 	//####deposit (parameters)
 }
 
-void deposit(int currentPlayer, int* accountBalance)
+void deposit(int currPlayer, int* accountBalance)
 {
 	//tracks whether deposit transaction has been cancelled
 	bool isCancelled = false;
@@ -356,7 +400,7 @@ void deposit(int currentPlayer, int* accountBalance)
 
 	//prompt user for bills
 	conveyorReturn();
-	conveyorSend(false);
+	sendTray(USER_PICKUP);
 	displayString(2, "DEPOSIT");
 	displayString(4, "PLACE BILLS ON TRAY");
 	displayString(5, "PRESS ENTER TO CONTINUE");
@@ -377,7 +421,7 @@ void deposit(int currentPlayer, int* accountBalance)
 	if (!isCancelled)
 	{
 		depositAmount = calcTransactionAmount(transactionBills);
-		accountBalance[currentPlayer] += depositAmount;
+		accountBalance[currPlayer] += depositAmount;
 		displayText_Wait("DEPOSIT COMPLETE");
 	}
 }
@@ -390,7 +434,7 @@ void processDeposit(int* transactionBills)
 	//"zero" everything before starting processing
 	zeroGantry();
 	conveyorReturn();
-	conveyorSend(true);
+	sendTray(COLOUR_SENSE_LOCATION);
 
 	//while the colour sensor doesn't sense black when scanning for colours
 	//scan bill, move bill to tray, repeat
@@ -406,8 +450,8 @@ void processDeposit(int* transactionBills)
 			//proceed with picking up bill and moving
 			conveyorReturn();
 			//account for intake/outtake tray taking up a spot
-			masterTransverse(TRAY_LOCATION, billIndex);
-			conveyorSend(true);
+			masterTransverse(OUTPUT_TRAY_LOCATION, billIndex);
+			sendTray(COLOUR_SENSE_LOCATION);
 		}
 	}
 	conveyorReturn();
@@ -428,7 +472,7 @@ void withdraw(int& playerBalance, int* transactionBills)
 		//move bills out of bins into main tray
 		moveBillsOut(transactionBills);
 		//move bills out for user
-		conveyorSend(false);
+		sendTray(USER_PICKUP);
 	}
 }
 
@@ -449,7 +493,7 @@ void moveBillsOut(int* transactionBills)
 		{
 			for (int numBills = 0; numBills < transactionBills[bill]; numBills++)
 			{
-				masterTransverse(bill, TRAY_LOCATION);
+				masterTransverse(bill, OUTPUT_TRAY_LOCATION);
 			}
 		}
 	}
@@ -922,9 +966,9 @@ void masterTransverse(int initial, int final)
 	dropBill();
 }
 
-void conveyorSend(bool isColourLocation)
+void sendTray(int trayLocation)
 {
-	if (isColourLocation)
+	if (trayLocation)
 	{
 		//moving tray to colour sensor
 		motor[CONVEYER_MOTOR]=30;
@@ -957,7 +1001,7 @@ task main()
 
 	int numPlayers = 0;
 	bool isPlaying[MAX_PLAYERS] = {true, false, false, false, false};
-	int accountBalance[MAX_PLAYERS] = {MAX_CASH, 0,0,0,0};
+	int accountBalance[MAX_PLAYERS] = {MAX_CASH,0,0,0,0};
 
 	setupPlayers(numPlayers, accountBalance, isPlaying);
 
@@ -974,7 +1018,7 @@ task main()
 			displayMainMenu(currPlayer, accountBalance);
 			doTransaction(currPlayer, numPlayers, isPlaying, accountBalance, continueTransaction);
 			if(continueTransaction)
-				promptContinue(continueTransaction);
+				promptContinue(continueTransaction, true);
 		} while (continueTransaction);
 	}
 
