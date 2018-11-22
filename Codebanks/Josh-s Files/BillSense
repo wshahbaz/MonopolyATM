@@ -48,34 +48,28 @@ int Sensebill(tSensors colorsensor)
 
 	int numReadings = 0;
 	
-	while (numReadings < 10){
-		//red
-		//	if(red<=80&&red>=3 && green<=20/100.0*red&&green>=10/100.0*red && blue<=30/100.0*red&&blue>=15/100.0*red)
-		//		return ##;
+	while (numReadings < 30){
 		//pink
-			if(red<=120&&red>=2 && green<=35/100.0*red&&green>=5/100.0*red && blue<=60/100.0*red&&blue>=30/100.0*red)
+			if(red<=120&&red>=15 && green<=50/100.0*red&&green>=20/100.0*red && blue<=60/100.0*red&&blue>=20/100.0*red)
 				colorCount[0]++;
 		//purple
-			else if(red<=100/100.0*blue&&red>=60/100.0*blue && green<=70/100.0*blue&&green>=30/100.0*blue && blue<=60&&blue>=12)
+			else if(red<=35&&red>=9 && green<=100/100.0*red&&green>=50/100.0*red && blue<=140/100.0*red&&blue>=65/100.0*red)
 				colorCount[1]++;
 		//brown
-			else if(red<=15&&red>=2 && green<=100/100.0*red&&green>=60/100.0*red && blue<=100/100.0*red&&blue>=60/100.0*red)
+			else if(red<=20&&red>=3 && green<=100/100.0*red&&green>=50/100.0*red && blue<=10&&blue>=2)
 				colorCount[2]++;
 		//blue
-			else if(red<=35/100.0*blue&&red>=5/100.0*blue && green<=100/100.0*blue&&green>=40/100.0*blue && blue<=100&&blue>=3)
+			else if(red<=45/100.0*green&&red>=5/100.0*green && green<=100&&green>=12 && blue<=150/100.0*green&&blue>=60/100.0*green)
 				colorCount[3]++;
 		//orange
-			else if(red<=120&&red>=7 && green<=30/100.0*red&&green>=5/100.0*red && blue<=35/100.0*red&&blue>=10/100.0*red)
+			else if(red<=120&&red>=7 && green<=30/100.0*red&&green>=5/100.0*red && blue<=10&&blue>=3)
 				colorCount[4]++;
 		//yellow
-			else if(red<=130&&red>=10 && green<=90/100.0*red&&green>=60/100.0*red && blue<=65/100.0*red&&blue>=30/100.0*red)
+			else if(red<=130&&red>=20 && green<=100/100.0*red&&green>=60/100.0*red && blue<=65/100.0*red&&blue>=25/100.0*red)
 				colorCount[5]++;
 		//green
-			else if(red<=50/100.0*green&&red>=20/100.0*green && green<=40&&green>=3 && blue<=85/100.0*green&&blue>=40/100.0*green)
+			else if(red<=50/100.0*green&&red>=20/100.0*green && green<=60&&green>=6 && blue<=15&&blue>=3)
 				colorCount[6]++;
-		//black
-		//else
-			//colorCount[7]++;
 	numReadings++;
 	}
 
