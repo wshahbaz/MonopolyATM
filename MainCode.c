@@ -58,7 +58,7 @@ void conveyorSend(bool isColourLocation);
 void conveyorReturn();
 int senseBill(tSensors colorsensor);
 int senseCard();
-void deposit(int currentPlayer, int* accountBalance, bool& doesContinue);
+void deposit(int currentPlayer, int* accountBalance);
 void processDeposit(int* transactionBills);
 
 void sensorConfig()
@@ -347,7 +347,7 @@ void declareWinner(bool* isPlaying)
 	//####deposit (parameters)
 }
 
-void deposit(int currentPlayer, int* accountBalance, bool& doesContinue)
+void deposit(int currentPlayer, int* accountBalance)
 {
 	doesContinue = false;
 	int depositAmount = 0;
@@ -412,9 +412,9 @@ void processDeposit(int* transactionBills)
 	conveyorReturn();
 }
 
-void withdraw(int& playerBalance, int* transactionBills, bool& doesContinue)
+void withdraw(int& playerBalance, int* transactionBills)
 {
-	doesContinue = false;
+	bool doesContinue = false;
 	//process withdraw transaction
 	int withdraw = receiveWithdrawBills(playerBalance, transactionBills, doesContinue);
 	//if user confirms transaction
