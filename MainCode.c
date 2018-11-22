@@ -20,13 +20,13 @@ const int TOUCH_ENC_ZERO = 2;		//port S3
 
 //function prototypes
 //need to declare function stubs so functions are declared ahead of time
-void withdraw(int& playerBalance, int* transactionBills, bool& doesContinue);
-int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& doesContinue);
+void withdraw(int& playerBalance, int* transactionBills);
+int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& isCancelled);
 //void moveBillsOut(int* transactionBills);
-void cancelTransaction(int* transactionBills, bool& doesContinue);
+void cancelTransaction(int* transactionBills, bool& isCancelled);
 void clearChosenBills(int* transactionBills);
 // Allows users to select bill amounts and stores the bill indices in an array
-void getLowerOptions(int playerBalance, int* transactionBills, bool& doesContinue);
+void getLowerOptions(int playerBalance, int* transactionBills, bool& isCancelled);
 // Displays bill values 1,5,10,20 for user to select
 void displayLowerOptions(int* transactionBills, int playerBalance);
 // Displays higher bill values 50,100,500 for user to select
@@ -36,12 +36,12 @@ bool isValidTransaction(int playerBalance, int totalTransaction, int bill);
 // Calculates the transaction amount given an array with bill indices
 int calcTransactionAmount(int* transactionBills);
 // Allows users to select bill amounts and stores the bill indices in an array
-bool getHigherOptions(int playerBalance, int* transactionBills, bool& doesContinue);
+bool getHigherOptions(int playerBalance, int* transactionBills, bool& isCancelled);
 bool isClearOrCancel(int* transactionBills);
 void displayText_NoWait(string* text);
 void displayText_Wait(string* text);
 int calcRemainingCash(int transactionAmont, int balance);
-void transfer(int transferor, int playersInGame, int* playerBalance, bool* isPlaying, bool& doesContinue);
+void transfer(int transferor, int playersInGame, int* playerBalance, bool* isPlaying);
 void waitButtonPress(int playersInGame);
 void buttonPressValid(int playersInGame);
 int getTransferee(int playersInGame, int * transferOption);
@@ -125,7 +125,7 @@ int senseCard()
 	red=blue=green=0;
 	getColorRGB(COLOUR_CARD, red, green, blue);
 
-	int colorCount[5] = {0,0,0,0,0};
+	int colorCount[MAX_PLAYERS] = {0,0,0,0,0};
 
 	int numReadings = 0;
 
@@ -302,7 +302,7 @@ void doTransaction(int currentPlayer, int& numPlayers, bool* isPlaying, int* acc
 		while (getButtonPress(buttonAny)){}
 		displayText_Wait("WITHDRAW");
 		int playerBalance = accountBalance[currentPlayer];
-		withdraw(playerBalance, transactionBills, continueTransaction);
+		withdraw(playerBalance, transactionBills);
 		accountBalance[currentPlayer] = playerBalance;
 	}
 
@@ -310,14 +310,14 @@ void doTransaction(int currentPlayer, int& numPlayers, bool* isPlaying, int* acc
 	{
 		while (getButtonPress(buttonAny)){}
 		displayText_Wait("DEPOSIT");
-		deposit(currentPlayer, accountBalance, continueTransaction);
+		deposit(currentPlayer, accountBalance);
 	}
 
 	else if(getButtonPress(buttonRight))
 	{
 		while (getButtonPress(buttonAny)){}
 		displayText_Wait("TRANSFER");
-		transfer(currentPlayer, numPlayers, accountBalance, isPlaying, continueTransaction);
+		transfer(currentPlayer, numPlayers, accountBalance, isPlaying);
 		//transfer(parameters);
 	}
 
@@ -349,7 +349,8 @@ void declareWinner(bool* isPlaying)
 
 void deposit(int currentPlayer, int* accountBalance)
 {
-	doesContinue = false;
+	//tracks whether deposit transaction has been cancelled
+	bool isCancelled = false;
 	int depositAmount = 0;
 	int transactionBills[NUM_BINS] = {0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -370,10 +371,10 @@ void deposit(int currentPlayer, int* accountBalance)
 	}
 	else
 	{
-		doesContinue = true;
+		isCancelled = true;
 	}
 
-	if (!doesContinue)
+	if (!isCancelled)
 	{
 		depositAmount = calcTransactionAmount(transactionBills);
 		accountBalance[currentPlayer] += depositAmount;
@@ -414,11 +415,12 @@ void processDeposit(int* transactionBills)
 
 void withdraw(int& playerBalance, int* transactionBills)
 {
-	bool doesContinue = false;
+	//tracks whether withdraw transaction has been cancelled
+	bool isCancelled = false;
 	//process withdraw transaction
-	int withdraw = receiveWithdrawBills(playerBalance, transactionBills, doesContinue);
+	int withdraw = receiveWithdrawBills(playerBalance, transactionBills, isCancelled);
 	//if user confirms transaction
-	if (!doesContinue)
+	if (!isCancelled)
 	{
 	  displayText_Wait("WITHDRAWAL COMPLETE");
 		//update account
@@ -430,10 +432,10 @@ void withdraw(int& playerBalance, int* transactionBills)
 	}
 }
 
-int receiveWithdrawBills(int playerBalance, int* transactionBills, bool& doesContinue)
+int receiveWithdrawBills(int playerBalance, int* transactionBills, bool& isCancelled)
 {
 	//lower options screen
-	getLowerOptions(playerBalance, transactionBills, doesContinue);
+	getLowerOptions(playerBalance, transactionBills, isCancelled);
 
 	int totalWithdraw = calcTransactionAmount(transactionBills);
 	return totalWithdraw;
@@ -453,7 +455,7 @@ void moveBillsOut(int* transactionBills)
 	}
 }
 
-void cancelTransaction(int* transactionBills, bool& doesContinue)
+void cancelTransaction(int* transactionBills, bool& isCancelled)
 {
 	for (int bill = 0; bill < NUM_BINS; bill++)
 	{
@@ -461,7 +463,7 @@ void cancelTransaction(int* transactionBills, bool& doesContinue)
 	}
 	displayText_Wait("TRANSACTION CANCELLED");
 	//set condition that exits displayLowerOptions, modified version for displayHigherOptions
-	doesContinue = true;
+	isCancelled = true;
 }
 
 void clearChosenBills(int* transactionBills)
@@ -473,7 +475,7 @@ void clearChosenBills(int* transactionBills)
 	displayText_Wait("TRANSACTION CLEARED");
 }
 
-void getLowerOptions(int playerBalance, int* transactionBills, bool& doesContinue)
+void getLowerOptions(int playerBalance, int* transactionBills, bool& isCancelled)
 {
 		bool isDone = false;
 		while (!isDone)
@@ -505,7 +507,7 @@ void getLowerOptions(int playerBalance, int* transactionBills, bool& doesContinu
 				//check if cancel
 				if (isClearOrCancel(transactionBills))
 				{
-					cancelTransaction(transactionBills, doesContinue);
+					cancelTransaction(transactionBills, isCancelled);
 					isDone = true;
 				}
 				//update bills otherwise
@@ -524,14 +526,14 @@ void getLowerOptions(int playerBalance, int* transactionBills, bool& doesContinu
 				/*getHigherOptions is similar to getLowerOptions
 				but returns true if user clicks "go back button" and
 				false if user clicks "confirm transaction" button*/
-				isDone = getHigherOptions(playerBalance, transactionBills, doesContinue);
+				isDone = getHigherOptions(playerBalance, transactionBills, isCancelled);
 			}
 			//wait for user to release button
 			while(getButtonPress(buttonAny)){}
 		}
 }
 
-bool getHigherOptions(int playerBalance, int* transactionBills, bool& doesContinue)
+bool getHigherOptions(int playerBalance, int* transactionBills, bool& isCancelled)
 {
 	displayHigherOptions(transactionBills, playerBalance);
 	while (getButtonPress(buttonAny)){}
@@ -566,7 +568,7 @@ bool getHigherOptions(int playerBalance, int* transactionBills, bool& doesContin
 				//check if cancel
 				if (isClearOrCancel(transactionBills))
 				{
-					cancelTransaction(transactionBills, doesContinue);
+					cancelTransaction(transactionBills, isCancelled);
 		      isTransactionDone = true;
 				}
 				//check if can add bill to withdrawal
@@ -684,9 +686,10 @@ if user presses Enter button, transfer function is exited
 if user presses valid transferee, user is prompted for transfer amount
 ...
 */
-void transfer(int transferor, int playersInGame, int * playerBalance, bool * isPlaying, bool& doesContinue)
+void transfer(int transferor, int playersInGame, int * playerBalance, bool * isPlaying)
 {
-	doesContinue = false;
+	//tracks whether transfer transaction has been cancelled
+	bool isCancelled = false;
 	int transferee = 0;		//initialize variable
 	int transferOption[MAX_PLAYERS];		//declare array for transfer options
 
@@ -702,9 +705,9 @@ void transfer(int transferor, int playersInGame, int * playerBalance, bool * isP
 	if (transferee != -1)
 	{
 		//if Enter button is not pressed, calls function to transfer inputted amount to tranferee
-		transferAmount(transferor, transferee, playerBalance, doesContinue);
+		transferAmount(transferor, transferee, playerBalance, isCancelled);
 	}
-	if (!doesContinue)
+	if (!isCancelled)
 	{
 		displayText_Wait("TRANSFER COMPLETE");
 	}
