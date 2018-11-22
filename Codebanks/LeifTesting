@@ -4,6 +4,53 @@ const enum tSensors COLOR_CARD = S1;
 const enum tSensors COLOR_BILL = S2;
 const enum tSensors TOUCH_ENC_ZERO = S3;
 
+
+#include "PC_FileIO.c"
+
+const enum TTimers GAMETIME = T1;
+
+void updateLedger(TFileHandle & fout, int transactionType, int currPlayer, int transferee, int accountBalance, int amount){
+
+	long transactionTimeSeconds = (long) time1[GAMETIME]/1000;
+	long transactionTimeMinutes = transactionTimeSeconds/60;
+	long transactionTimeHours = transactionTimeMinutes/60;
+
+	transactionTimeSeconds -= transactionTimeMinutes*60;
+	transactionTimeMinutes -= transactionTimeHours*60;
+
+	string transactionNames[] = {"Withdraw","Deposit","Transfer","Declared Bankrupcty"};
+
+	writeTextPC(fout, "Time: ");
+	writeLongPC(fout, transactionTimeHours);
+	writeTextPC(fout, ":");
+	writeLongPC(fout, transactionTimeMinutes);
+	writeTextPC(fout, ":");writeLongPC(fout, transactionTimeSeconds);
+	writeTextPC(fout, " ");
+
+	writeTextPC(fout, "| Player: ");
+	writeLongPC(fout, currPlayer);
+	writeTextPC(fout, " ");
+
+	writeTextPC(fout, "| Type: ");
+	writeTextPC(fout, transactionNames[transactionType]);
+	writeTextPC(fout, " ");
+
+	if(transactionType != 3){
+		writeTextPC(fout, "| Amount: ");
+		writeLongPC(fout, amount);
+		writeTextPC(fout, " ");
+		if(transactionType == 2){
+			writeTextPC(fout, "to Player ");
+			writeLongPC(fout, transferee);
+			writeTextPC(fout, " ");
+		}
+		writeTextPC(fout, "| Updated player balance: ");
+		writeLongPC(fout, accountBalance);
+	}
+	
+	writeEndlPC(fout);
+}
+
 int senseCard()
 {
 	long red, green, blue;
