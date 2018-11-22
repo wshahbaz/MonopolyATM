@@ -1,7 +1,8 @@
 const int START_BALANCE = 1500;
 const int MAX_PLAYERS = 5;
 const int MAX_CASH = 10000;
-const int BILL_TYPES = 7;
+const int NUM_BINS = 8;
+const int TRAY_LOCATION = 3;
 const int DISPLAYSTART = 2;
 
 const int DISPLAY_WAIT = 1000;
@@ -24,11 +25,17 @@ int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& doesCo
 //void moveBillsOut(int* transactionBills);
 void cancelTransaction(int* transactionBills, bool& doesContinue);
 void clearChosenBills(int* transactionBills);
+// Allows users to select bill amounts and stores the bill indices in an array
 void getLowerOptions(int playerBalance, int* transactionBills, bool& doesContinue);
+// Displays bill values 1,5,10,20 for user to select
 void displayLowerOptions(int* transactionBills, int playerBalance);
+// Displays higher bill values 50,100,500 for user to select
 void displayHigherOptions(int* transactionBills, int playerBalance);
+// Checks whether the transaction exceeds the player's balance
 bool isValidTransaction(int playerBalance, int totalTransaction, int bill);
+// Calculates the transaction amount given an array with bill indices
 int calcTransactionAmount(int* transactionBills);
+// Allows users to select bill amounts and stores the bill indices in an array
 bool getHigherOptions(int playerBalance, int* transactionBills, bool& doesContinue);
 bool isClearOrCancel(int* transactionBills);
 void displayText_NoWait(string* text);
@@ -79,7 +86,7 @@ void setupPlayers(int & numPlayers, int * accountBalance, bool * isPlaying)
 
 
 	//wait for button press
-	while(!getButtonPress(buttonUp) && !getButtonPress(buttonLeft) && !getButtonPress(buttonRight) && !getButtonPress(buttonDown)){}
+	while(!getButtonPress(buttonLeft) && !getButtonPress(buttonRight) && !getButtonPress(buttonDown)){}
 
 	if(getButtonPress(buttonLeft))
 	{
@@ -97,7 +104,7 @@ void setupPlayers(int & numPlayers, int * accountBalance, bool * isPlaying)
 
 	else
 	{
-		while (getButtonPress(buttonAny)){}
+		while (getButtonPress(buttonDown)){}
 		numPlayers = 4;
 		displayText_Wait("FOUR PLAYER OPTION SELECTED");
 	}
@@ -109,51 +116,6 @@ void setupPlayers(int & numPlayers, int * accountBalance, bool * isPlaying)
 		accountBalance[index] = START_BALANCE;
 	}
 }
-
-/*****************
-THIS IS THE PREVIOUS CARD READING FUNCTION, WAITING TESTS FOR NEW FUNCTION
-******************
-int senseCard()
-{
-	long red, green, blue;
-	getColorRGB(COLOUR_CARD, red, green, blue);
-	red=blue=green=0;
-	getColorRGB(COLOUR_CARD, red, green, blue);
-
-	int colorCount[5] = {0,0,0,0,0};
-
-	int numReadings = 0;
-
-	while (numReadings < 10){
-		//pink
-			if(red<=120&&red>=2 && green<=35/100.0*red&&green>=5/100.0*red && blue<=60/100.0*red&&blue>=30/100.0*red)
-				colorCount[1]++;
-		//blue
-			else if(red<=35/100.0*blue&&red>=5/100.0*blue && green<=100/100.0*blue&&green>=40/100.0*blue && blue<=100&&blue>=3)
-				colorCount[2]++;
-		//green
-			else if(red<=50/100.0*green&&red>=20/100.0*green && green<=40*blue&&green>=3 && blue<=85/100.0*green&&blue>=40/100.0*green)
-				colorCount[3]++;
-		//yellow
-			else if(red<=130&&red>=10 && green<=90/100.0*red&&green>=60/100.0*red && blue<=65/100.0*red&&blue>=30/100.0*red)
-				colorCount[4]++;
-	numReadings++;
-	}
-
-	int maxColorCount = 0;
-	int maxColorIndex = 0;
-
-	for (int index = 0; index < 3; index++)
-		if (colorCount[index] > maxColorCount){
-			maxColorCount = colorCount[index];
-			maxColorIndex = index;
-		}
-
-	if (maxColorCount > 0)
-		return maxColorIndex;
-	return -1;
-}
-*/
 
 //new card colour sensing function
 int senseCard()
@@ -169,7 +131,7 @@ int senseCard()
 
 	while (numReadings < 10){
 		//pink
-			if(red<=140&&red>=30 && green<=150/100.0*red&&green>=36/100.0*red && blue<=70/100.0*red&&blue>=20/100.0*red)
+			if(red<=140&&red>=20 && green<=150/100.0*red&&green>=36/100.0*red && blue<=70/100.0*red&&blue>=20/100.0*red)
 				colorCount[1]++;
 		//blue
 			else if(red<=60/100.0*blue&&red>=38/100.0*blue && green<=70/100.0*blue&&green>=50/100.0*blue && blue<=30&&blue>=15)
@@ -207,45 +169,39 @@ int senseBill(tSensors colorsensor)
 	red=blue=green=0;
 	getColorRGB(colorsensor, red, green, blue);
 
-	int colorCount[7] = {0,0,0,0,0,0,0};
+	int colorCount[NUM_BINS] = {0,0,0,0,0,0,0,0};
 
 	int numReadings = 0;
 
-	while (numReadings < 10){
-		//red
-		//	if(red<=80&&red>=3 && green<=20/100.0*red&&green>=10/100.0*red && blue<=30/100.0*red&&blue>=15/100.0*red)
-		//		return ##;
-		//pink
-			if(red<=120&&red>=2 && green<=35/100.0*red&&green>=5/100.0*red && blue<=60/100.0*red&&blue>=30/100.0*red)
+	while (numReadings < 30){
+		//pink - 1s
+			if(red<=120&&red>=15 && green<=50/100.0*red&&green>=20/100.0*red && blue<=60/100.0*red&&blue>=20/100.0*red)
 				colorCount[0]++;
-		//purple
-			else if(red<=100/100.0*blue&&red>=60/100.0*blue && green<=70/100.0*blue&&green>=30/100.0*blue && blue<=60&&blue>=12)
+		//purple - 5s
+			else if(red<=35&&red>=9 && green<=100/100.0*red&&green>=50/100.0*red && blue<=140/100.0*red&&blue>=65/100.0*red)
 				colorCount[1]++;
-		//brown
-			else if(red<=15&&red>=2 && green<=100/100.0*red&&green>=60/100.0*red && blue<=100/100.0*red&&blue>=60/100.0*red)
+		//brown - 10s
+			else if(red<=20&&red>=3 && green<=100/100.0*red&&green>=50/100.0*red && blue<=10&&blue>=2)
 				colorCount[2]++;
-		//blue
-			else if(red<=35/100.0*blue&&red>=5/100.0*blue && green<=100/100.0*blue&&green>=40/100.0*blue && blue<=100&&blue>=3)
-				colorCount[3]++;
-		//orange
-			else if(red<=120&&red>=7 && green<=30/100.0*red&&green>=5/100.0*red && blue<=35/100.0*red&&blue>=10/100.0*red)
+		//blue -
+			else if(red<=45/100.0*green&&red>=5/100.0*green && green<=100&&green>=12 && blue<=150/100.0*green&&blue>=60/100.0*green)
 				colorCount[4]++;
-		//yellow
-			else if(red<=130&&red>=10 && green<=90/100.0*red&&green>=60/100.0*red && blue<=65/100.0*red&&blue>=30/100.0*red)
+		//orange -
+			else if(red<=120&&red>=7 && green<=30/100.0*red&&green>=5/100.0*red && blue<=10&&blue>=3)
 				colorCount[5]++;
-		//green
-			else if(red<=50/100.0*green&&red>=20/100.0*green && green<=40&&green>=3 && blue<=85/100.0*green&&blue>=40/100.0*green)
+		//yellow -
+			else if(red<=130&&red>=20 && green<=100/100.0*red&&green>=60/100.0*red && blue<=65/100.0*red&&blue>=25/100.0*red)
 				colorCount[6]++;
-		//black
-		//else
-			//colorCount[7]++;
+		//green -
+			else if(red<=50/100.0*green&&red>=20/100.0*green && green<=60&&green>=6 && blue<=15&&blue>=3)
+				colorCount[7]++;
 	numReadings++;
 	}
 
 	int maxColorCount = 0;
 	int maxColorIndex = 0;
 
-	for (int index = 0; index < 7; index++)
+	for (int index = 0; index < 8; index++)
 		if (colorCount[index] > maxColorCount){
 			maxColorCount = colorCount[index];
 			maxColorIndex = index;
@@ -253,7 +209,8 @@ int senseBill(tSensors colorsensor)
 
 	if (maxColorCount > 0)
 		return maxColorIndex;
-	return 7;
+	//if it sees black
+	return -1;
 }
 
 void setCurrPlayer(int& currPlayer, bool* isPlaying)
@@ -336,7 +293,7 @@ void promptContinue(bool& continueTransaction)
 
 void doTransaction(int currentPlayer, int& numPlayers, bool* isPlaying, int* accountBalance, bool& continueTransaction)
 {
-	int transactionBills[7] = {0, 0, 0, 0, 0, 0, 0};
+	int transactionBills[NUM_BINS] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 	while(!getButtonPress(buttonAny)){}
 
@@ -394,9 +351,11 @@ void deposit(int currentPlayer, int* accountBalance, bool& doesContinue)
 {
 	doesContinue = false;
 	int depositAmount = 0;
-	int transactionBills[BILL_TYPES] = {0, 0, 0, 0, 0, 0, 0};
+	int transactionBills[NUM_BINS] = {0, 0, 0, 0, 0, 0, 0, 0};
 
 	//prompt user for bills
+	conveyorReturn();
+	conveyorSend(false);
 	displayString(2, "DEPOSIT");
 	displayString(4, "PLACE BILLS ON TRAY");
 	displayString(5, "PRESS ENTER TO CONTINUE");
@@ -417,37 +376,36 @@ void deposit(int currentPlayer, int* accountBalance, bool& doesContinue)
 	if (!doesContinue)
 	{
 		depositAmount = calcTransactionAmount(transactionBills);
-		accountBalance[currentPlayer] -= depositAmount;
+		accountBalance[currentPlayer] += depositAmount;
 		displayText_Wait("DEPOSIT COMPLETE");
 	}
 }
 
 void processDeposit(int* transactionBills)
 {
-	int billScan = -1;
+	//set billIndex to int value that will proceed through loop
+	int billIndex = 8;
 
 	//"zero" everything before starting processing
 	zeroGantry();
+	conveyorReturn();
 	conveyorSend(true);
 
 	//while the colour sensor doesn't sense black when scanning for colours
 	//scan bill, move bill to tray, repeat
-	while (billScan !=7)
+	while (billIndex != -1)
 	{
-		billScan = senseBill(COLOUR_BILL);
-		if (billScan != 7)
+		billIndex = senseBill(COLOUR_BILL);
+		eraseDisplay();
+		displayString(2, "BIll sensed %d", billIndex);
+		wait1Msec(1500);
+		if (billIndex != -1)
 		{
+			transactionBills[billIndex]++;
 			//proceed with picking up bill and moving
 			conveyorReturn();
 			//account for intake/outtake tray taking up a spot
-			if (billScan > 2)
-			{
-				masterTransverse(billScan+1, 3);
-			}
-			else
-			{
-				masterTransverse(billScan, 3);
-			}
+			masterTransverse(TRAY_LOCATION, billIndex);
 			conveyorSend(true);
 		}
 	}
@@ -483,13 +441,13 @@ int receiveWithdrawBills(int playerBalance, int* transactionBills, bool& doesCon
 
 void moveBillsOut(int* transactionBills)
 {
-	for (int bill = 0; bill < BILL_TYPES; bill++)
+	for (int bill = 0; bill < NUM_BINS; bill++)
 	{
 		if (transactionBills[bill] > 0)
 		{
-			for (int numBills =0; numBills < transactionBills[bill]; numBills++)
+			for (int numBills = 0; numBills < transactionBills[bill]; numBills++)
 			{
-				masterTransverse(bill, 3);
+				masterTransverse(bill, TRAY_LOCATION);
 			}
 		}
 	}
@@ -497,7 +455,7 @@ void moveBillsOut(int* transactionBills)
 
 void cancelTransaction(int* transactionBills, bool& doesContinue)
 {
-	for (int bill = 0; bill < BILL_TYPES; bill++)
+	for (int bill = 0; bill < NUM_BINS; bill++)
 	{
 		transactionBills[bill] = 0;
 	}
@@ -508,7 +466,7 @@ void cancelTransaction(int* transactionBills, bool& doesContinue)
 
 void clearChosenBills(int* transactionBills)
 {
-	for (int bill = 0; bill < BILL_TYPES; bill++)
+	for (int bill = 0; bill < NUM_BINS; bill++)
 	{
 		transactionBills[bill] = 0;
 	}
@@ -523,7 +481,6 @@ void getLowerOptions(int playerBalance, int* transactionBills, bool& doesContinu
 			displayLowerOptions(transactionBills, playerBalance);
 			//wait for button press
 			while (!getButtonPress(buttonAny)){}
-
 
 			//check  button options
 			if (getButtonPress(buttonUp) &&  isValidTransaction(playerBalance, calcTransactionAmount(transactionBills), 1)) {
@@ -559,7 +516,7 @@ void getLowerOptions(int playerBalance, int* transactionBills, bool& doesContinu
 			}
 			else if (getButtonPress(buttonEnter) && isValidTransaction(playerBalance, calcTransactionAmount(transactionBills), 20))
 			{
-				transactionBills[3]++;
+				transactionBills[4]++;
 			}
 			//if user wants to go to higher options screen
 			else if (getButtonPress(buttonDown))
@@ -588,7 +545,7 @@ bool getHigherOptions(int playerBalance, int* transactionBills, bool& doesContin
 
 			//check button options
 		  if (getButtonPress(buttonUp) &&  isValidTransaction(playerBalance, calcTransactionAmount(transactionBills), 50)) {
-				transactionBills[4]++;
+				transactionBills[5]++;
 			}
 			else if (getButtonPress(buttonLeft))
 			{
@@ -601,7 +558,7 @@ bool getHigherOptions(int playerBalance, int* transactionBills, bool& doesContin
 				//check if can add bill to withdrawal
 				else if (isValidTransaction(playerBalance, calcTransactionAmount(transactionBills), 100))
 				{
-					transactionBills[5]++;
+					transactionBills[6]++;
 				}
 			}
 			else if (getButtonPress(buttonRight))
@@ -615,7 +572,7 @@ bool getHigherOptions(int playerBalance, int* transactionBills, bool& doesContin
 				//check if can add bill to withdrawal
 				else if (isValidTransaction(playerBalance, calcTransactionAmount(transactionBills), 500))
 				{
-					transactionBills[6]++;
+					transactionBills[7]++;
 				}
 			}
 			//this button returns back to original screen
@@ -701,8 +658,8 @@ bool isClearOrCancel(int* transactionBills)
 int calcTransactionAmount(int* transactionBills)
 {
 	int totalTransaction = 0;
-	int billValues[BILL_TYPES] = {1, 5, 10, 20, 50, 100, 500};
-	for (int bill = 0; bill < 7; bill ++)
+	int billValues[NUM_BINS] = {1, 5, 10, 0, 20, 50, 100, 500};
+	for (int bill = 0; bill < NUM_BINS; bill ++)
 		totalTransaction += transactionBills[bill] * billValues[bill];
 	return totalTransaction;
 }
@@ -814,9 +771,9 @@ void transferAmount(int transferor, int transferee, int * accountBalance, bool &
 int getTransferAmount(int playerBalance, bool & isTransferCancelled)
 //gets user input for transfer amount
 {
-	int transferBills[BILL_TYPES];		//declare array for bills
+	int transferBills[NUM_BINS];		//declare array for bills
 
-	for (int index = 0; index < BILL_TYPES; index++)		//initialize array for transfer bills
+	for (int index = 0; index < NUM_BINS; index++)		//initialize array for transfer bills
 	{
 		transferBills[index] = 0;
 	}
@@ -863,69 +820,69 @@ void zeroGantry()
 void GantryTransverse(int position)
 {
 	zeroGantry();
-	nMotorEncoder[GANTRY_MOTOR]=0;
+	nMotorEncoder[motorA]=0;
 	if (position==1)
 	{
-		motor[GANTRY_MOTOR]=40;
-		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<6.25){}
-		motor[GANTRY_MOTOR]=0;
+		motor[motorA]=40;
+		while(nMotorEncoder[motorA]*PI*3/180.0<6.25){}
+		motor[motorA]=0;
 		wait10Msec(50);
 	}
 	else if (position==2)
 	{
-		motor[GANTRY_MOTOR]=40;
-		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<12.5){}
-		motor[GANTRY_MOTOR]=0;
+		motor[motorA]=40;
+		while(nMotorEncoder[motorA]*PI*3/180.0<12.5){}
+		motor[motorA]=0;
 		wait10Msec(50);
 	}
 	else if (position==3)
 	{
-		motor[GANTRY_MOTOR]=40;
-		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<22.7){}
-		motor[GANTRY_MOTOR]=0;
+		motor[motorA]=40;
+		while(nMotorEncoder[motorA]*PI*3/180.0<22.7){}
+		motor[motorA]=0;
 		wait10Msec(50);
 	}
 	else if (position==4)
 	{
-		motor[GANTRY_MOTOR]=40;
-		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<32.6){}//21.5+9.6+1.5
-		motor[GANTRY_MOTOR]=0;
+		motor[motorA]=40;
+		while(nMotorEncoder[motorA]*PI*3/180.0<32.6){}//21.5+9.6+1.5
+		motor[motorA]=0;
 		wait10Msec(50);
 	}
 	else if (position==5)
 	{
-		motor[GANTRY_MOTOR]=40;
-		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<38.8){}//21.5+9.6+7.5
-		motor[GANTRY_MOTOR]=0;
+		motor[motorA]=40;
+		while(nMotorEncoder[motorA]*PI*3/180.0<38.8){}//21.5+9.6+7.5
+		motor[motorA]=0;
 		wait10Msec(50);
 	}
 	else if (position==6)
 	{
-		motor[GANTRY_MOTOR]=40;
-		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<44.9){}//21.5+9.6+6+7.5
-		motor[GANTRY_MOTOR]=0;
+		motor[motorA]=40;
+		while(nMotorEncoder[motorA]*PI*3/180.0<44.7){}//21.5+9.6+6+7.5
+		motor[motorA]=0;
 		wait10Msec(50);
 	}
 	else if (position==7)
 	{
-		motor[GANTRY_MOTOR]=40;
-		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<50.8){}//21.5+9.6+6+6+7.5
-		motor[GANTRY_MOTOR]=0;
+		motor[motorA]=40;
+		while(nMotorEncoder[motorA]*PI*3/180.0<50.5){}//21.5+9.6+6+6+7.5
+		motor[motorA]=0;
 		wait10Msec(50);
 	}
 }
 
 void pickUpBill()
 //motora=suction
-//motorb= end effector
+//VERT_ACTUATOR_MOTOR= end effector
+
 {
 	nMotorEncoder[VERT_ACTUATOR_MOTOR]=0;
-	nMotorEncoder[END_EFFECTOR_MOTOR]=0;
 
 	motor[VERT_ACTUATOR_MOTOR]=-30;
 	while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0>-14){}
 	motor[VERT_ACTUATOR_MOTOR]=0;
-
+	nMotorEncoder[END_EFFECTOR_MOTOR]=0;
 	motor[END_EFFECTOR_MOTOR] = -40;
 	while(nMotorEncoder[END_EFFECTOR_MOTOR]*PI/180.0>-1.8){}
 	motor[END_EFFECTOR_MOTOR]=0;
@@ -970,7 +927,7 @@ void conveyorSend(bool isColourLocation)
 		motor[CONVEYER_MOTOR]=30;
 		while(nMotorEncoder[CONVEYER_MOTOR]*PI*1.75/180.0<7){}
 		motor[CONVEYER_MOTOR]=0;
-		wait10Msec(100);
+		wait10Msec(5);
 	}
 	else
 	{
@@ -978,7 +935,7 @@ void conveyorSend(bool isColourLocation)
 		motor[CONVEYER_MOTOR]=30;
 		while(nMotorEncoder[CONVEYER_MOTOR]*PI*1.75/180.0<26){}
 		motor[CONVEYER_MOTOR]=0;
-		wait10Msec(100);
+		wait10Msec(5);
 	}
 }
 
