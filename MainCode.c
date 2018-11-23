@@ -22,6 +22,13 @@ const int BILL_500 = 7; */
 
 //Motors
 enum MOTOR_PORTS { GANTRY_MOTOR, VERT_ACTUATOR_MOTOR, END_EFFECTOR_MOTOR, CONVEYER_MOTOR };
+enum MOTOR_POWERS {
+	GANTRY_POWER = 40,
+	VERT_ACTUATOR_POWER = 30,
+	END_EFFECTOR_POWER_LOW = 20,
+	END_EFFECTOR_POWER_HIGH = 40,
+	CONVEYER_POWER = 30,
+};
 /*
 const int GANTRY_MOTOR = 0;
 const int VERT_ACTUATOR_MOTOR = 1;
@@ -80,6 +87,7 @@ int senseCard();
 void deposit(int currPlayer, int* accountBalance);
 void processDeposit(int* transactionBills);
 void completeWithdrawal(int currentPlayer, int* accountBalance, int withdraw, int* transactionBills);
+void moveSelectMotor(int motorPort, int power, float encoderDistMult, float encoderDistLimit, int waitTime, int direction);
 
 void sensorConfig()
 {
@@ -882,7 +890,7 @@ void displayTransferOptions(int transferor, int * transferOption, bool * isPlayi
 
 void zeroGantry()
 {
-	motor[GANTRY_MOTOR] = -40;
+	motor[GANTRY_MOTOR] = -GANTRY_POWER;
 	while(SensorValue(TOUCH_ENC_ZERO)!=1){}
 	motor[GANTRY_MOTOR]=0;
 }
@@ -893,52 +901,70 @@ void GantryTransverse(int position)
 	nMotorEncoder[GANTRY_MOTOR]=0;
 	if (position==1)
 	{
+		moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI*3/180.0, 6.25, 500, 0);
+		/*
 		motor[GANTRY_MOTOR]=40;
 		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<6.25){}
 		motor[GANTRY_MOTOR]=0;
-		wait10Msec(50);
+		wait10Msec(50); */
 	}
 	else if (position==2)
 	{
+		moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI*3/180.0, 12.5, 500, 0);
+		/*
 		motor[GANTRY_MOTOR]=40;
 		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<12.5){}
 		motor[GANTRY_MOTOR]=0;
 		wait10Msec(50);
+		*/
 	}
 	else if (position==3)
 	{
+		moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI*3/180.0, 22.7, 500, 0);
+		/*
 		motor[GANTRY_MOTOR]=40;
 		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<22.7){}
 		motor[GANTRY_MOTOR]=0;
 		wait10Msec(50);
+		*/
 	}
 	else if (position==4)
 	{
+		moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI*3/180.0, 32.6, 500, 0);
+	/*
 		motor[GANTRY_MOTOR]=40;
 		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<32.6){}//21.5+9.6+1.5
 		motor[GANTRY_MOTOR]=0;
-		wait10Msec(50);
+		wait10Msec(50); */
 	}
 	else if (position==5)
 	{
+		moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI*3/180.0, 38.8, 500, 0);
+	/*
 		motor[GANTRY_MOTOR]=40;
 		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<38.8){}//21.5+9.6+7.5
 		motor[GANTRY_MOTOR]=0;
 		wait10Msec(50);
+		*/
 	}
 	else if (position==6)
 	{
+		moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI*3/180.0, 44.7, 500, 0);
+		/*
 		motor[GANTRY_MOTOR]=40;
 		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<44.7){}//21.5+9.6+6+7.5
 		motor[GANTRY_MOTOR]=0;
 		wait10Msec(50);
+		*/
 	}
 	else if (position==7)
 	{
+		moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI*3/180.0, 50.5, 500, 0);
+		/*
 		motor[GANTRY_MOTOR]=40;
 		while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<50.5){}//21.5+9.6+6+6+7.5
 		motor[GANTRY_MOTOR]=0;
-		wait10Msec(50);
+		wait10Msec(50); */
 	}
 }
 
@@ -949,40 +975,55 @@ void pickUpBill()
 {
 	nMotorEncoder[VERT_ACTUATOR_MOTOR]=0;
 
+	moveSelectMotor(VERT_ACTUATOR_MOTOR, -VERT_ACTUATOR_POWER, PI*3.2/180.0, -14, 0, 1);
+	/*
 	motor[VERT_ACTUATOR_MOTOR]=-30;
 	while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0>-14){}
-	motor[VERT_ACTUATOR_MOTOR]=0;
+	motor[VERT_ACTUATOR_MOTOR]=0; */
 
+	moveSelectMotor(END_EFFECTOR_MOTOR, -END_EFFECTOR_POWER_HIGH, PI/180.0, -1.8, 0, 1);
+	/*
 	nMotorEncoder[END_EFFECTOR_MOTOR]=0;
 	motor[END_EFFECTOR_MOTOR] = -40;
 	while(nMotorEncoder[END_EFFECTOR_MOTOR]*PI/180.0>-1.8){}
-	motor[END_EFFECTOR_MOTOR]=0;
+	motor[END_EFFECTOR_MOTOR]=0; */
 
+	moveSelectMotor(VERT_ACTUATOR_MOTOR, VERT_ACTUATOR_POWER, PI*3.2/180.0, 0, 500, 0);
+	/*
 	motor[VERT_ACTUATOR_MOTOR]=30;
 	while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0<0){}
 	motor[VERT_ACTUATOR_MOTOR]=0;
-	wait10Msec(50);
+	wait10Msec(50); */
 }
 
 void dropBill(){
+
+	moveSelectMotor(VERT_ACTUATOR_MOTOR, VERT_ACTUATOR_POWER, PI*3.2/180.0, -7, 0, 1);
+	/*
 	nMotorEncoder[VERT_ACTUATOR_MOTOR]=0;
 	motor[VERT_ACTUATOR_MOTOR]=-30;
 	while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0>-7){}
-	motor[VERT_ACTUATOR_MOTOR]=0;
+	motor[VERT_ACTUATOR_MOTOR]=0;*/
 
+	moveSelectMotor(END_EFFECTOR_MOTOR, END_EFFECTOR_POWER_HIGH, PI/180.0, 1.5, 300, 0);
+	/*
 	motor[END_EFFECTOR_MOTOR]=40;
 	while(nMotorEncoder[END_EFFECTOR_MOTOR]*PI/180.0<1.5){}
 	motor[END_EFFECTOR_MOTOR]=0;
-	wait10Msec(30);
+	wait10Msec(30);*/
 
+	moveSelectMotor(VERT_ACTUATOR_MOTOR, VERT_ACTUATOR_POWER, PI*3.2/180.0, 0, 0, 0);
+	/*
 	motor[VERT_ACTUATOR_MOTOR]=30;
 	while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0<0){}
-	motor[VERT_ACTUATOR_MOTOR]=0;
+	motor[VERT_ACTUATOR_MOTOR]=0;*/
 
+	moveSelectMotor(END_EFFECTOR_MOTOR, -END_EFFECTOR_POWER_LOW, PI/180.0, 0, 500, 1);
+	/*
 	motor[END_EFFECTOR_MOTOR] = -20;
 	while(nMotorEncoder[END_EFFECTOR_MOTOR]*PI/180.0>0){}
 	motor[END_EFFECTOR_MOTOR]=0;
-	wait10Msec(50);
+	wait10Msec(50); */
 }
 
 void masterTransverse(int initial, int final)
@@ -998,42 +1039,48 @@ void sendTray(int trayLocation)
 	if (trayLocation)
 	{
 		//moving tray to colour sensor
+		moveSelectMotor(CONVEYER_MOTOR, CONVEYER_POWER, PI*1.75/180.0, 7, 50, 0);
+		/*
 		motor[CONVEYER_MOTOR]=30;
 		while(nMotorEncoder[CONVEYER_MOTOR]*PI*1.75/180.0<7){}
 		motor[CONVEYER_MOTOR]=0;
-		wait10Msec(5);
+		wait10Msec(5);*/
 	}
 	else
 	{
 		//moving tray to user
+		moveSelectMotor(CONVEYER_MOTOR, CONVEYER_POWER, PI*1.75/180.0, 26, 50, 0);
+		/*
 		motor[CONVEYER_MOTOR]=30;
 		while(nMotorEncoder[CONVEYER_MOTOR]*PI*1.75/180.0<26){}
 		motor[CONVEYER_MOTOR]=0;
-		wait10Msec(5);
+		wait10Msec(5);*/
 	}
 }
 
 //this function brings tray back into enclosure
 void conveyorReturn()
 {
+	moveSelectMotor(CONVEYER_MOTOR, -CONVEYER_POWER, PI * 2.75/180.0, 0, 1000, 1);
+	/*
 	motor[CONVEYER_MOTOR]=-30;
 	while(nMotorEncoder[CONVEYER_MOTOR] * PI * 2.75/180.0 > 0){}
 	motor[CONVEYER_MOTOR]=0;
-	wait10Msec(100);
+	wait10Msec(100); */
 }
 
-/*
-void moveSelectMotor(int motorPort, int power, int encoderDistMult, int encoderDistLimit, int waitTime, bool isPositive)
+//direction = 1 means >
+//direction = 0 means <
+void moveSelectMotor(int motorPort, int power, float encoderDistMult, float encoderDistLimit, int waitTime, int direction)
 {
 	motor[motorPort] = power;
-	if (isPositive)
+	if (direction)
 		while (nMotorEncoder[motorPort] * encoderDistMult > encoderDistLimit) {}
 	else
 		while (nMotorEncoder[motorPort] * encoderDistMult < encoderDistLimit) {}
 	motor[motorPort] = 0;
 	wait1Msec(waitTime);
 }
-*/
 
 
 task main()
