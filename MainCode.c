@@ -12,7 +12,6 @@ const int DISPLAYSTART = 2;
 const int DISPLAY_WAIT = 1000;
 
 //Bill TRAY indicies
-
 enum BILLTRAYS {
     BILL_1, BILL_5, BILL_10, OUTPUT_TRAY_LOCATION, BILL_20,
     BILL_50, BILL_100, BILL_500
@@ -53,6 +52,8 @@ const int TOUCH_ENC_ZERO = 2;
 void displayText_NoWait(string *text);
 void displayText_Wait(string *text);
 
+void promptContinue(bool &continueTransaction);
+void promptCancel(bool &continueTransaction);
 
 //WITHDRAWAL FUNCTION(S)PROTOTYPES
 void withdraw(int currentPlayer, int *accountBalance);
@@ -105,7 +106,7 @@ void conveyorReturn();
 void moveSelectMotor(int motorPort, int power, float encoderDistMult, float encoderDistLimit, int waitTime, int direction);
 
 //COLOUR SENSING
-int senseBill(tSensors colorsensor);
+int senseBill();
 int senseCard();
 
 //configures all EV3 sensors
@@ -185,7 +186,8 @@ int senseCard()
     getColorRGB(COLOUR_CARD, red, green, blue);
 
     //iterate through multiple reads and record instance of each bill read
-    while (numReadings < 10) {
+    while (numReadings < 10)
+    {
         //get colour reading
         getColorRGB(COLOUR_CARD, red, green, blue);
         //pink
@@ -243,6 +245,7 @@ int senseBill()
 
     int numReadings = 0;
 
+    //iterate bill reads, record instance of each bill
     while (numReadings < 30) {
         getColorRGB(COLOUR_BILL, red, green, blue);
         //pink - 1s
@@ -288,11 +291,15 @@ int senseBill()
     return -1;
 }
 
-void setCurrPlayer(int &currPlayer, bool *isPlaying) {
+//calls senseCard function and associates player number (index) based on reading
+void setCurrPlayer(int &currPlayer, bool *isPlaying)
+{
+		//set current reads to -1 to indicate no player
     int readPlayer = -1;
     currPlayer = -1;
-    //keep reading until seeing valid player
+    //keep reading until seeing valid player (when number >= 0)
     while (currPlayer == -1) {
+    		//read card
         readPlayer = senseCard();
 
         if (readPlayer != -1 && isPlaying[readPlayer])
@@ -353,20 +360,17 @@ declareBankruptcy(int currPlayer, int &numPlayers, bool *isPlaying, int *account
         while (getButtonPress(buttonAny)) {}
 }
 
-void promptContinue(bool &continueTransaction, bool assumeContinue) {
+void promptContinue(bool &continueTransaction)
+{
     eraseDisplay();
-
-    if (assumeContinue)
-        displayString(2, "CONTINUE TRANSACTION?");
-    else
-        displayString(3, "CONFIRM CANCEL");
+    displayString(2, "CONTINUE TRANSACTION?");
 
     displayString(5, "a) Yes");
     displayString(6, "b) No");
 
     while (!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)) {}
 
-    if (getButtonPress(buttonUp) && assumeContinue || getButtonPress(buttonLeft) && !assumeContinue)
+    if (getButtonPress(buttonUp))
         while (getButtonPress(buttonAny)) {}
 
     else {
@@ -375,6 +379,24 @@ void promptContinue(bool &continueTransaction, bool assumeContinue) {
     }
 }
 
+void promptCancel(bool &continueTransaction)
+{
+	eraseDisplay();
+
+	displayString(2, "CONFIRM CANCEL");
+	displayString(5, "a) Yes");
+  displayString(6, "b) No");
+
+  while (!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)) {}
+
+    if (getButtonPress(buttonUp))
+  	{
+      while (getButtonPress(buttonAny)) {}
+      continueTransaction = false;
+    }
+    else
+      while (getButtonPress(buttonAny)) {}
+}
 
 void doTransaction(int currPlayer, int &numPlayers, bool *isPlaying, int *accountBalance, bool &continueTransaction) {
 
@@ -400,7 +422,7 @@ void doTransaction(int currPlayer, int &numPlayers, bool *isPlaying, int *accoun
             declareBankruptcy(currPlayer, numPlayers, isPlaying, accountBalance, continueTransaction);
         } else {
             while (getButtonPress(buttonEnter)) {}
-            promptContinue(continueTransaction, false);
+            promptCancel(continueTransaction);
         }
     }
         //if the monopoly man is at the start screen
@@ -411,8 +433,11 @@ void doTransaction(int currPlayer, int &numPlayers, bool *isPlaying, int *accoun
             while (getButtonPress(buttonAny)) {}
             displayText_Wait("TRANSFER");
             transfer(currPlayer, numPlayers, accountBalance, isPlaying);
-        } else {
+        }
+        else
+        {
             while (getButtonPress(buttonLeft)) {}
+            promptCancel(continueTransaction);
         }
     }
 }
@@ -475,7 +500,7 @@ void processDeposit(int *transactionBills) {
     //while the colour sensor doesn't sense black when scanning for colours
     //scan bill, move bill to tray, repeat
     while (billIndex != -1) {
-        billIndex = senseBill(COLOUR_BILL);
+        billIndex = senseBill();
 
         if (billIndex != -1) {
             transactionBills[billIndex]++;
@@ -1055,7 +1080,11 @@ task main() {
     setupPlayers(numPlayers, accountBalance, isPlaying);
 
     while (numPlayers > 1) {
-        displayText_NoWait("PLEASE SWIPE CARD");
+        displayString(4, "PLEASE INSERT CARD");
+        displayString(7, "PRESS ENTER TO SCAN CARD");
+        //wait for player to confirm for program to proceed with scanning colour
+        while (!getButtonPress(buttonEnter)) {}
+
 
         int currPlayer = -1;
         setCurrPlayer(currPlayer, isPlaying);
@@ -1065,7 +1094,7 @@ task main() {
             displayMainMenu(currPlayer, accountBalance);
             doTransaction(currPlayer, numPlayers, isPlaying, accountBalance, continueTransaction);
             if (continueTransaction)
-                promptContinue(continueTransaction, true);
+                promptContinue(continueTransaction);
         } while (continueTransaction);
     }
 
