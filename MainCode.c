@@ -991,14 +991,15 @@ void dropBill() {
     motor[END_EFFECTOR_MOTOR]=0;
     wait10Msec(50); */
 }
-
+// an umbrella function that combines multiple functions in order to pick up a bill and transport it 
+// to another tray
 void masterTransverse(int initial, int final) {
     GantryTransverse(initial);
     pickUpBill();
     GantryTransverse(final);
     dropBill();
 }
-
+//Send the bill tray to a given location from its intial position
 void sendTray(int trayLocation) {
     if (trayLocation) {
         //moving tray to colour sensor
