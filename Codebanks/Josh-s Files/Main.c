@@ -283,7 +283,7 @@ void declareBankruptcy(int currPlayer, int& numPlayers, bool* isPlaying, int* ac
 			*/
 
 			isPlaying[currPlayer] = false;
-			accountBalance[currPlayer] = 0;
+			resetbalances(currPlayer,accountBalance) // this has been changed
 			numPlayers--;
 			continueTransaction = false;
 		}
