@@ -284,7 +284,7 @@ void declareBankruptcy(int currPlayer, int& numPlayers, bool* isPlaying, int* ac
 			*/
 
 			isPlaying[currPlayer] = false;
-			resetPlayerBalance(currPlayer,accountBalance) // this has been changed
+			resetPlayerBalance(currPlayer,accountBalance); // this has been changed
 			numPlayers--;
 			continueTransaction = false;
 		}
@@ -392,7 +392,7 @@ void declareWinner(bool* isPlaying)
 	//####deposit (parameters)
 }
 
-void deposit(int currPlayer, int* accountBalance, bool isEndGame)
+void deposit(int currPlayer, int* accountBalance, bool playerIsDone)
 {
 	//tracks whether deposit transaction has been cancelled
 	bool isCancelled = false;
@@ -422,7 +422,7 @@ void deposit(int currPlayer, int* accountBalance, bool isEndGame)
 	if (!isCancelled)
 	{
 		depositAmount = calcTransactionAmount(transactionBills);
-		if(!isEndGame)
+		if(!playerIsDone)
 			accountBalance[currPlayer] += depositAmount;
 		else
 			accountBalance[0] += depositAmount;
