@@ -8,8 +8,9 @@ const int MAX_CASH = 13720;
 const int NUM_BINS = 8;
 
 //user interface
-const int DISPLAYSTART = 2;
+const int DISPLAYSTART = 4;
 const int DISPLAY_WAIT = 1000;
+const int NUM_TRANSFER_OPTIONS = 4;
 
 //Bill TRAY indicies
 enum BILLTRAYS {
@@ -304,6 +305,7 @@ void setCurrPlayer(int &currPlayer, bool *isPlaying)
     		//read card
         readPlayer = senseCard();
 
+        //checking for validity
         if (readPlayer != -1 && isPlaying[readPlayer])
             currPlayer = readPlayer;
     }
@@ -313,6 +315,7 @@ void setCurrPlayer(int &currPlayer, bool *isPlaying)
 void displayMainMenu(int currPlayer, int *accountBalance)
 {
     eraseDisplay();
+
     //displays options for regular players
     if (currPlayer != 0)
     {
@@ -482,11 +485,13 @@ int declareWinner(bool *isPlaying)
 		int winnerIndex = 0;
 		//find final player remaining and display that they won
     for (int index = 0; index < 4; index++)
+    {
         if (isPlaying[index] == 1)
         {
             displayString(4, "PLAYER %d WON MONOPOLY!", index);
             winnerIndex = index;
         }
+    }
 
     wait1Msec(2500);
     displayText_Wait("DEPOSIT REMAINING CASH");
@@ -504,6 +509,7 @@ void deposit(int currPlayer, int *accountBalance, bool isPlayerDone)
     //prompt user for bills
     conveyorReturn();
     sendTray(USER_PICKUP);
+    //user interface
     eraseDisplay();
     displayString(2, "DEPOSIT");
     displayString(4, "PLACE BILLS ON TRAY");
@@ -516,12 +522,12 @@ void deposit(int currPlayer, int *accountBalance, bool isPlayerDone)
     {
 	    while (!getButtonPress(buttonEnter) && !getButtonPress(buttonRight)) {}
 	    //if user wants to proceed with transaction, then process bills
-	    if (getButtonPress(buttonEnter)) 
+	    if (getButtonPress(buttonEnter))
 	    {
 	       processDeposit(transactionBills);
 	       noButtonPress = false;
-	    } 
-	    else 
+	    }
+	    else
 	    {
 	    	if(isClearOrCancel())
 	    	{
@@ -623,10 +629,14 @@ int receiveWithdrawBills(int playerBalance, int *transactionBills, bool &isCance
 }
 
 //moves the specified number of bills onto output tray for withdraw
-void moveBillsOut(int *transactionBills) {
-    for (int bill = 0; bill < NUM_BINS; bill++) {
-        if (transactionBills[bill] > 0) {
-            for (int numBills = 0; numBills < transactionBills[bill]; numBills++) {
+void moveBillsOut(int *transactionBills)
+{
+    for (int bill = 0; bill < NUM_BINS; bill++)
+    {
+        if (transactionBills[bill] > 0)
+        {
+            for (int numBills = 0; numBills < transactionBills[bill]; numBills++)
+            {
                 masterTransverse(bill, OUTPUT_TRAY_LOCATION);
             }
         }
@@ -742,7 +752,7 @@ bool getHigherOptions(int playerBalance, int *transactionBills, bool &isCancelle
                 cancelTransaction(transactionBills, isCancelled);
                 isTransactionDone = true;
             }
-                //check if can add bill to withdrawal
+            //check if can add bill to withdrawal
             else if (isValidTransaction(playerBalance, calcTransactionAmount(transactionBills), 500))
                 transactionBills[BILL_500]++;
         }
@@ -968,9 +978,13 @@ int getTransferAmount(int playerBalance, bool &isTransferCancelled)
 //displays transferee options based on if they're playing
 void displayTransferOptions(int transferor, int *transferOption, bool *isPlaying)
 {
-		int index = 0, row = DISPLAYSTART;        //initialize variables
+		const string OPTIONS[NUM_TRANSFER_OPTIONS] = { "a)", "b)", "c)", "d)" };
+
+		//initialize variables
+		int index = 0, row = DISPLAYSTART, optionNum = 0;
 
     eraseDisplay();
+		displayString(2, "TRANSFER");
 
     //find players that are valid transferees and display them
     for (int option = 0; option < MAX_PLAYERS; option++)
@@ -979,17 +993,19 @@ void displayTransferOptions(int transferor, int *transferOption, bool *isPlaying
         {
             if (option == 0)
             {
-                displayString(row, "Monopoly");
+                displayString(row, "%s Monopoly", OPTIONS[optionNum]);
                 row++;
                 transferOption[index] = option;
                 index++;
+                optionNum++;
             }
             else
             {
-                displayString(row, "Player %d", option);
+                displayString(row, "%s Player %d", OPTIONS[optionNum], option);
                 row++;
                 transferOption[index] = option;
                 index++;
+                optionNum++;
             }
         }
     }
@@ -1055,9 +1071,13 @@ void dropBill()
 //main mechanical movement function. calls other mechanical functions to complete tasks for bill transffers
 void masterTransverse(int initial, int final)
 {
+		//moves gantry to initial bill location
     GantryTransverse(initial);
+    //picks up bill
     pickUpBill();
+    //moves gantry to final bill location
     GantryTransverse(final);
+    //drops bill
     dropBill();
 }
 
@@ -1082,7 +1102,12 @@ void conveyorReturn()
 /*this funciton moves a motor by a specified amount
 Parameters:
 	int motorPort: port of motor being moved
-
+	int power: power of motor
+	float encoderDistMult: factor that's multiplied by motor encoder to get distance (PI * ####)
+	float encoderDistLimit: sets the distane that the motor will cover
+	int waitTime: sets the time delay after a motor movement
+	int direction: indicates whether a motor will be approaching a distance limit from the positive (ie greater than)
+		or negative direction (ie less than)
 	*/
 void moveSelectMotor(int motorPort, int power, float encoderDistMult, float encoderDistLimit, int waitTime, int direction)
 {
@@ -1103,7 +1128,7 @@ void endGame(int currPlayer, int *playerBalances)
     resetPlayerBalance(currPlayer, playerBalances);
     //Reuturns all cash to monopoly man
     deposit(currPlayer, playerBalances, true);
-    
+
     displayString(3, "MISSING MONEY: $%d", MAX_CASH - playerBalances[0]);
     displayString(4, "GAME OVER");
     wait1Msec(5000);
@@ -1112,33 +1137,38 @@ void endGame(int currPlayer, int *playerBalances)
 task main()
 {
     sensorConfig();
-		
+
     //initiates variables containingnecessary player information
     int numPlayers = 0;
     bool isPlaying[MAX_PLAYERS] = {true, false, false, false, false};
     int accountBalance[MAX_PLAYERS] = {MAX_CASH, 0, 0, 0, 0};
-		
+
     setupPlayers(numPlayers, accountBalance, isPlaying);
 
     //game continues until one player remains
-    while (numPlayers > 1) 
+    while (numPlayers > 1)
     {
+    		//graphical interface
     		eraseDisplay();
         displayString(4, "PLEASE INSERT CARD");
         displayString(7, "PRESS ENTER TO SCAN CARD");
+
         //wait for player to confirm for program to proceed with scanning colour
         while (!getButtonPress(buttonEnter)) {}
         while (getButtonPress(buttonEnter)) {}
         int currPlayer = -1;
+
         //gets colour reading from card sensor and sets player
         setCurrPlayer(currPlayer, isPlaying);
         //sets control variable for player to continue doing transactions
         bool continueTransaction = true;
-        do 
+
+        do
         {
         		//player selects transactions
             displayMainMenu(currPlayer, accountBalance);
             doTransaction(currPlayer, numPlayers, isPlaying, accountBalance, continueTransaction);
+
             //prompts user to continue transactions unless aborted by bankruptcy or cancel
             if (continueTransaction)
                 promptContinue(continueTransaction);
