@@ -1051,34 +1051,28 @@ void masterTransverse(int initial, int final)
 //Send the bill tray to a given location from its intial position
 void sendTray(int trayLocation)
 {
-    if (trayLocation) {
+    if (trayLocation)
         //moving tray to colour sensor
-        moveSelectMotor(CONVEYER_MOTOR, CONVEYER_POWER, PI * 1.75 / 180.0, 7, 150, 0)
-    } else {
+        moveSelectMotor(CONVEYER_MOTOR, CONVEYER_POWER, PI * 1.75 / 180.0, 7, 150, 0);
+    else
         //moving tray to user
         moveSelectMotor(CONVEYER_MOTOR, CONVEYER_POWER, PI * 1.75 / 180.0, 26, 150, 0);
-        /*
-        motor[CONVEYER_MOTOR]=30;
-        while(nMotorEncoder[CONVEYER_MOTOR]*PI*1.75/180.0<26){}
-        motor[CONVEYER_MOTOR]=0;
-        wait10Msec(5);*/
-    }
 }
 
-//this function brings tray back into enclosure
-void conveyorReturn() {
+//brings tray back into enclosure
+void conveyorReturn()
+{
     moveSelectMotor(CONVEYER_MOTOR, -CONVEYER_POWER, PI * 2.75 / 180.0, 0, 200, 1);
-    /*
-    motor[CONVEYER_MOTOR]=-30;
-    while(nMotorEncoder[CONVEYER_MOTOR] * PI * 2.75/180.0 > 0){}
-    motor[CONVEYER_MOTOR]=0;
-    wait10Msec(100); */
 }
 
-//direction = 1 means >
-//direction = 0 means <
-void
-moveSelectMotor(int motorPort, int power, float encoderDistMult, float encoderDistLimit, int waitTime, int direction) {
+
+/*this funciton moves a motor by a specified amount
+Parameters:
+	int motorPort: port of motor being moved
+
+	*/
+void moveSelectMotor(int motorPort, int power, float encoderDistMult, float encoderDistLimit, int waitTime, int direction)
+{
     motor[motorPort] = power;
     if (direction)
         while (nMotorEncoder[motorPort] * encoderDistMult > encoderDistLimit) {}
