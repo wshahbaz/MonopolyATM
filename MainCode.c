@@ -440,7 +440,7 @@ void doTransaction(int currPlayer, int &numPlayers, bool *isPlaying, int *accoun
         {
             while (getButtonPress(buttonAny)) {}
             displayText_Wait("DEPOSIT");
-            deposit(currPlayer, accountBalance, continueTransaction);
+            deposit(currPlayer, accountBalance, false);
         }
         else if (getButtonPress(buttonRight))
         {
@@ -541,7 +541,7 @@ void deposit(int currPlayer, int *accountBalance, bool isPlayerDone)
     if (!isCancelled)
     {
         depositAmount = calcTransactionAmount(transactionBills);
-        if (isPlayerDone)
+        if (!isPlayerDone)
             accountBalance[currPlayer] += depositAmount;
         else
         		//considering final deposits to Monopoly Man (interal account balancing)
@@ -1167,7 +1167,7 @@ task main()
         {
         		//player selects transactions
             displayMainMenu(currPlayer, accountBalance);
-            doTransaction(currPlayer, numPlayers, isPlaying, accountBalance, continueTransaction);
+            doTransaction(currPlayer, numPlayers, isPlaying, accountBalance, false);
 
             //prompts user to continue transactions unless aborted by bankruptcy or cancel
             if (continueTransaction)
