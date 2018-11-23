@@ -35,6 +35,7 @@ const int COLOUR_SENSE_LOCATION = 1;
 //function prototypes
 //need to declare function stubs so functions are declared ahead of time
 void withdraw(int& playerBalance, int* transactionBills);
+void resetPlayerBalance(int currPlayer, int *playerBalances);
 int receiveWithdrawBills(int& playerBalance, int* transactionBills, bool& isCancelled);
 //void moveBillsOut(int* transactionBills);
 void cancelTransaction(int* transactionBills, bool& isCancelled);
@@ -283,7 +284,7 @@ void declareBankruptcy(int currPlayer, int& numPlayers, bool* isPlaying, int* ac
 			*/
 
 			isPlaying[currPlayer] = false;
-			resetbalances(currPlayer,accountBalance) // this has been changed
+			resetPlayerBalance(currPlayer,accountBalance) // this has been changed
 			numPlayers--;
 			continueTransaction = false;
 		}
@@ -1020,6 +1021,8 @@ void endGame(int currPlayer, int *playerBalances)         // Request all bills b
 		deposit(currPlayer, playerBalances, true);
 	}
 	displayText_NoWait("Thank you for playing");
+	displayString(3,"%d dollars have not been returned to the game", MAX_CASH-playerBalances[0]);
+
 
 }
 
