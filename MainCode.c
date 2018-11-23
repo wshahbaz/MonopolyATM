@@ -1,31 +1,32 @@
+//Monopoly MAIN CODE BASE
+
+//CONSTANTS
+//cash balance
 const int START_BALANCE = 1500;
 const int MAX_PLAYERS = 5;
 const int MAX_CASH = 13720;
 const int NUM_BINS = 8;
-const int DISPLAYSTART = 2;
 
+//user interface
+const int DISPLAYSTART = 2;
 const int DISPLAY_WAIT = 1000;
 
-//Bill indices
+//Bill TRAY indicies
+
 enum BILLTRAYS {
     BILL_1, BILL_5, BILL_10, OUTPUT_TRAY_LOCATION, BILL_20,
     BILL_50, BILL_100, BILL_500
 };
-/*
-const int BILL_1 = 0;
-const int BILL_5 = 1;
-const int BILL_10 = 2;
-//This is used in the specific case of going to bin location
-const int OUTPUT_TRAY_LOCATION = 3;
-const int BILL_20 = 4;
-const int BILL_50 = 5;
-const int BILL_100 = 6;
-const int BILL_500 = 7; */
 
-//Motors
+//Intake/outtake tray locations
+const int USER_PICKUP = 0;
+const int COLOUR_SENSE_LOCATION = 1;
+
+//Motor ports
 enum MOTOR_PORTS {
     GANTRY_MOTOR, VERT_ACTUATOR_MOTOR, END_EFFECTOR_MOTOR, CONVEYER_MOTOR
 };
+//Motor powers
 enum MOTOR_POWERS {
     GANTRY_POWER = 40,
     VERT_ACTUATOR_POWER = 30,
@@ -39,96 +40,77 @@ const int VERT_ACTUATOR_MOTOR = 1;
 const int END_EFFECTOR_MOTOR = 2;
 const int CONVEYER_MOTOR = 3;*/
 
-//Sensors
-const int COLOUR_CARD = 0;    //port S1
-const int COLOUR_BILL = 1;    //port S2
-const int TOUCH_ENC_ZERO = 2;        //port S3 */
-
-//Tray locations
-const int USER_PICKUP = 0;
-const int COLOUR_SENSE_LOCATION = 1;
+//Sensor ports
+const int COLOUR_CARD = 0;
+const int COLOUR_BILL = 1;
+const int TOUCH_ENC_ZERO = 2;
 
 //function prototypes
-//need to declare function stubs so functions are declared ahead of time
-void withdraw(int currentPlayer, int *accountBalance);
 
-int receiveWithdrawBills(int &playerBalance, int *transactionBills, bool &isCancelled);
-
-//void moveBillsOut(int* transactionBills);
-void cancelTransaction(int *transactionBills, bool &isCancelled);
-
-void clearChosenBills(int *transactionBills);
-
-// Allows users to select bill amounts and stores the bill indices in an array
-void getLowerOptions(int playerBalance, int *transactionBills, bool &isCancelled);
-
-// Displays bill values 1,5,10,20 for user to select
-void displayLowerOptions(int *transactionBills, int playerBalance);
-
-// Displays higher bill values 50,100,500 for user to select
-void displayHigherOptions(int *transactionBills, int playerBalance);
-
-// Checks whether the transaction exceeds the player's balance
-bool isValidTransaction(int playerBalance, int totalTransaction, int bill);
-
-// Calculates the transaction amount given an array with bill indices
-int calcTransactionAmount(int *transactionBills);
-
-// Allows users to select bill amounts and stores the bill indices in an array
-bool getHigherOptions(int playerBalance, int *transactionBills, bool &isCancelled);
-
-bool isClearOrCancel();
-
+//FUNCTION PROTOTYPES
+//*******************
+//GENERAL USER INTERFACE FUNCTION PROTOTYPES
 void displayText_NoWait(string *text);
-
 void displayText_Wait(string *text);
 
+
+//WITHDRAWAL FUNCTION(S)PROTOTYPES
+void withdraw(int currentPlayer, int *accountBalance);
+int receiveWithdrawBills(int &playerBalance, int *transactionBills, bool &isCancelled);
+void getLowerOptions(int playerBalance, int *transactionBills, bool &isCancelled);
+bool getHigherOptions(int playerBalance, int *transactionBills, bool &isCancelled);
+bool isClearOrCancel();
+
+void clearChosenBills(int *transactionBills);
+void cancelTransaction(int *transactionBills, bool &isCancelled);
+bool isValidTransaction(int playerBalance, int totalTransaction, int bill);
+int calcTransactionAmount(int *transactionBills);
 int calcRemainingCash(int transactionAmount, int balance);
+void completeWithdrawal(int currentPlayer, int *accountBalance, int withdraw, int *transactionBills);
 
+void displayLowerOptions(int *transactionBills, int playerBalance);
+void displayHigherOptions(int *transactionBills, int playerBalance);
+
+
+//DEPOSIT FUNCTION PROTOTYPES
+void deposit(int currPlayer, int *accountBalance, bool isPlayerDone);
+void processDeposit(int *transactionBills);
+
+//TRANSFER FUNCTION PROTOTYPES
 void transfer(int transferor, int playersInGame, int *playerBalance, bool *isPlaying);
-
-void waitButtonPress(int playersInGame);
-
-void buttonPressValid(int playersInGame);
-
 int getTransferee(int playersInGame, int *transferOption);
 
 void transferAmount(int transferor, int transferee, int *accountBalance, bool &isTransferCancelled);
-
 int getTransferAmount(int playerBalance, bool &isTransferCancelled);
+
+void waitButtonPress(int playersInGame);
+void buttonPressValid(int playersInGame);
 
 void displayTransferOptions(int transferor, int *transferOption, bool *isPlaying);
 
+
+//MECHANICAL FUNCTIONS (ALL FUNCTIONS)
+//BILL MOVEMENT
 void moveBillsOut(int *transactionBills);
 
 void masterTransverse(int initial, int final);
-
 void pickUpBill();
-
 void GantryTransverse(int position);
-
 void dropBill();
-
 void zeroGantry();
 
 void sendTray(int trayLocation);
-
 void conveyorReturn();
 
-int senseBill(tSensors colorsensor);
+void moveSelectMotor(int motorPort, int power, float encoderDistMult, float encoderDistLimit, int waitTime, int direction);
 
+//COLOUR SENSING
+int senseBill(tSensors colorsensor);
 int senseCard();
 
-void deposit(int currPlayer, int *accountBalance);
-
-void processDeposit(int *transactionBills);
-
-void completeWithdrawal(int currentPlayer, int *accountBalance, int withdraw, int *transactionBills);
-
-void
-moveSelectMotor(int motorPort, int power, float encoderDistMult, float encoderDistLimit, int waitTime, int direction);
-
-void sensorConfig() {
+//configures all EV3 sensors
+void sensorConfig()
+{
     SensorType[COLOUR_CARD] = sensorEV3_Color;
     wait1Msec(50);
     SensorMode[COLOUR_CARD] = modeEV3Color_RGB_Raw;
@@ -142,7 +124,10 @@ void sensorConfig() {
     SensorType[TOUCH_ENC_ZERO] = sensorEV3_Touch;
 }
 
-void setupPlayers(int &numPlayers, int *accountBalance, bool *isPlaying) {
+//function prompts user for total number of players, sets up each player's account
+void setupPlayers(int &numPlayers, int *accountBalance, bool *isPlaying)
+{
+		//graphical interface
     eraseDisplay();
     displayString(2, "CHOOSE NUMBER OF PLAYER");
     displayString(5, "a) 2 PLAYERS");
@@ -152,46 +137,54 @@ void setupPlayers(int &numPlayers, int *accountBalance, bool *isPlaying) {
     //wait for button press
     while (!getButtonPress(buttonUp) && !getButtonPress(buttonLeft) && !getButtonPress(buttonRight)) {}
 
-    if (getButtonPress(buttonUp)) {
+    //receive button press, update number of players depending on button press (2, 3, 4 players)
+    if (getButtonPress(buttonUp))
+    {
         while (getButtonPress(buttonAny)) {}
         numPlayers = 2;
         displayText_Wait("TWO PLAYER OPTION SELECTED");
-    } else if (getButtonPress(buttonLeft)) {
+    }
+    else if (getButtonPress(buttonLeft))
+    {
         while (getButtonPress(buttonAny)) {}
         numPlayers = 3;
         displayText_Wait("THREE PLAYER OPTION SELECTED");
-    } else {
+    }
+    else
+    {
         while (getButtonPress(buttonRight)) {}
         numPlayers = 4;
         displayText_Wait("FOUR PLAYER OPTION SELECTED");
     }
 
     //update player balance and playing arrays
-    for (int index = 1; index <= numPlayers; index++) {
+    for (int index = 1; index <= numPlayers; index++)
+    {
         isPlaying[index] = true;
         accountBalance[index] = START_BALANCE;
     }
 }
 
-//new card colour sensing function
-int senseCard() {
-    long red, green, blue;
-    getColorRGB(COLOUR_CARD, red, green, blue);
-    red = blue = green = 0;
+//function senses colour of player card
+//returns int corresponding to player number
+int senseCard()
+{
+		enum CARD_COLOURS {
+        BROWN, PINK, BLUE, RED, GREEN
+    };
+		//initialization variables
+    long red = 0, green = 0, blue = 0;
     int numReadings = 0;
     int colorCount[MAX_PLAYERS] = {0, 0, 0, 0, 0};
-
-    enum CARD_COLOURS {
-        PINK, BLUE, RED, GREEN, BROWN
-    };
 
     //variables to hold most common colour readings
     int maxColorCount = 0;
     int maxColorIndex = 0;
 
-    //intial colour reading - discard value
+    //initial reading - discard
     getColorRGB(COLOUR_CARD, red, green, blue);
 
+    //iterate through multiple reads and record instance of each bill read
     while (numReadings < 10) {
         //get colour reading
         getColorRGB(COLOUR_CARD, red, green, blue);
@@ -199,47 +192,50 @@ int senseCard() {
         if (red <= 140 && red >= 20 && green <= 150 / 100.0 * red && green >= 36 / 100.0 * red &&
             blue <= 70 / 100.0 * red && blue >= 20 / 100.0 * red)
             colorCount[PINK]++;
-            //blue
+        //blue
         else if (red <= 60 / 100.0 * blue && red >= 38 / 100.0 * blue && green <= 70 / 100.0 * blue &&
                  green >= 50 / 100.0 * blue && blue <= 30 && blue >= 15)
             colorCount[BLUE]++;
-            //red
+        //red
         else if (red <= 80 && red >= 30 && green <= 20 / 100.0 * red && green >= 3 / 100.0 * red &&
                  blue <= 20 / 100.0 * red && blue >= 5 / 100.0 * red)
             colorCount[RED]++;
-            //green
+        //green
         else if (red <= 70 / 100.0 * green && red >= 50 / 100.0 * green && green <= 80 && green >= 20 &&
                  blue <= 70 / 100.0 * green && blue >= 50 / 100.0 * green)
             colorCount[GREEN]++;
-            //brown
+        //brown
         else if (red <= 15 && red >= 2 && green <= 70 / 100.0 * red && green >= 40 / 100.0 * red &&
                  blue <= 70 / 100.0 * red && blue >= 40 / 100.0 * red)
             colorCount[BROWN]++;
+
         numReadings++;
     }
 
     //get most common colour index
     for (int index = 0; index < 5; index++)
-        if (colorCount[index] > maxColorCount) {
+        if (colorCount[index] > maxColorCount)
+        {
             maxColorCount = colorCount[index];
             maxColorIndex = index;
         }
 
+    //return colour index or -1 if nothing is read (ie sees black)
     if (maxColorCount > 0)
         return maxColorIndex;
 
     return -1;
 }
 
-int senseBill(tSensors colorsensor) {
-    long red, green, blue;
-    getColorRGB(colorsensor, red, green, blue);
-    red = blue = green = 0;
+//reads bill colour and returns int based on colour
+int senseBill()
+{
+		//initialize variables
+    long red = 0, green = 0, blue = 0;
+    getColorRGB(COLOUR_BILL, red, green, blue);
 
+    //array to keep track of numer of instance of bill reads
     int colorCount[NUM_BINS] = {0, 0, 0, 0, 0, 0, 0, 0};
-    enum BILL_COLOURS {
-        PINK, PURPLE, BROWN, BLUE, ORANGE, YELLOW, GREEN
-    };
 
     //max colour counts
     int maxColorCount = 0;
@@ -248,35 +244,35 @@ int senseBill(tSensors colorsensor) {
     int numReadings = 0;
 
     while (numReadings < 30) {
-        getColorRGB(colorsensor, red, green, blue);
+        getColorRGB(COLOUR_BILL, red, green, blue);
         //pink - 1s
         if (red <= 120 && red >= 15 && green <= 50 / 100.0 * red && green >= 20 / 100.0 * red &&
             blue <= 60 / 100.0 * red && blue >= 20 / 100.0 * red)
-            colorCount[PINK]++;
+            colorCount[BILL_1]++;
             //purple - 5s
         else if (red <= 35 && red >= 9 && green <= 100 / 100.0 * red && green >= 50 / 100.0 * red &&
                  blue <= 140 / 100.0 * red && blue >= 65 / 100.0 * red)
-            colorCount[PURPLE]++;
+            colorCount[BILL_5]++;
             //brown - 10s
         else if (red <= 20 && red >= 3 && green <= 100 / 100.0 * red && green >= 50 / 100.0 * red && blue <= 10 &&
                  blue >= 2)
-            colorCount[BROWN]++;
+            colorCount[BILL_10]++;
             //blue -
         else if (red <= 45 / 100.0 * green && red >= 5 / 100.0 * green && green <= 100 && green >= 12 &&
                  blue <= 150 / 100.0 * green && blue >= 60 / 100.0 * green)
-            colorCount[BLUE]++;
+            colorCount[BILL_20]++;
             //orange -
         else if (red <= 120 && red >= 7 && green <= 30 / 100.0 * red && green >= 5 / 100.0 * red && blue <= 10 &&
                  blue >= 3)
-            colorCount[ORANGE]++;
+            colorCount[BILL_50]++;
             //yellow -
         else if (red <= 130 && red >= 20 && green <= 100 / 100.0 * red && green >= 60 / 100.0 * red &&
                  blue <= 65 / 100.0 * red && blue >= 25 / 100.0 * red)
-            colorCount[YELLOW]++;
+            colorCount[BILL_100]++;
             //green -
         else if (red <= 50 / 100.0 * green && red >= 20 / 100.0 * green && green <= 60 && green >= 6 && blue <= 15 &&
                  blue >= 3)
-            colorCount[GREEN]++;
+            colorCount[BILL_500]++;
         numReadings++;
     }
 
@@ -393,7 +389,7 @@ void doTransaction(int currPlayer, int &numPlayers, bool *isPlaying, int *accoun
         } else if (getButtonPress(buttonLeft)) {
             while (getButtonPress(buttonAny)) {}
             displayText_Wait("DEPOSIT");
-            deposit(currPlayer, accountBalance);
+            deposit(currPlayer, accountBalance, continueTransaction);
         } else if (getButtonPress(buttonRight)) {
             while (getButtonPress(buttonAny)) {}
             displayText_Wait("TRANSFER");
@@ -433,7 +429,7 @@ void declareWinner(bool *isPlaying) {
     //####END FUNCTION
 }
 
-void deposit(int currPlayer, int *accountBalance, bool playerIsDone) {
+void deposit(int currPlayer, int *accountBalance, bool isPlayerDone) {
     //tracks whether deposit transaction has been cancelled
     bool isCancelled = false;
     int depositAmount = 0;
@@ -458,7 +454,7 @@ void deposit(int currPlayer, int *accountBalance, bool playerIsDone) {
 
     if (!isCancelled) {
         depositAmount = calcTransactionAmount(transactionBills);
-        if (!playerIsDone)
+        if (isPlayerDone)
             accountBalance[currPlayer] += depositAmount;
         else
             accountBalance[0] += depositAmount;
@@ -468,7 +464,7 @@ void deposit(int currPlayer, int *accountBalance, bool playerIsDone) {
 }
 
 void processDeposit(int *transactionBills) {
-    //set billIndex to int value that will proceed through loop
+    //set billIndex to int value that will proceed through loop first time through
     int billIndex = NUM_BINS;
 
     //"zero" everything before starting processing
@@ -507,16 +503,18 @@ void withdraw(int currentPlayer, int *accountBalance) {
 }
 
 void completeWithdrawal(int currentPlayer, int *accountBalance, int withdraw, int *transactionBills) {
-    displayText_Wait("WITHDRAWAL COMPLETE");
+    displayText_Wait("PROCESSING BILLS...");
     //update account
     accountBalance[currentPlayer] -= withdraw;
     //move bills out of bins into main tray
     moveBillsOut(transactionBills);
+    //indicate to user function is complete
+    displayText_NoWait("WITHDRAWAL COMPELTE");
     //move bills out for user
     sendTray(USER_PICKUP);
     //prompt user to pick up cash and return tray
     displayText_NoWait("PRESS ENTER BUTTON WHEN DONE");
-    while (getButtonPress(buttonEnter)) {}
+    while (!getButtonPress(buttonEnter)) {}
     conveyorReturn();
 }
 
@@ -679,7 +677,7 @@ void displayHigherOptions(int *transactionBills, int playerBalance) {
 }
 
 int calcRemainingCash(int transactionAmount, int balance) {
-    return balance - transactionAmont;
+    return balance - transactionAmount;
 }
 
 bool isValidTransaction(int playerBalance, int totalTransaction, int bill) {
@@ -812,7 +810,6 @@ void transferAmount(int transferor, int transferee, int *accountBalance, bool &i
                                            isTransferCancelled);        //calls function to get transfer amount
     accountBalance[transferor] -= transferAmount;        //subtracts amount from transferer balance
     accountBalance[transferee] += transferAmount;        //adds amount to transfer recipient balance
-
 }
 
 int getTransferAmount(int playerBalance, bool &isTransferCancelled)
@@ -919,30 +916,30 @@ void pickUpBill()
 {
     nMotorEncoder[VERT_ACTUATOR_MOTOR] = 0;
 
-    moveSelectMotor(VERT_ACTUATOR_MOTOR, -VERT_ACTUATOR_POWER, PI * 3.2 / 180.0, -14, 0, 1);
-    /*
+   // moveSelectMotor(VERT_ACTUATOR_MOTOR, -VERT_ACTUATOR_POWER, PI * 3.2 / 180.0, -14, 0, 1);
+
     motor[VERT_ACTUATOR_MOTOR]=-30;
     while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0>-14){}
-    motor[VERT_ACTUATOR_MOTOR]=0; */
+    motor[VERT_ACTUATOR_MOTOR]=0;
 
-    moveSelectMotor(END_EFFECTOR_MOTOR, -END_EFFECTOR_POWER_HIGH, PI / 180.0, -1.8, 0, 1);
-    /*
+    //moveSelectMotor(END_EFFECTOR_MOTOR, -END_EFFECTOR_POWER_HIGH, PI / 180.0, -1.8, 0, 1);
+
     nMotorEncoder[END_EFFECTOR_MOTOR]=0;
     motor[END_EFFECTOR_MOTOR] = -40;
     while(nMotorEncoder[END_EFFECTOR_MOTOR]*PI/180.0>-1.8){}
-    motor[END_EFFECTOR_MOTOR]=0; */
+    motor[END_EFFECTOR_MOTOR]=0;
 
-    moveSelectMotor(VERT_ACTUATOR_MOTOR, VERT_ACTUATOR_POWER, PI * 3.2 / 180.0, 0, 500, 0);
-    /*
+    //moveSelectMotor(VERT_ACTUATOR_MOTOR, VERT_ACTUATOR_POWER, PI * 3.2 / 180.0, 0, 500, 0);
+
     motor[VERT_ACTUATOR_MOTOR]=30;
     while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0<0){}
     motor[VERT_ACTUATOR_MOTOR]=0;
-    wait10Msec(50); */
+    wait10Msec(50);
 }
 
 void dropBill() {
 
-    moveSelectMotor(VERT_ACTUATOR_MOTOR, VERT_ACTUATOR_POWER, PI * 3.2 / 180.0, -7, 0, 1);
+    moveSelectMotor(VERT_ACTUATOR_MOTOR, -VERT_ACTUATOR_POWER, PI * 3.2 / 180.0, -7, 0, 1);
     /*
     nMotorEncoder[VERT_ACTUATOR_MOTOR]=0;
     motor[VERT_ACTUATOR_MOTOR]=-30;
@@ -1020,13 +1017,14 @@ moveSelectMotor(int motorPort, int power, float encoderDistMult, float encoderDi
     wait1Msec(waitTime);
 }
 
-void endGame(int currPlayer,
-             int *playerBalances)         // Request all bills be deposited into the tray, redistribute into slots, state any discrepancies in the count
+// Request all bills be deposited into the tray,
+//redistribute into slots, state any discrepancies in the count
+void endGame(int currPlayer, int *playerBalances)
 {
     resetPlayerBalance(currPlayer, playerBalances);
     displayText_NoWait("MAX 20 BILLS TO TRAY");
-    while (!getButtonPress(buttonAny));
-    while (getButtonPress(buttonEnter));
+    while (!getButtonPress(buttonAny)){}
+    while (getButtonPress(buttonEnter)){}
     //conveyorSend(COLOUR_SENSE_LOCATION);
     bool keepCollecting = true;
     while (playerBalances[0] < MAX_CASH && keepCollecting) {
@@ -1034,19 +1032,17 @@ void endGame(int currPlayer,
         displayString(2, "DEPOSIT COMPLETE?");
         displayString(3, "a) YES");
         displayString(4, "b) NO");
-        while (!getbuttonPress(buttonUp) && !getbuttonpress(butttonLeft)) {}
-        if (getbuttonPress(buttonUp)) {
-            while (getbuttonpress(buttonUp)) {}
+        while (!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)) {}
+        if (getButtonPress(buttonUp)) {
+            while (getButtonPress(buttonUp)) {}
             keepCollecting = false;
         } else {
-            while (getbuttonpress(buttonleft)) {}
+            while (getButtonPress(buttonLeft)) {}
         }
 
     }
     displayText_NoWait("Thank you for playing");
     displayString(3, "%d dollars have not been returned to the game", MAX_CASH - playerBalances[0]);
-
-
 }
 
 task main() {
