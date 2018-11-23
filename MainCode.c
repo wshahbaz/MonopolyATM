@@ -28,7 +28,7 @@ enum MOTOR_PORTS {
 //Motor powers
 enum MOTOR_POWERS {
     GANTRY_POWER = 40,
-    VERT_ACTUATOR_POWER = 30,
+    VERT_ACTUATOR_POWER = 40,
     END_EFFECTOR_POWER_LOW = 20,
     END_EFFECTOR_POWER_HIGH = 40,
     CONVEYER_POWER = 30,
@@ -257,8 +257,8 @@ int senseBill()
                  blue <= 140 / 100.0 * red && blue >= 65 / 100.0 * red)
             colorCount[BILL_5]++;
             //brown - 10s
-        else if (red <= 20 && red >= 3 && green <= 100 / 100.0 * red && green >= 50 / 100.0 * red && blue <= 10 &&
-                 blue >= 2)
+        else if (red <= 20 && red >= 4 && green <= 100 / 100.0 * red && green >= 50 / 100.0 * red && blue <= 10 &&
+                 blue >= 3)
             colorCount[BILL_10]++;
             //blue -
         else if (red <= 45 / 100.0 * green && red >= 5 / 100.0 * green && green <= 100 && green >= 12 &&
@@ -297,8 +297,9 @@ void setCurrPlayer(int &currPlayer, bool *isPlaying)
 		//set current reads to -1 to indicate no player
     int readPlayer = -1;
     currPlayer = -1;
-    //keep reading until seeing valid player (when number >= 0)
-    while (currPlayer == -1) {
+    //keep reading until seeing valid player
+    while (currPlayer == -1)
+    {
     		//read card
         readPlayer = senseCard();
 
@@ -307,9 +308,13 @@ void setCurrPlayer(int &currPlayer, bool *isPlaying)
     }
 }
 
-void displayMainMenu(int currPlayer, int *accountBalance) {
+//displays main menu when player card is read
+void displayMainMenu(int currPlayer, int *accountBalance)
+{
     eraseDisplay();
-    if (currPlayer != 0) {
+    //displays options for regular players
+    if (currPlayer != 0)
+    {
         displayString(2, "MAIN MENU");
         displayString(4, "PLAYER %d, BALANCE: %d", currPlayer, accountBalance[currPlayer]);
         displayString(5, "a) WITHDRAW");
@@ -317,7 +322,10 @@ void displayMainMenu(int currPlayer, int *accountBalance) {
         displayString(7, "c) TRANSFER");
         displayString(8, "d) DECLARE BANKUPTCY");
         displayString(9, "e) CANCEL TRANSACTION");
-    } else {
+    }
+    //displays options for Monopoly Man
+    else
+    {
         displayString(2, "MAIN MENU");
         displayString(4, "MONOPOLY MAN, Balance: %d", accountBalance[currPlayer]);
         displayString(5, "a) TRANSFER");
@@ -325,15 +333,21 @@ void displayMainMenu(int currPlayer, int *accountBalance) {
     }
 }
 
-void resetPlayerBalance(int currPlayer, int *playerBalances) {
-    playerBalances[0] += playerBalances[currPlayer] - 1500;
-    playerBalances[currPlayer] = 1500;
+//resets the player balance to starting value for keeping track of total cash value in endgame
+void resetPlayerBalance(int currPlayer, int *playerBalances)
+{
+		//re-balances monopoly man account and current player account
+    playerBalances[0] += playerBalances[currPlayer] - START_BALANCE;
+    playerBalances[currPlayer] = START_BALANCE;
 }
 
-void
-declareBankruptcy(int currPlayer, int &numPlayers, bool *isPlaying, int *accountBalance, bool &continueTransaction) {
-    eraseDisplay();
+//allows user to exit the game
+void declareBankruptcy (int currPlayer, int &numPlayers, bool *isPlaying,
+	int *accountBalance, bool &continueTransaction)
+	{
 
+		//graphical interface
+    eraseDisplay();
     displayString(2, "Declare Bankrupt?");
     displayString(4, "1: Yes");
     displayString(5, "2: No");
@@ -341,7 +355,8 @@ declareBankruptcy(int currPlayer, int &numPlayers, bool *isPlaying, int *account
     //wait for user to make decision
     while (!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)) {}
 
-    if (getButtonPress(buttonUp)) {
+    if (getButtonPress(buttonUp))
+    {
         while (getButtonPress(buttonAny)) {}
 
         displayText_Wait("BETTER LUCK NEXT TIME");
@@ -353,10 +368,13 @@ declareBankruptcy(int currPlayer, int &numPlayers, bool *isPlaying, int *account
         */
 
         isPlaying[currPlayer] = false;
-        resetPlayerBalance(currPlayer, accountBalance); // this has been changed
+        resetPlayerBalance(currPlayer, accountBalance);// this has been changed
+        displayText_Wait("DEPOSIT REMAINING CASH");
+        deposit(currPlayer, accountBalance, true);
         numPlayers--;
         continueTransaction = false;
-    } else
+    }
+    else
         while (getButtonPress(buttonAny)) {}
 }
 
@@ -442,15 +460,19 @@ void doTransaction(int currPlayer, int &numPlayers, bool *isPlaying, int *accoun
     }
 }
 
-void declareWinner(bool *isPlaying) {
+int declareWinner(bool *isPlaying) {
     eraseDisplay();
-
+		int winnerIndex = 0;
     for (int index = 0; index < 4; index++)
         if (isPlaying[index] == 1)
+        {
             displayString(4, "PLAYER %d WON MONOPOLY!", index);
+            winnerIndex = index;
+        }
 
     wait1Msec(2500);
     displayText_Wait("DEPOSIT REMAINING CASH");
+    return winnerIndex;
     //####END FUNCTION
 }
 
@@ -477,7 +499,8 @@ void deposit(int currPlayer, int *accountBalance, bool isPlayerDone) {
         isCancelled = true;
     }
 
-    if (!isCancelled) {
+    if (!isCancelled)
+    {
         depositAmount = calcTransactionAmount(transactionBills);
         if (isPlayerDone)
             accountBalance[currPlayer] += depositAmount;
@@ -879,14 +902,14 @@ void GantryTransverse(int position) {
     zeroGantry();
     nMotorEncoder[GANTRY_MOTOR] = 0;
     if (position == 1) {
-        moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI * 3 / 180.0, 6.25, 500, 0);
+        moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI * 3 / 180.0, 6.25, 150, 0);
         /*
         motor[GANTRY_MOTOR]=40;
         while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<6.25){}
         motor[GANTRY_MOTOR]=0;
         wait10Msec(50); */
     } else if (position == 2) {
-        moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI * 3 / 180.0, 12.5, 500, 0);
+        moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI * 3 / 180.0, 12.5, 150, 0);
         /*
         motor[GANTRY_MOTOR]=40;
         while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<12.5){}
@@ -894,7 +917,7 @@ void GantryTransverse(int position) {
         wait10Msec(50);
         */
     } else if (position == 3) {
-        moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI * 3 / 180.0, 22.7, 500, 0);
+        moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI * 3 / 180.0, 22.7, 150, 0);
         /*
         motor[GANTRY_MOTOR]=40;
         while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<22.7){}
@@ -902,14 +925,14 @@ void GantryTransverse(int position) {
         wait10Msec(50);
         */
     } else if (position == 4) {
-        moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI * 3 / 180.0, 32.6, 500, 0);
+        moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI * 3 / 180.0, 32.6, 150, 0);
         /*
             motor[GANTRY_MOTOR]=40;
             while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<32.6){}//21.5+9.6+1.5
             motor[GANTRY_MOTOR]=0;
             wait10Msec(50); */
     } else if (position == 5) {
-        moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI * 3 / 180.0, 38.8, 500, 0);
+        moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI * 3 / 180.0, 38.8, 150, 0);
         /*
             motor[GANTRY_MOTOR]=40;
             while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<38.8){}//21.5+9.6+7.5
@@ -917,7 +940,7 @@ void GantryTransverse(int position) {
             wait10Msec(50);
             */
     } else if (position == 6) {
-        moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI * 3 / 180.0, 44.7, 500, 0);
+        moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI * 3 / 180.0, 44.7, 150, 0);
         /*
         motor[GANTRY_MOTOR]=40;
         while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<44.7){}//21.5+9.6+6+7.5
@@ -925,7 +948,7 @@ void GantryTransverse(int position) {
         wait10Msec(50);
         */
     } else if (position == 7) {
-        moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI * 3 / 180.0, 50.5, 500, 0);
+        moveSelectMotor(GANTRY_MOTOR, GANTRY_POWER, PI * 3 / 180.0, 50.5, 150, 0);
         /*
         motor[GANTRY_MOTOR]=40;
         while(nMotorEncoder[GANTRY_MOTOR]*PI*3/180.0<50.5){}//21.5+9.6+6+6+7.5
@@ -941,25 +964,28 @@ void pickUpBill()
 {
     nMotorEncoder[VERT_ACTUATOR_MOTOR] = 0;
 
-   // moveSelectMotor(VERT_ACTUATOR_MOTOR, -VERT_ACTUATOR_POWER, PI * 3.2 / 180.0, -14, 0, 1);
+    moveSelectMotor(VERT_ACTUATOR_MOTOR, -VERT_ACTUATOR_POWER, PI * 3.2 / 180.0, -14, 0, 1);
 
+    /*
     motor[VERT_ACTUATOR_MOTOR]=-30;
-    while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0>-14){}
-    motor[VERT_ACTUATOR_MOTOR]=0;
+    while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0>-13){}
+    motor[VERT_ACTUATOR_MOTOR]=0; */
 
-    //moveSelectMotor(END_EFFECTOR_MOTOR, -END_EFFECTOR_POWER_HIGH, PI / 180.0, -1.8, 0, 1);
+    moveSelectMotor(END_EFFECTOR_MOTOR, -END_EFFECTOR_POWER_HIGH, PI / 180.0, -1.8, 0, 1);
 
+    /*
     nMotorEncoder[END_EFFECTOR_MOTOR]=0;
     motor[END_EFFECTOR_MOTOR] = -40;
     while(nMotorEncoder[END_EFFECTOR_MOTOR]*PI/180.0>-1.8){}
-    motor[END_EFFECTOR_MOTOR]=0;
+    motor[END_EFFECTOR_MOTOR]=0; */
 
-    //moveSelectMotor(VERT_ACTUATOR_MOTOR, VERT_ACTUATOR_POWER, PI * 3.2 / 180.0, 0, 500, 0);
+    moveSelectMotor(VERT_ACTUATOR_MOTOR, VERT_ACTUATOR_POWER, PI * 3.2 / 180.0, 0, 500, 0);
 
+    /*
     motor[VERT_ACTUATOR_MOTOR]=30;
     while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0<0){}
     motor[VERT_ACTUATOR_MOTOR]=0;
-    wait10Msec(50);
+    wait10Msec(50); */
 }
 
 void dropBill() {
@@ -971,7 +997,7 @@ void dropBill() {
     while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0>-7){}
     motor[VERT_ACTUATOR_MOTOR]=0;*/
 
-    moveSelectMotor(END_EFFECTOR_MOTOR, END_EFFECTOR_POWER_HIGH, PI / 180.0, 1.5, 300, 0);
+    moveSelectMotor(END_EFFECTOR_MOTOR, END_EFFECTOR_POWER_HIGH, PI / 180.0, 1.5, 150, 0);
     /*
     motor[END_EFFECTOR_MOTOR]=40;
     while(nMotorEncoder[END_EFFECTOR_MOTOR]*PI/180.0<1.5){}
@@ -984,7 +1010,7 @@ void dropBill() {
     while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0<0){}
     motor[VERT_ACTUATOR_MOTOR]=0;*/
 
-    moveSelectMotor(END_EFFECTOR_MOTOR, -END_EFFECTOR_POWER_LOW, PI / 180.0, 0, 500, 1);
+    moveSelectMotor(END_EFFECTOR_MOTOR, -END_EFFECTOR_POWER_LOW, PI / 180.0, 0, 150, 1);
     /*
     motor[END_EFFECTOR_MOTOR] = -20;
     while(nMotorEncoder[END_EFFECTOR_MOTOR]*PI/180.0>0){}
@@ -1002,7 +1028,7 @@ void masterTransverse(int initial, int final) {
 void sendTray(int trayLocation) {
     if (trayLocation) {
         //moving tray to colour sensor
-        moveSelectMotor(CONVEYER_MOTOR, CONVEYER_POWER, PI * 1.75 / 180.0, 7, 50, 0);
+        moveSelectMotor(CONVEYER_MOTOR, CONVEYER_POWER, PI * 1.75 / 180.0, 7, 150, 0);
         /*
         motor[CONVEYER_MOTOR]=30;
         while(nMotorEncoder[CONVEYER_MOTOR]*PI*1.75/180.0<7){}
@@ -1010,7 +1036,7 @@ void sendTray(int trayLocation) {
         wait10Msec(5);*/
     } else {
         //moving tray to user
-        moveSelectMotor(CONVEYER_MOTOR, CONVEYER_POWER, PI * 1.75 / 180.0, 26, 50, 0);
+        moveSelectMotor(CONVEYER_MOTOR, CONVEYER_POWER, PI * 1.75 / 180.0, 26, 150, 0);
         /*
         motor[CONVEYER_MOTOR]=30;
         while(nMotorEncoder[CONVEYER_MOTOR]*PI*1.75/180.0<26){}
@@ -1021,7 +1047,7 @@ void sendTray(int trayLocation) {
 
 //this function brings tray back into enclosure
 void conveyorReturn() {
-    moveSelectMotor(CONVEYER_MOTOR, -CONVEYER_POWER, PI * 2.75 / 180.0, 0, 1000, 1);
+    moveSelectMotor(CONVEYER_MOTOR, -CONVEYER_POWER, PI * 2.75 / 180.0, 0, 200, 1);
     /*
     motor[CONVEYER_MOTOR]=-30;
     while(nMotorEncoder[CONVEYER_MOTOR] * PI * 2.75/180.0 > 0){}
@@ -1058,10 +1084,12 @@ void endGame(int currPlayer, int *playerBalances)
         displayString(3, "a) YES");
         displayString(4, "b) NO");
         while (!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)) {}
-        if (getButtonPress(buttonUp)) {
+        if (getButtonPress(buttonUp))
+        {
             while (getButtonPress(buttonUp)) {}
             keepCollecting = false;
-        } else {
+        } else
+        {
             while (getButtonPress(buttonLeft)) {}
         }
 
@@ -1070,7 +1098,8 @@ void endGame(int currPlayer, int *playerBalances)
     displayString(3, "%d dollars have not been returned to the game", MAX_CASH - playerBalances[0]);
 }
 
-task main() {
+task main()
+{
     sensorConfig();
 
     int numPlayers = 0;
@@ -1080,12 +1109,12 @@ task main() {
     setupPlayers(numPlayers, accountBalance, isPlaying);
 
     while (numPlayers > 1) {
+    		eraseDisplay();
         displayString(4, "PLEASE INSERT CARD");
         displayString(7, "PRESS ENTER TO SCAN CARD");
         //wait for player to confirm for program to proceed with scanning colour
         while (!getButtonPress(buttonEnter)) {}
-
-
+        while (getButtonPress(buttonEnter)) {}
         int currPlayer = -1;
         setCurrPlayer(currPlayer, isPlaying);
 
@@ -1097,6 +1126,7 @@ task main() {
                 promptContinue(continueTransaction);
         } while (continueTransaction);
     }
-
-    declareWinner(isPlaying);
+    int winner = 0;
+    winner = declareWinner(isPlaying);
+    endGame(winner, accountBalance);
 }
