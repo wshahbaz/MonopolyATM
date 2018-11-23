@@ -365,11 +365,11 @@ void declareBankruptcy (int currPlayer, int &numPlayers, bool *isPlaying,
         //reset player values and balance internal cash accounts
         resetPlayerBalance(currPlayer, accountBalance);
 
-        //recieve any remaining cash from player
+        //recieve any remaining cash from player and add to monopoly man account
         displayText_Wait("DEPOSIT REMAINING CASH");
         deposit(currPlayer, accountBalance, true);
 
-        //final updates to bankrupt accoutn
+        //final updates to bankrupt account
         isPlaying[currPlayer] = false;
         numPlayers--;
         continueTransaction = false;
@@ -504,19 +504,32 @@ void deposit(int currPlayer, int *accountBalance, bool isPlayerDone)
     //prompt user for bills
     conveyorReturn();
     sendTray(USER_PICKUP);
+    eraseDisplay();
     displayString(2, "DEPOSIT");
     displayString(4, "PLACE BILLS ON TRAY");
     displayString(5, "PRESS ENTER TO CONTINUE");
-    displayString(6, "PRESS DOWN TO CANCEL");
+    displayString(6, "HOLD RIGHT TO CANCEL");
 
     //wait for user to press button
-    while (!getButtonPress(buttonEnter) && !getButtonPress(buttonDown)) {}
-    //if user wants to proceed with transaction, then process bills
-    if (getButtonPress(buttonEnter)) {
-        processDeposit(transactionBills);
-    } else {
-        isCancelled = true;
-    }
+    bool noButtonPress = true;
+    while (noButtonPress)
+    {
+	    while (!getButtonPress(buttonEnter) && !getButtonPress(buttonRight)) {}
+	    //if user wants to proceed with transaction, then process bills
+	    if (getButtonPress(buttonEnter)) 
+	    {
+	       processDeposit(transactionBills);
+	       noButtonPress = false;
+	    } 
+	    else 
+	    {
+	    	if(isClearOrCancel())
+	    	{
+	       	isCancelled = true;
+	       	noButtonPress = false;
+	      }
+	    }
+	  }
 
     //update accoutns if transaction proceeds
     if (!isCancelled)
@@ -856,7 +869,7 @@ void transfer(int transferor, int playersInGame, int *playerBalance, bool *isPla
         displayText_Wait("TRANSFER COMPLETE");
     }
 
-    if (isCancelled)
+    if (isCancelled || transferee == -1)
         displayText_Wait("TRANSFER CANCELLED");
 }
 
@@ -1086,43 +1099,30 @@ void moveSelectMotor(int motorPort, int power, float encoderDistMult, float enco
 //redistribute into slots, state any discrepancies in the count
 void endGame(int currPlayer, int *playerBalances)
 {
+		//Balances virtual currency in player and monopoly man accounts
     resetPlayerBalance(currPlayer, playerBalances);
-    displayText_NoWait("MAX 20 BILLS TO TRAY");
-    while (!getButtonPress(buttonAny)){}
-    while (getButtonPress(buttonEnter)){}
-    //conveyorSend(COLOUR_SENSE_LOCATION);
-    bool keepCollecting = true;
-    while (playerBalances[0] < MAX_CASH && keepCollecting) {
-        deposit(currPlayer, playerBalances, true);
-        displayString(2, "DEPOSIT COMPLETE?");
-        displayString(3, "a) YES");
-        displayString(4, "b) NO");
-        while (!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)) {}
-        if (getButtonPress(buttonUp))
-        {
-            while (getButtonPress(buttonUp)) {}
-            keepCollecting = false;
-        } else
-        {
-            while (getButtonPress(buttonLeft)) {}
-        }
-
-    }
-    displayText_NoWait("Thank you for playing");
-    displayString(3, "%d dollars have not been returned to the game", MAX_CASH - playerBalances[0]);
+    //Reuturns all cash to monopoly man
+    deposit(currPlayer, playerBalances, true);
+    
+    displayString(3, "MISSING MONEY: $%d", MAX_CASH - playerBalances[0]);
+    displayString(4, "GAME OVER");
+    wait1Msec(5000);
 }
 
 task main()
 {
     sensorConfig();
-
+		
+    //initiates variables containingnecessary player information
     int numPlayers = 0;
     bool isPlaying[MAX_PLAYERS] = {true, false, false, false, false};
     int accountBalance[MAX_PLAYERS] = {MAX_CASH, 0, 0, 0, 0};
-
+		
     setupPlayers(numPlayers, accountBalance, isPlaying);
 
-    while (numPlayers > 1) {
+    //game continues until one player remains
+    while (numPlayers > 1) 
+    {
     		eraseDisplay();
         displayString(4, "PLEASE INSERT CARD");
         displayString(7, "PRESS ENTER TO SCAN CARD");
@@ -1130,16 +1130,21 @@ task main()
         while (!getButtonPress(buttonEnter)) {}
         while (getButtonPress(buttonEnter)) {}
         int currPlayer = -1;
+        //gets colour reading from card sensor and sets player
         setCurrPlayer(currPlayer, isPlaying);
-
+        //sets control variable for player to continue doing transactions
         bool continueTransaction = true;
-        do {
+        do 
+        {
+        		//player selects transactions
             displayMainMenu(currPlayer, accountBalance);
             doTransaction(currPlayer, numPlayers, isPlaying, accountBalance, continueTransaction);
+            //prompts user to continue transactions unless aborted by bankruptcy or cancel
             if (continueTransaction)
                 promptContinue(continueTransaction);
         } while (continueTransaction);
     }
+    //declares winner and ends game
     int winner = 0;
     winner = declareWinner(isPlaying);
     endGame(winner, accountBalance);
