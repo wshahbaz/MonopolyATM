@@ -94,22 +94,22 @@ void sensorConfig()
 void setupPlayers(int & numPlayers, int * accountBalance, bool * isPlaying)
 {
 	eraseDisplay();
-	displayBigTextLine(0,"CHOOSE NUMBER OF PLAYER");
-	displayString(5,"2 PLAYERS");
-	displayString(6,"3 PLAYERS");
-	displayString(7,"4 PLAYERS");
+	displayString(2, "CHOOSE NUMBER OF PLAYER");
+	displayString(5,"a) 2 PLAYERS");
+	displayString(6,"b) 3 PLAYERS");
+	displayString(7,"c) 4 PLAYERS");
 
 	//wait for button press
-	while(!getButtonPress(buttonLeft) && !getButtonPress(buttonRight) && !getButtonPress(buttonDown)){}
+	while(!getButtonPress(buttonUp) && !getButtonPress(buttonLeft) && !getButtonPress(buttonRight)){}
 
-	if(getButtonPress(buttonLeft))
+	if(getButtonPress(buttonUp))
 	{
 		while (getButtonPress(buttonAny)){}
 		numPlayers = 2;
 		displayText_Wait("TWO PLAYER OPTION SELECTED");
 	}
 
-	else if(getButtonPress(buttonRight))
+	else if(getButtonPress(buttonLeft))
 	{
 		while (getButtonPress(buttonAny)){}
 		numPlayers = 3;
@@ -118,7 +118,7 @@ void setupPlayers(int & numPlayers, int * accountBalance, bool * isPlaying)
 
 	else
 	{
-		while (getButtonPress(buttonDown)){}
+		while (getButtonPress(buttonRight)){}
 		numPlayers = 4;
 		displayText_Wait("FOUR PLAYER OPTION SELECTED");
 	}
@@ -251,19 +251,19 @@ void displayMainMenu(int currPlayer, int* accountBalance)
 {
 	eraseDisplay();
 	if (currPlayer != 0){
-		displayBigTextLine(0, "MAIN MENU");
-		displayString(3, "PLAYER %d, BALANCE: %d", currPlayer, accountBalance[currPlayer]);
-		displayString(5, "1: WITHDRAW");
-		displayString(6, "2: DEPOSIT");
-		displayString(7, "3: TRANSFER");
-		displayString(8, "4: DECLARE BANKUPTCY");
-		displayString(9, "5: CANCEL TRANSACTION");
+		displayString(2, "MAIN MENU");
+		displayString(4, "PLAYER %d, BALANCE: %d", currPlayer, accountBalance[currPlayer]);
+		displayString(5, "a) WITHDRAW");
+		displayString(6, "b) DEPOSIT");
+		displayString(7, "c) TRANSFER");
+		displayString(8, "d) DECLARE BANKUPTCY");
+		displayString(9, "e) CANCEL TRANSACTION");
 	}
 	else{
-		displayBigTextLine(0, "MAIN MENU");
-		displayString(3, "MONOPOLY MAN, Balance: %d", accountBalance[currPlayer]);
-		displayString(5, "1: TRANSFER");
-		displayString(6, "2: CANCEL TRANSFER");
+		displayString(2, "MAIN MENU");
+		displayString(4, "MONOPOLY MAN, Balance: %d", accountBalance[currPlayer]);
+		displayString(5, "a) TRANSFER");
+		displayString(6, "b) CANCEL TRANSFER");
 	}
 }
 
@@ -271,9 +271,9 @@ void declareBankruptcy(int currPlayer, int& numPlayers, bool* isPlaying, int* ac
 {
 	eraseDisplay();
 
-	displayBigTextLine(0,"DECLARE BANKRUPTY?");
-	displayString(5, "1: YES");
-	displayString(6, "2: NO");
+	displayString(2,"DECLARE BANKRUPTY?");
+	displayString(5, "a) YES");
+	displayString(6, "b) NO");
 
 	//wait for user to make decision
 	while(!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)){}
@@ -304,12 +304,12 @@ void promptContinue(bool& continueTransaction, bool assumeContinue)
 	eraseDisplay();
 
 	if (assumeContinue)
-		displayBigTextLine(0,"CONTINUE TRANSACTION?");
+		displayString(2,"CONTINUE TRANSACTION?");
 	else
 		displayString(3,"CONFIRM CANCEL");
 
-	displayString(5, "1: Yes");
-	displayString(6, "2: No");
+	displayString(5, "a) Yes");
+	displayString(6, "b) No");
 
 	while (!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)){}
 
@@ -377,7 +377,6 @@ void doTransaction(int currPlayer, int& numPlayers, bool* isPlaying, int* accoun
 			while (getButtonPress(buttonAny)){}
 			displayText_Wait("TRANSFER");
 			transfer(currPlayer, numPlayers, accountBalance, isPlaying);
-			//transfer(parameters);
 		}
 
 		else{
@@ -392,7 +391,7 @@ void declareWinner(bool* isPlaying)
 
 	for (int index = 0; index < 4; index++)
 		if (isPlaying[index] == 1)
-			displayBigTextLine(4, "PLAYER %d WON MONOPOLY!", index);
+			displayString(4, "PLAYER %d WON MONOPOLY!", index);
 
 	wait1Msec(2500);
 	displayText_Wait("DEPOSIT REMAINING CASH");
@@ -409,7 +408,7 @@ void deposit(int currPlayer, int* accountBalance)
 	//prompt user for bills
 	conveyorReturn();
 	sendTray(USER_PICKUP);
-	displayBigTextLine(0, "DEPOSIT");
+	displayString(2, "DEPOSIT");
 	displayString(4, "PLACE BILLS ON TRAY");
 	displayString(5, "PRESS ENTER TO CONTINUE");
 	displayString(6, "PRESS DOWN TO CANCEL");
@@ -573,12 +572,12 @@ void getLowerOptions(int playerBalance, int* transactionBills, bool& isCancelled
 					transactionBills[2]++;
 				}
 			}
-			else if (getButtonPress(buttonEnter) && isValidTransaction(playerBalance, calcTransactionAmount(transactionBills), 20))
+			else if (getButtonPress(buttonDown) && isValidTransaction(playerBalance, calcTransactionAmount(transactionBills), 20))
 			{
 				transactionBills[4]++;
 			}
 			//if user wants to go to higher options screen
-			else if (getButtonPress(buttonDown))
+			else if (getButtonPress(buttonEnter))
 			{
 
 				isDone = getHigherOptions(playerBalance, transactionBills, isCancelled);
@@ -637,12 +636,12 @@ bool getHigherOptions(int playerBalance, int* transactionBills, bool& isCancelle
 				}
 			}
 			//this button returns back to original screen
-			else if (getButtonPress(buttonDown))
+			else if (getButtonPress(buttonEnter))
 			{
 				isHigherOptionsDone = true;
 			}
 			//if withdrawal is done
-			else if (getButtonPress(buttonEnter))
+			else if (getButtonPress(buttonDown))
 			{
 				isTransactionDone = true;
 			}
@@ -657,12 +656,12 @@ bool getHigherOptions(int playerBalance, int* transactionBills, bool& isCancelle
 void displayLowerOptions(int* transactionBills, int playerBalance)
 {
 	eraseDisplay();
-	displayBigTextLine(0, "WITHDRAWAL LOWER OPTIONS");
-	displayString(4, "$1 bills");
-	displayString(5, "$5 bills");
-	displayString(6, "$10 bills");
-	displayString(7, "$20 bills");
-	displayString(8, "GO TO HIGHER OPTIONS");
+	displayString(2, "WITHDRAWAL LOWER OPTIONS");
+	displayString(4, "a) $1 bills");
+	displayString(5, "b) $5 bills");
+	displayString(6, "c) $10 bills");
+	displayString(7, "d) $20 bills");
+	displayString(8, "e) GO TO HIGHER OPTIONS");
 	displayString(10, "TOTAL WITHDRAW: %d", calcTransactionAmount(transactionBills));
 	displayString(11, "CASH REMAINING: %d", calcRemainingCash(calcTransactionAmount(transactionBills), playerBalance));
 }
@@ -670,12 +669,12 @@ void displayLowerOptions(int* transactionBills, int playerBalance)
 void displayHigherOptions(int* transactionBills, int playerBalance)
 {
 	eraseDisplay();
-	displayBigTextLine(0, "WITHDRAWAL HIGHER OPTIONS");
-	displayString(4, "$50 BILLS");
-	displayString(5, "$100 BILLS");
-	displayString(6, "$500 BILLS");
-	displayString(7, "CONFIRM TRANSACTION");
-	displayString(8, "GO TO LOWER OPTIONS");
+	displayString(2, "WITHDRAWAL HIGHER OPTIONS");
+	displayString(4, "a) $50 BILLS");
+	displayString(5, "b) $100 BILLS");
+	displayString(6, "c) $500 BILLS");
+	displayString(7, "d) CONFIRM TRANSACTION");
+	displayString(8, "e) GO TO LOWER OPTIONS");
 	displayString(10, "TOTAL WITHDRAW: %d", calcTransactionAmount(transactionBills));
 	displayString(11, "CASH REMAINING: %d", calcRemainingCash(calcTransactionAmount(transactionBills), playerBalance));
 }
@@ -703,12 +702,12 @@ bool isClearOrCancel()
 	time1[T1] = 0;
 	while (getButtonPress(buttonLeft) || getButtonPress(buttonRight))
 	{
-		if (time1[T1] > 3000)
+		if (time1[T1] > 2000)
 		{
-			displayBigTextLine(4, "RELEASE BUTTON TO CONTINUE");
+			displayString(14, "RELEASE BUTTON TO CONTINUE");
 		}
 	}
-	if (time1[T1] > 3000)
+	if (time1[T1] > 2000)
 	{
 		return true;
 	}
@@ -730,14 +729,14 @@ int calcTransactionAmount(int* transactionBills)
 void displayText_Wait(string* text)
 {
 	eraseDisplay();
-	displayBigTextLine(5, "%s", text);
+	displayString(5, "%s", text);
 	wait1Msec(DISPLAY_WAIT);
 }
 
 void displayText_NoWait(string* text)
 {
 	eraseDisplay();
-	displayBigTextLine(5, "%s", text);
+	displayString(5, "%s", text);
 }
 
 //main transfer function
@@ -770,7 +769,7 @@ void transfer(int transferor, int playersInGame, int * playerBalance, bool * isP
 		displayText_Wait("TRANSFER COMPLETE");
 	}
 
-	if (!isCancelled)
+	if (isCancelled)
 	{
 		displayText_Wait("TRANSFER CANCELLED");
 	}
@@ -826,6 +825,9 @@ int getTransferee(int playersInGame, int * transferOption)
 //updates appropriate balances based on transfer amount
 void transferAmount(int transferor, int transferee, int * accountBalance, bool & isTransferCancelled)
 {
+	eraseDisplay();
+	displayString(4, "TRANSFER TO PLAYER %d", transferee);
+	wait1Msec(1200);
 	displayText_Wait("PICK YOUR BILLS");
 	int transferorBalance = accountBalance[transferor];
 	int transferAmount = getTransferAmount(transferorBalance, isTransferCancelled);		//calls function to get transfer amount
@@ -943,10 +945,12 @@ void pickUpBill()
 	motor[VERT_ACTUATOR_MOTOR]=-30;
 	while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0>-14){}
 	motor[VERT_ACTUATOR_MOTOR]=0;
+
 	nMotorEncoder[END_EFFECTOR_MOTOR]=0;
 	motor[END_EFFECTOR_MOTOR] = -40;
 	while(nMotorEncoder[END_EFFECTOR_MOTOR]*PI/180.0>-1.8){}
 	motor[END_EFFECTOR_MOTOR]=0;
+
 	motor[VERT_ACTUATOR_MOTOR]=30;
 	while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0<0){}
 	motor[VERT_ACTUATOR_MOTOR]=0;
@@ -958,6 +962,7 @@ void dropBill(){
 	motor[VERT_ACTUATOR_MOTOR]=-30;
 	while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0>-7){}
 	motor[VERT_ACTUATOR_MOTOR]=0;
+
 	motor[END_EFFECTOR_MOTOR]=40;
 	while(nMotorEncoder[END_EFFECTOR_MOTOR]*PI/180.0<1.5){}
 	motor[END_EFFECTOR_MOTOR]=0;
@@ -966,6 +971,7 @@ void dropBill(){
 	motor[VERT_ACTUATOR_MOTOR]=30;
 	while(nMotorEncoder[VERT_ACTUATOR_MOTOR]*PI*3.2/180.0<0){}
 	motor[VERT_ACTUATOR_MOTOR]=0;
+
 	motor[END_EFFECTOR_MOTOR] = -20;
 	while(nMotorEncoder[END_EFFECTOR_MOTOR]*PI/180.0>0){}
 	motor[END_EFFECTOR_MOTOR]=0;
@@ -1004,10 +1010,24 @@ void sendTray(int trayLocation)
 void conveyorReturn()
 {
 	motor[CONVEYER_MOTOR]=-30;
-	while(nMotorEncoder[CONVEYER_MOTOR]*PI*2.75/180.0>0){}
+	while(nMotorEncoder[CONVEYER_MOTOR] * PI * 2.75/180.0 > 0){}
 	motor[CONVEYER_MOTOR]=0;
 	wait10Msec(100);
 }
+
+/*
+void moveSelectMotor(int motorPort, int power, int encoderDistMult, int encoderDistLimit, int waitTime, bool isPositive)
+{
+	motor[motorPort] = power;
+	if (isPositive)
+		while (nMotorEncoder[motorPort] * encoderDistMult > encoderDistLimit) {}
+	else
+		while (nMotorEncoder[motorPort] * encoderDistMult < encoderDistLimit) {}
+	motor[motorPort] = 0;
+	wait1Msec(waitTime);
+}
+*/
+
 
 task main()
 {
