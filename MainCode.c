@@ -322,43 +322,40 @@ void displayMainMenu(int currPlayer, int *accountBalance) {
     }
 }
 
-void resetPlayerBalance(int currPlayer, int *playerBalances)
-{
-		playerBalances[0] += playerBalances[currPlayer] - 1500;
-		playerBalances[currPlayer] = 1500;
+void resetPlayerBalance(int currPlayer, int *playerBalances) {
+    playerBalances[0] += playerBalances[currPlayer] - 1500;
+    playerBalances[currPlayer] = 1500;
 }
 
-void declareBankruptcy(int currPlayer, int& numPlayers, bool* isPlaying, int* accountBalance, bool& continueTransaction)
-{
-	eraseDisplay();
+void
+declareBankruptcy(int currPlayer, int &numPlayers, bool *isPlaying, int *accountBalance, bool &continueTransaction) {
+    eraseDisplay();
 
-	displayString(2,"Declare Bankrupt?");
-	displayString(4, "1: Yes");
-	displayString(5, "2: No");
+    displayString(2, "Declare Bankrupt?");
+    displayString(4, "1: Yes");
+    displayString(5, "2: No");
 
-	//wait for user to make decision
-	while(!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)){}
+    //wait for user to make decision
+    while (!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)) {}
 
-	if (getButtonPress(buttonUp))
-		{
-			while(getButtonPress(buttonAny)){}
-	
-			displayText_Wait("BETTER LUCK NEXT TIME");
-			/*
-			run deposit function to get cash
-			displayString(2, "Deposit any remaining cash at hand");
-			wait1Msec(1500);
-			depositCash( . . . )
-			*/
-	
-			isPlaying[currPlayer] = false;
-			resetPlayerBalance(currPlayer,accountBalance); // this has been changed
-			numPlayers--;
-			continueTransaction = false;
-		}
-		else
-			while (getButtonPress(buttonAny)){}
-	}
+    if (getButtonPress(buttonUp)) {
+        while (getButtonPress(buttonAny)) {}
+
+        displayText_Wait("BETTER LUCK NEXT TIME");
+        /*
+        run deposit function to get cash
+        displayString(2, "Deposit any remaining cash at hand");
+        wait1Msec(1500);
+        depositCash( . . . )
+        */
+
+        isPlaying[currPlayer] = false;
+        resetPlayerBalance(currPlayer, accountBalance); // this has been changed
+        numPlayers--;
+        continueTransaction = false;
+    } else
+        while (getButtonPress(buttonAny)) {}
+}
 
 void promptContinue(bool &continueTransaction, bool assumeContinue) {
     eraseDisplay();
@@ -436,43 +433,38 @@ void declareWinner(bool *isPlaying) {
     //####END FUNCTION
 }
 
-void deposit(int currPlayer, int* accountBalance, bool playerIsDone)
-{
-	//tracks whether deposit transaction has been cancelled
-	bool isCancelled = false;
-	int depositAmount = 0;
-	int transactionBills[NUM_BINS] = {0, 0, 0, 0, 0, 0, 0, 0};
+void deposit(int currPlayer, int *accountBalance, bool playerIsDone) {
+    //tracks whether deposit transaction has been cancelled
+    bool isCancelled = false;
+    int depositAmount = 0;
+    int transactionBills[NUM_BINS] = {0, 0, 0, 0, 0, 0, 0, 0};
 
-	//prompt user for bills
-	conveyorReturn();
-	sendTray(USER_PICKUP);
-	displayString(2, "DEPOSIT");
-	displayString(4, "PLACE BILLS ON TRAY");
-	displayString(5, "PRESS ENTER TO CONTINUE");
-	displayString(6, "PRESS DOWN TO CANCEL");
+    //prompt user for bills
+    conveyorReturn();
+    sendTray(USER_PICKUP);
+    displayString(2, "DEPOSIT");
+    displayString(4, "PLACE BILLS ON TRAY");
+    displayString(5, "PRESS ENTER TO CONTINUE");
+    displayString(6, "PRESS DOWN TO CANCEL");
 
-	//wait for user
-	while (!getButtonPress(buttonEnter) && !getButtonPress(buttonDown)){}
-	//if wants to continue
-	if (getButtonPress(buttonEnter))
-	{
-		processDeposit(transactionBills);
-	}
-	else
-	{
-		isCancelled = true;
-	}
+    //wait for user
+    while (!getButtonPress(buttonEnter) && !getButtonPress(buttonDown)) {}
+    //if wants to continue
+    if (getButtonPress(buttonEnter)) {
+        processDeposit(transactionBills);
+    } else {
+        isCancelled = true;
+    }
 
-	if (!isCancelled)
-	{
-		depositAmount = calcTransactionAmount(transactionBills);
-		if(!playerIsDone)
-			accountBalance[currPlayer] += depositAmount;
-		else
-			accountBalance[0] += depositAmount;
-			
-		displayText_Wait("DEPOSIT COMPLETE");
-	}
+    if (!isCancelled) {
+        depositAmount = calcTransactionAmount(transactionBills);
+        if (!playerIsDone)
+            accountBalance[currPlayer] += depositAmount;
+        else
+            accountBalance[0] += depositAmount;
+
+        displayText_Wait("DEPOSIT COMPLETE");
+    }
 }
 
 void processDeposit(int *transactionBills) {
@@ -1027,25 +1019,36 @@ moveSelectMotor(int motorPort, int power, float encoderDistMult, float encoderDi
     motor[motorPort] = 0;
     wait1Msec(waitTime);
 }
-void endGame(int currPlayer, int *playerBalances)         // Request all bills be deposited into the tray, redistribute into slots, state any discrepancies in the count
+
+void endGame(int currPlayer,
+             int *playerBalances)         // Request all bills be deposited into the tray, redistribute into slots, state any discrepancies in the count
 {
-	resetPlayerBalance(currPlayer, playerBalances);
-	displayText_NoWait("Return maximum 20 bills to tray");
-	sendTray(USER_PICKUP);
-	displayText_NoWait("Press Enter when all money has be placed in the tray");
-	while(!getButtonPress(buttonAny));
-	while(getButtonPress(buttonEnter));
-	//conveyorSend(COLOUR_SENSE_LOCATION);
-	bool keepCollecting =true;
-	while(playerBalances[0]<MAX_CASH&&keepCollecting)
-	{
-		deposit(currPlayer, playerBalances, true);
-	}
-	displayText_NoWait("Thank you for playing");
-	displayString(3,"%d dollars have not been returned to the game", MAX_CASH-playerBalances[0]);
-	
-	
+    resetPlayerBalance(currPlayer, playerBalances);
+    displayText_NoWait("MAX 20 BILLS TO TRAY");
+    while (!getButtonPress(buttonAny));
+    while (getButtonPress(buttonEnter));
+    //conveyorSend(COLOUR_SENSE_LOCATION);
+    bool keepCollecting = true;
+    while (playerBalances[0] < MAX_CASH && keepCollecting) {
+        deposit(currPlayer, playerBalances, true);
+        displayString(2, "DEPOSIT COMPLETE?");
+        displayString(3, "a) YES");
+        displayString(4, "b) NO");
+        while (!getbuttonPress(buttonUp) && !getbuttonpress(butttonLeft)) {}
+        if (getbuttonPress(buttonUp)) {
+            while (getbuttonpress(buttonUp)) {}
+            keepCollecting = false;
+        } else {
+            while (getbuttonpress(buttonleft)) {}
+        }
+
+    }
+    displayText_NoWait("Thank you for playing");
+    displayString(3, "%d dollars have not been returned to the game", MAX_CASH - playerBalances[0]);
+
+
 }
+
 task main() {
     sensorConfig();
 
