@@ -630,7 +630,7 @@ void completeWithdrawal(int currentPlayer, int *accountBalance, int withdraw, in
 int receiveWithdrawBills(int playerBalance, int *transactionBills, bool &isCancelled)
 {
     //lower bill value options screen
-	/this function will call other funcitons, updating transaction bills array
+    //this function will call other funcitons, updating transaction bills array
     getLowerOptions(playerBalance, transactionBills, isCancelled);
 
     //calculate total withdraw and return amount into main withdraw function
