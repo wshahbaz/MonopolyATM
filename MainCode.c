@@ -620,7 +620,7 @@ void completeWithdrawal(int currentPlayer, int *accountBalance, int withdraw, in
 int receiveWithdrawBills(int playerBalance, int *transactionBills, bool &isCancelled)
 {
     //lower bill value options screen
-		//this function will call other funcitons, updating transaction bills array
+	/this function will call other funcitons, updating transaction bills array
     getLowerOptions(playerBalance, transactionBills, isCancelled);
 
     //calculate total withdraw and return amount into main withdraw function
@@ -1148,8 +1148,8 @@ task main()
     //game continues until one player remains
     while (numPlayers > 1)
     {
-    		//graphical interface
-    		eraseDisplay();
+    	//graphical interface
+    	eraseDisplay();
         displayString(4, "PLEASE INSERT CARD");
         displayString(7, "PRESS ENTER TO SCAN CARD");
 
@@ -1165,7 +1165,7 @@ task main()
 
         do
         {
-        		//player selects transactions
+        //player selects transactions
             displayMainMenu(currPlayer, accountBalance);
             doTransaction(currPlayer, numPlayers, isPlaying, accountBalance, false);
 
