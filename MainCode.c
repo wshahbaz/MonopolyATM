@@ -34,91 +34,90 @@ enum MOTOR_POWERS {
     END_EFFECTOR_POWER_HIGH = 40,
     CONVEYER_POWER = 30,
 };
-/*
-const int GANTRY_MOTOR = 0;
-const int VERT_ACTUATOR_MOTOR = 1;
-const int END_EFFECTOR_MOTOR = 2;
-const int CONVEYER_MOTOR = 3;*/
 
 //Sensor ports
 const int COLOUR_CARD = 0;
 const int COLOUR_BILL = 1;
 const int TOUCH_ENC_ZERO = 2;
 
-//function prototypes
 
 //FUNCTION PROTOTYPES
+//Note that line numbers corresponding to each function prototype are given for readability
 //*******************
 //GENERAL USER INTERFACE FUNCTION PROTOTYPES
-void displayText_NoWait(string *text);
-void displayText_Wait(string *text);
+void displayText_NoWait(string *text);	//L853
+void displayText_Wait(string *text);	//L845
 
-void promptContinue(bool &continueTransaction);
-void promptCancel(bool &continueTransaction);
+void promptContinue(bool &continueTransaction);	//L389
+void promptCancel(bool &continueTransaction);	//L489
 
 //WITHDRAWAL FUNCTION(S)PROTOTYPES
-void withdraw(int currentPlayer, int *accountBalance);
-int receiveWithdrawBills(int &playerBalance, int *transactionBills, bool &isCancelled);
-void getLowerOptions(int playerBalance, int *transactionBills, bool &isCancelled);
-bool getHigherOptions(int playerBalance, int *transactionBills, bool &isCancelled);
-bool isClearOrCancel();
+void withdraw(int currentPlayer, int *accountBalance);									//L589
+int receiveWithdrawBills(int &playerBalance, int *transactionBills, bool &isCancelled);	//L624
+void getLowerOptions(int playerBalance, int *transactionBills, bool &isCancelled);		//L671
+bool getHigherOptions(int playerBalance, int *transactionBills, bool &isCancelled);		//L717
+bool isClearOrCancel();																	//L818
 
-void clearChosenBills(int *transactionBills);
-void cancelTransaction(int *transactionBills, bool &isCancelled);
-bool isValidTransaction(int playerBalance, int totalTransaction, int bill);
-int calcTransactionAmount(int *transactionBills);
-int calcRemainingCash(int transactionAmount, int balance);
-void completeWithdrawal(int currentPlayer, int *accountBalance, int withdraw, int *transactionBills);
+void clearChosenBills(int *transactionBills);															//L662
+void cancelTransaction(int *transactionBills, bool &isCancelled);										//L651	
+bool isValidTransaction(int playerBalance, int totalTransaction, int bill);								//L809
+int calcTransactionAmount(int *transactionBills);														//L834
+int calcRemainingCash(int transactionAmount, int balance);												//L803
+void completeWithdrawal(int currentPlayer, int *accountBalance, int withdraw, int *transactionBills);	//L603
 
-void displayLowerOptions(int *transactionBills, int playerBalance);
-void displayHigherOptions(int *transactionBills, int playerBalance);
+void displayLowerOptions(int *transactionBills, int playerBalance);		//L777
+void displayHigherOptions(int *transactionBills, int playerBalance);	//L790
 
 //DEPOSIT FUNCTION PROTOTYPES
-void deposit(int currPlayer, int *accountBalance, bool isPlayerDone);
-void processDeposit(int *transactionBills);
+void deposit(int currPlayer, int *accountBalance, bool isPlayerDone);	//L506
+void processDeposit(int *transactionBills);								//L559
 
 //TRANSFER FUNCTION PROTOTYPES
-void transfer(int transferor, int playersInGame, int *playerBalance, bool *isPlaying);
-int getTransferee(int playersInGame, int *transferOption);
+void transfer(int transferor, int playersInGame, int *playerBalance, bool *isPlaying);	//L864
+int getTransferee(int playersInGame, int *transferOption);								//L922
 
-void transferAmount(int transferor, int transferee, int *accountBalance, bool &isTransferCancelled);
-int getTransferAmount(int playerBalance, bool &isTransferCancelled);
+void transferAmount(int transferor, int transferee, int *accountBalance, bool &isTransferCancelled);	//L951
+int getTransferAmount(int playerBalance, bool &isTransferCancelled);									//L969
 
-void waitButtonPress(int playersInGame);
-void buttonPressValid(int playersInGame);
+void waitButtonPress(int playersInGame);	//L914
+void buttonPressValid(int playersInGame);	//L895
 
-void displayTransferOptions(int transferor, int *transferOption, bool *isPlaying);
+void displayTransferOptions(int transferor, int *transferOption, bool *isPlaying);	//L983
 
 //PRE-TRANSACTION FUNCTION PROTOYPES
-void setCurrPlayer(int &currPlayer, bool *isPlaying);
-void displayMainMenu(int currPlayer, int *accountBalance);
+void setCurrPlayer(int &currPlayer, bool *isPlaying);					//L301
+void displayMainMenu(int currPlayer, int *accountBalance);				//L319
 void doTransaction(int currPlayer, int &numPlayers, bool *isPlaying,
-	int *accountBalance, bool &continueTransaction);
+	int *accountBalance, bool &continueTransaction);					//L430
 
 //END PROGRAM FUNCTION PROTYPES
-void resetPlayerBalance(int currPlayer, int *playerBalances);
-int declareWinner(bool *isPlaying);
+void resetPlayerBalance(int currPlayer, int *playerBalances);				//L348
+int declareWinner(bool *isPlaying);											//L489
 void declareBankruptcy (int currPlayer, int &numPlayers, bool *isPlaying,
-	int *accountBalance, bool &continueTransaction);
+	int *accountBalance, bool &continueTransaction);						//L356
 
 //MECHANICAL FUNCTIONS (ALL FUNCTIONS)
 //BILL MOVEMENT
-void moveBillsOut(int *transactionBills);
+void moveBillsOut(int *transactionBills);			//L641
 
-void masterTransverse(int initial, int final);
-void pickUpBill();
-void GantryTransverse(int position);
-void dropBill();
-void zeroGantry();
+void masterTransverse(int initial, int final);		//L1001
+void pickUpBill();									//L1055
+void GantryTransverse(int position);				//L1032
+void dropBill();									//L1068
+void zeroGantry();									//L1024
 
-void sendTray(int trayLocation);
-void conveyorReturn();
+void sendTray(int trayLocation);					//L1094
+void conveyorReturn();								//L1105
 
-void moveSelectMotor(int motorPort, int power, float encoderDistMult, float encoderDistLimit, int waitTime, int direction);
+void moveSelectMotor(int motorPort, int power, float encoderDistMult, 
+	float encoderDistLimit, int waitTime, int direction);				//L1121
 
 //COLOUR SENSING
-int senseBill();
-int senseCard();
+int senseBill();	//L243
+int senseCard();	//L181
+
+//FUNCTION BODIES
+//**************************
 
 //configures all EV3 sensors
 void sensorConfig()
