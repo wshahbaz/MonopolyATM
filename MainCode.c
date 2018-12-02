@@ -73,7 +73,6 @@ void completeWithdrawal(int currentPlayer, int *accountBalance, int withdraw, in
 void displayLowerOptions(int *transactionBills, int playerBalance);
 void displayHigherOptions(int *transactionBills, int playerBalance);
 
-
 //DEPOSIT FUNCTION PROTOTYPES
 void deposit(int currPlayer, int *accountBalance, bool isPlayerDone);
 void processDeposit(int *transactionBills);
@@ -90,6 +89,17 @@ void buttonPressValid(int playersInGame);
 
 void displayTransferOptions(int transferor, int *transferOption, bool *isPlaying);
 
+//PRE-TRANSACTION FUNCTION PROTOYPES
+void setCurrPlayer(int &currPlayer, bool *isPlaying);
+void displayMainMenu(int currPlayer, int *accountBalance);
+void doTransaction(int currPlayer, int &numPlayers, bool *isPlaying,
+	int *accountBalance, bool &continueTransaction);
+
+//END PROGRAM FUNCTION PROTYPES
+void resetPlayerBalance(int currPlayer, int *playerBalances);
+int declareWinner(bool *isPlaying);
+void declareBankruptcy (int currPlayer, int &numPlayers, bool *isPlaying,
+	int *accountBalance, bool &continueTransaction);
 
 //MECHANICAL FUNCTIONS (ALL FUNCTIONS)
 //BILL MOVEMENT
