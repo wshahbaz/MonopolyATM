@@ -13,7 +13,8 @@ const int DISPLAY_WAIT = 1000;
 const int NUM_TRANSFER_OPTIONS = 4;
 
 //Bill TRAY indicies
-enum BILLTRAYS {
+enum BILLTRAYS 
+{
     BILL_1, BILL_5, BILL_10, OUTPUT_TRAY_LOCATION, BILL_20,
     BILL_50, BILL_100, BILL_500
 };
@@ -23,11 +24,13 @@ const int USER_PICKUP = 0;
 const int COLOUR_SENSE_LOCATION = 1;
 
 //Motor ports
-enum MOTOR_PORTS {
+enum MOTOR_PORTS 
+{
     GANTRY_MOTOR, VERT_ACTUATOR_MOTOR, END_EFFECTOR_MOTOR, CONVEYER_MOTOR
 };
 //Motor powers
-enum MOTOR_POWERS {
+enum MOTOR_POWERS 
+{
     GANTRY_POWER = 40,
     VERT_ACTUATOR_POWER = 40,
     END_EFFECTOR_POWER_LOW = 20,
@@ -180,7 +183,8 @@ void setupPlayers(int &numPlayers, int *accountBalance, bool *isPlaying)
 //returns int corresponding to player number
 int senseCard()
 {
-	enum CARD_COLOURS {
+	enum CARD_COLOURS 
+	{
         BROWN, PINK, BLUE, RED, GREEN
     };
 		//initialization variables
@@ -256,7 +260,8 @@ int senseBill()
     int numReadings = 0;
 
     //iterate bill reads, record instance of each bill
-    while (numReadings < 30) {
+    while (numReadings < 30) 
+	{
         getColorRGB(COLOUR_BILL, red, green, blue);
         //pink - 1s
         if (red <= 120 && red >= 15 && green <= 50 / 100.0 * red && green >= 20 / 100.0 * red &&
@@ -291,7 +296,8 @@ int senseBill()
 
     //calculate mode of colour reads
     for (int index = 0; index < 8; index++)
-        if (colorCount[index] > maxColorCount) {
+        if (colorCount[index] > maxColorCount) 
+		{
             maxColorCount = colorCount[index];
             maxColorIndex = index;
         }
@@ -358,6 +364,7 @@ void resetPlayerBalance(int currPlayer, int *playerBalances)
 void declareBankruptcy (int currPlayer, int &numPlayers, bool *isPlaying,
 	int *accountBalance, bool &continueTransaction)
 {
+	//prompt user for bankruptcy and recieve answer as input
 	//graphical interface
     eraseDisplay();
     displayString(2, "Declare Bankrupt?");
@@ -469,7 +476,8 @@ void doTransaction(int currPlayer, int &numPlayers, bool *isPlaying, int *accoun
         }
     }
     //if the monopoly man is at the start screen, display his options
-    else {
+    else 
+	{
         while (!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)) {}
 
         if (getButtonPress(buttonUp))
@@ -541,7 +549,7 @@ void deposit(int currPlayer, int *accountBalance, bool isPlayerDone)
 	    	{
 	       		isCancelled = true;
 	       		noButtonPress = false;
-	      }
+	      	}
 	    }
 	  }
 
@@ -640,15 +648,9 @@ int receiveWithdrawBills(int playerBalance, int *transactionBills, bool &isCance
 void moveBillsOut(int *transactionBills)
 {
     for (int bill = 0; bill < NUM_BINS; bill++)
-    {
         if (transactionBills[bill] > 0)
-        {
             for (int numBills = 0; numBills < transactionBills[bill]; numBills++)
-            {
                 masterTransverse(bill, OUTPUT_TRAY_LOCATION);
-            }
-        }
-    }
 }
 
 //cancels withdraw/transfer transaction - clears transaction bills array
@@ -778,7 +780,8 @@ bool getHigherOptions(int playerBalance, int *transactionBills, bool &isCancelle
 }
 
 //dusplays lower options for user to choose
-void displayLowerOptions(int *transactionBills, int playerBalance) {
+void displayLowerOptions(int *transactionBills, int playerBalance) 
+{
     eraseDisplay();
     displayString(2, "WITHDRAWAL LOWER OPTIONS");
     displayString(4, "a) $1 bills");
@@ -791,7 +794,8 @@ void displayLowerOptions(int *transactionBills, int playerBalance) {
 }
 
 //dusplays higher options for user to choose
-void displayHigherOptions(int *transactionBills, int playerBalance) {
+void displayHigherOptions(int *transactionBills, int playerBalance) 
+{
     eraseDisplay();
     displayString(2, "WITHDRAWAL HIGHER OPTIONS");
     displayString(4, "a) $50 BILLS");
@@ -835,7 +839,8 @@ bool isClearOrCancel()
 }
 
 //calculates the amount of a transaction based on selection of bills
-int calcTransactionAmount(int *transactionBills) {
+int calcTransactionAmount(int *transactionBills) 
+{
     int totalTransaction = 0;
     int billValues[NUM_BINS] = {1, 5, 10, 0, 20, 50, 100, 500};
 
