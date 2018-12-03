@@ -48,76 +48,80 @@ const int TOUCH_ENC_ZERO = 2;
 //Note that line numbers corresponding to each function prototype are given for readability
 //*******************
 //GENERAL USER INTERFACE FUNCTION PROTOTYPES
-void displayText_NoWait(string *text);	//L853
-void displayText_Wait(string *text);	//L845
+void displayText_NoWait(string *text);	//854
+void displayText_Wait(string *text);	//846
 
-void promptContinue(bool &continueTransaction);	//L389
-void promptCancel(bool &continueTransaction);	//L489
+void promptContinue(bool &continueTransaction);	//392
+void promptCancel(bool &continueTransaction);	//412
+
+//PROGRAM STARTUP FUNCITON PROTOTYPES
+void setupPlayers(int &numPlayers, int *accountBalance, bool *isPlaying);	//146
+void sensorConfig();														//130
 
 //WITHDRAWAL FUNCTION(S)PROTOTYPES
-void withdraw(int currentPlayer, int *accountBalance);									//L589
-int receiveWithdrawBills(int &playerBalance, int *transactionBills, bool &isCancelled);	//L624
-void getLowerOptions(int playerBalance, int *transactionBills, bool &isCancelled);		//L671
-bool getHigherOptions(int playerBalance, int *transactionBills, bool &isCancelled);		//L717
-bool isClearOrCancel();																	//L818
+void withdraw(int currentPlayer, int *accountBalance);									//593
+int receiveWithdrawBills(int playerBalance, int *transactionBills, bool &isCancelled);	//628
+void getLowerOptions(int playerBalance, int *transactionBills, bool &isCancelled);		//669
+bool getHigherOptions(int playerBalance, int *transactionBills, bool &isCancelled);		//715
+bool isClearOrCancel();																	//818
 
-void clearChosenBills(int *transactionBills);															//L662
-void cancelTransaction(int *transactionBills, bool &isCancelled);										//L651	
-bool isValidTransaction(int playerBalance, int totalTransaction, int bill);								//L809
-int calcTransactionAmount(int *transactionBills);														//L834
-int calcRemainingCash(int transactionAmount, int balance);												//L803
-void completeWithdrawal(int currentPlayer, int *accountBalance, int withdraw, int *transactionBills);	//L603
+void clearChosenBills(int *transactionBills);															//660
+void cancelTransaction(int *transactionBills, bool &isCancelled);										//649	
+bool isValidTransaction(int playerBalance, int totalTransaction, int bill);								//809
+int calcTransactionAmount(int *transactionBills);														//834
+int calcRemainingCash(int transactionAmount, int balance);												//803
+void completeWithdrawal(int currentPlayer, int *accountBalance, int withdraw, int *transactionBills);	//607
 
-void displayLowerOptions(int *transactionBills, int playerBalance);		//L777
-void displayHigherOptions(int *transactionBills, int playerBalance);	//L790
+void displayLowerOptions(int *transactionBills, int playerBalance);		//L775
+void displayHigherOptions(int *transactionBills, int playerBalance);	//789
 
 //DEPOSIT FUNCTION PROTOTYPES
-void deposit(int currPlayer, int *accountBalance, bool isPlayerDone);	//L506
-void processDeposit(int *transactionBills);								//L559
+void deposit(int currPlayer, int *accountBalance, bool isPlayerDone);	//510
+void processDeposit(int *transactionBills);								//563
 
 //TRANSFER FUNCTION PROTOTYPES
-void transfer(int transferor, int playersInGame, int *playerBalance, bool *isPlaying);	//L864
-int getTransferee(int playersInGame, int *transferOption);								//L922
+void transfer(int transferor, int playersInGame, int *playerBalance, bool *isPlaying);	//865
+int getTransferee(int playersInGame, int *transferOption);								//923
 
-void transferAmount(int transferor, int transferee, int *accountBalance, bool &isTransferCancelled);	//L951
-int getTransferAmount(int playerBalance, bool &isTransferCancelled);									//L969
+void transferAmount(int transferor, int transferee, int *accountBalance, bool &isTransferCancelled);	//952
+int getTransferAmount(int playerBalance, bool &isTransferCancelled);									//970
 
-void waitButtonPress(int playersInGame);	//L914
-void buttonPressValid(int playersInGame);	//L895
+void waitButtonPress(int playersInGame);	//915
+void buttonPressValid(int playersInGame);	//896
 
-void displayTransferOptions(int transferor, int *transferOption, bool *isPlaying);	//L983
+void displayTransferOptions(int transferor, int *transferOption, bool *isPlaying);	//984
 
 //PRE-TRANSACTION FUNCTION PROTOYPES
-void setCurrPlayer(int &currPlayer, bool *isPlaying);					//L301
-void displayMainMenu(int currPlayer, int *accountBalance);				//L319
-void doTransaction(int currPlayer, int &numPlayers, bool *isPlaying,
-	int *accountBalance, bool &continueTransaction);					//L430
+void setCurrPlayer(int &currPlayer, bool *isPlaying);					//304
+void displayMainMenu(int currPlayer, int *accountBalance);				//322
+void doTransaction(int currPlayer, int &numPlayers, bool *isPlaying, int *accountBalance, bool &continueTransaction);		//433
 
 //END PROGRAM FUNCTION PROTYPES
-void resetPlayerBalance(int currPlayer, int *playerBalances);				//L348
-int declareWinner(bool *isPlaying);											//L489
-void declareBankruptcy (int currPlayer, int &numPlayers, bool *isPlaying,
-	int *accountBalance, bool &continueTransaction);						//L356
+void resetPlayerBalance(int currPlayer, int *playerBalances);				//348
+int declareWinner(bool *isPlaying);											//490
+void endGame(int currPlayer, int *playerBalances);							//1130
+void declareBankruptcy (int currPlayer, int &numPlayers, bool *isPlaying, int *accountBalance, bool &continueTransaction);		//356
+
 
 //MECHANICAL FUNCTIONS (ALL FUNCTIONS)
 //BILL MOVEMENT
 void moveBillsOut(int *transactionBills);			//L641
 
-void masterTransverse(int initial, int final);		//L1001
-void pickUpBill();									//L1055
-void GantryTransverse(int position);				//L1032
-void dropBill();									//L1068
-void zeroGantry();									//L1024
+void masterTransverse(int initial, int final);		//1001
+void pickUpBill();									//1051
+void GantryTransverse(int position);				//1028
+void dropBill();									//1064
+void zeroGantry();									//1020
 
-void sendTray(int trayLocation);					//L1094
-void conveyorReturn();								//L1105
+void sendTray(int trayLocation);					//1090
+void conveyorReturn();								//1101
 
 void moveSelectMotor(int motorPort, int power, float encoderDistMult, 
-	float encoderDistLimit, int waitTime, int direction);				//L1121
+	float encoderDistLimit, int waitTime, int direction);				//1117
 
 //COLOUR SENSING
-int senseBill();	//L243
-int senseCard();	//L181
+int senseBill();	//246
+int senseCard();	//188
 
 //FUNCTION BODIES
 //**************************
@@ -205,24 +209,19 @@ int senseCard()
         //get colour reading
         getColorRGB(COLOUR_CARD, red, green, blue);
         //pink
-        if (red <= 140 && red >= 20 && green <= 150 / 100.0 * red && green >= 36 / 100.0 * red &&
-            blue <= 70 / 100.0 * red && blue >= 20 / 100.0 * red)
+        if (red <= 140 && red >= 20 && green <= 150 / 100.0 * red && green >= 36 / 100.0 * red && blue <= 70 / 100.0 * red && blue >= 20 / 100.0 * red)
             colorCount[PINK]++;
         //blue
-        else if (red <= 60 / 100.0 * blue && red >= 38 / 100.0 * blue && green <= 70 / 100.0 * blue &&
-                 green >= 50 / 100.0 * blue && blue <= 30 && blue >= 15)
+        else if (red <= 60 / 100.0 * blue && red >= 38 / 100.0 * blue && green <= 70 / 100.0 * blue && green >= 50 / 100.0 * blue && blue <= 30 && blue >= 15)
             colorCount[BLUE]++;
         //red
-        else if (red <= 80 && red >= 30 && green <= 20 / 100.0 * red && green >= 3 / 100.0 * red &&
-                 blue <= 20 / 100.0 * red && blue >= 5 / 100.0 * red)
+        else if (red <= 80 && red >= 30 && green <= 20 / 100.0 * red && green >= 3 / 100.0 * red && blue <= 20 / 100.0 * red && blue >= 5 / 100.0 * red)
             colorCount[RED]++;
         //green
-        else if (red <= 70 / 100.0 * green && red >= 50 / 100.0 * green && green <= 80 && green >= 20 &&
-                 blue <= 70 / 100.0 * green && blue >= 50 / 100.0 * green)
+        else if (red <= 70 / 100.0 * green && red >= 50 / 100.0 * green && green <= 80 && green >= 20 && blue <= 70 / 100.0 * green && blue >= 50 / 100.0 * green)
             colorCount[GREEN]++;
         //brown
-        else if (red <= 15 && red >= 2 && green <= 70 / 100.0 * red && green >= 40 / 100.0 * red &&
-                 blue <= 70 / 100.0 * red && blue >= 40 / 100.0 * red)
+        else if (red <= 15 && red >= 2 && green <= 70 / 100.0 * red && green >= 40 / 100.0 * red && blue <= 70 / 100.0 * red && blue >= 40 / 100.0 * red)
             colorCount[BROWN]++;
 
         numReadings++;
@@ -264,32 +263,25 @@ int senseBill()
 	{
         getColorRGB(COLOUR_BILL, red, green, blue);
         //pink - 1s
-        if (red <= 120 && red >= 15 && green <= 50 / 100.0 * red && green >= 20 / 100.0 * red &&
-            blue <= 60 / 100.0 * red && blue >= 20 / 100.0 * red)
+        if (red <= 120 && red >= 15 && green <= 50 / 100.0 * red && green >= 20 / 100.0 * red && blue <= 60 / 100.0 * red && blue >= 20 / 100.0 * red)
             colorCount[BILL_1]++;
         //purple - 5s
-        else if (red <= 35 && red >= 9 && green <= 100 / 100.0 * red && green >= 50 / 100.0 * red &&
-                 blue <= 140 / 100.0 * red && blue >= 65 / 100.0 * red)
+        else if (red <= 35 && red >= 9 && green <= 100 / 100.0 * red && green >= 50 / 100.0 * red && blue <= 140 / 100.0 * red && blue >= 65 / 100.0 * red)
             colorCount[BILL_5]++;
         //brown - 10s
-        else if (red <= 20 && red >= 4 && green <= 100 / 100.0 * red && green >= 50 / 100.0 * red && blue <= 10 &&
-                 blue >= 3)
+        else if (red <= 20 && red >= 4 && green <= 100 / 100.0 * red && green >= 50 / 100.0 * red && blue <= 10 && blue >= 3)
             colorCount[BILL_10]++;
         //blue - 20s
-        else if (red <= 45 / 100.0 * green && red >= 5 / 100.0 * green && green <= 100 && green >= 12 &&
-                 blue <= 150 / 100.0 * green && blue >= 60 / 100.0 * green)
+        else if (red <= 45 / 100.0 * green && red >= 5 / 100.0 * green && green <= 100 && green >= 12 && blue <= 150 / 100.0 * green && blue >= 60 / 100.0 * green)
             colorCount[BILL_20]++;
         //orange - 50s
-        else if (red <= 120 && red >= 7 && green <= 30 / 100.0 * red && green >= 5 / 100.0 * red && blue <= 10 &&
-                 blue >= 3)
+        else if (red <= 120 && red >= 7 && green <= 30 / 100.0 * red && green >= 5 / 100.0 * red && blue <= 10 && blue >= 3)
             colorCount[BILL_50]++;
         //yellow - 100s
-        else if (red <= 130 && red >= 20 && green <= 100 / 100.0 * red && green >= 60 / 100.0 * red &&
-                 blue <= 65 / 100.0 * red && blue >= 25 / 100.0 * red)
+        else if (red <= 130 && red >= 20 && green <= 100 / 100.0 * red && green >= 60 / 100.0 * red && blue <= 65 / 100.0 * red && blue >= 25 / 100.0 * red)
             colorCount[BILL_100]++;
         //green - 500
-        else if (red <= 50 / 100.0 * green && red >= 20 / 100.0 * green && green <= 60 && green >= 6 && blue <= 15 &&
-                 blue >= 3)
+        else if (red <= 50 / 100.0 * green && red >= 20 / 100.0 * green && green <= 60 && green >= 6 && blue <= 15 && blue >= 3)
             colorCount[BILL_500]++;
         numReadings++;
     }
