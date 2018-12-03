@@ -48,80 +48,79 @@ const int TOUCH_ENC_ZERO = 2;
 //Note that line numbers corresponding to each function prototype are given for readability
 //*******************
 //GENERAL USER INTERFACE FUNCTION PROTOTYPES
-void displayText_NoWait(string *text);	//854
-void displayText_Wait(string *text);	//846
+void displayText_NoWait(string *text);	//853
+void displayText_Wait(string *text);	//845
 
-void promptContinue(bool &continueTransaction);	//392
-void promptCancel(bool &continueTransaction);	//412
+void promptContinue(bool &continueTransaction);	//391
+void promptCancel(bool &continueTransaction);	//411
 
 //PROGRAM STARTUP FUNCITON PROTOTYPES
-void setupPlayers(int &numPlayers, int *accountBalance, bool *isPlaying);	//146
-void sensorConfig();														//130
+void setupPlayers(int &numPlayers, int *accountBalance, bool *isPlaying);	//145
+void sensorConfig();														//129
 
 //WITHDRAWAL FUNCTION(S)PROTOTYPES
-void withdraw(int currentPlayer, int *accountBalance);									//593
-int receiveWithdrawBills(int playerBalance, int *transactionBills, bool &isCancelled);	//628
-void getLowerOptions(int playerBalance, int *transactionBills, bool &isCancelled);		//669
-bool getHigherOptions(int playerBalance, int *transactionBills, bool &isCancelled);		//715
-bool isClearOrCancel();																	//818
+void withdraw(int currentPlayer, int *accountBalance);									//592
+int receiveWithdrawBills(int playerBalance, int *transactionBills, bool &isCancelled);	//627
+void getLowerOptions(int playerBalance, int *transactionBills, bool &isCancelled);		//668
+bool getHigherOptions(int playerBalance, int *transactionBills, bool &isCancelled);		//714
+bool isClearOrCancel();																	//817
 
-void clearChosenBills(int *transactionBills);															//660
-void cancelTransaction(int *transactionBills, bool &isCancelled);										//649	
-bool isValidTransaction(int playerBalance, int totalTransaction, int bill);								//809
-int calcTransactionAmount(int *transactionBills);														//834
-int calcRemainingCash(int transactionAmount, int balance);												//803
-void completeWithdrawal(int currentPlayer, int *accountBalance, int withdraw, int *transactionBills);	//607
+void clearChosenBills(int *transactionBills);															//659
+void cancelTransaction(int *transactionBills, bool &isCancelled);										//648	
+bool isValidTransaction(int playerBalance, int totalTransaction, int bill);								//808
+int calcTransactionAmount(int *transactionBills);														//833
+int calcRemainingCash(int transactionAmount, int balance);												//802
+void completeWithdrawal(int currentPlayer, int *accountBalance, int withdraw, int *transactionBills);	//606
 
-void displayLowerOptions(int *transactionBills, int playerBalance);		//L775
-void displayHigherOptions(int *transactionBills, int playerBalance);	//789
+void displayLowerOptions(int *transactionBills, int playerBalance);		//L774
+void displayHigherOptions(int *transactionBills, int playerBalance);	//788
 
 //DEPOSIT FUNCTION PROTOTYPES
-void deposit(int currPlayer, int *accountBalance, bool isPlayerDone);	//510
-void processDeposit(int *transactionBills);								//563
+void deposit(int currPlayer, int *accountBalance, bool isPlayerDone);	//509
+void processDeposit(int *transactionBills);								//562
 
 //TRANSFER FUNCTION PROTOTYPES
-void transfer(int transferor, int playersInGame, int *playerBalance, bool *isPlaying);	//865
-int getTransferee(int playersInGame, int *transferOption);								//923
+void transfer(int transferor, int playersInGame, int *playerBalance, bool *isPlaying);	//864
+int getTransferee(int playersInGame, int *transferOption);								//922
 
-void transferAmount(int transferor, int transferee, int *accountBalance, bool &isTransferCancelled);	//952
-int getTransferAmount(int playerBalance, bool &isTransferCancelled);									//970
+void transferAmount(int transferor, int transferee, int *accountBalance, bool &isTransferCancelled);	//951
+int getTransferAmount(int playerBalance, bool &isTransferCancelled);									//969
 
-void waitButtonPress(int playersInGame);	//915
-void buttonPressValid(int playersInGame);	//896
+void waitButtonPress(int playersInGame);	//914
+void buttonPressValid(int playersInGame);	//895
 
-void displayTransferOptions(int transferor, int *transferOption, bool *isPlaying);	//984
+void displayTransferOptions(int transferor, int *transferOption, bool *isPlaying);	//983
 
 //PRE-TRANSACTION FUNCTION PROTOYPES
-void setCurrPlayer(int &currPlayer, bool *isPlaying);					//304
-void displayMainMenu(int currPlayer, int *accountBalance);				//322
-void doTransaction(int currPlayer, int &numPlayers, bool *isPlaying, int *accountBalance, bool &continueTransaction);		//433
+void setCurrPlayer(int &currPlayer, bool *isPlaying);					//303
+void displayMainMenu(int currPlayer, int *accountBalance);				//321
+void doTransaction(int currPlayer, int &numPlayers, bool *isPlaying, int *accountBalance, bool &continueTransaction);		//432
 
 //END PROGRAM FUNCTION PROTYPES
-void resetPlayerBalance(int currPlayer, int *playerBalances);				//348
-int declareWinner(bool *isPlaying);											//490
-void endGame(int currPlayer, int *playerBalances);							//1130
-void declareBankruptcy (int currPlayer, int &numPlayers, bool *isPlaying, int *accountBalance, bool &continueTransaction);		//356
+void resetPlayerBalance(int currPlayer, int *playerBalances);				//347
+int declareWinner(bool *isPlaying);											//489
+void endGame(int currPlayer, int *playerBalances);							//1129
+void declareBankruptcy (int currPlayer, int &numPlayers, bool *isPlaying, int *accountBalance, bool &continueTransaction);		//355
 
 
 //MECHANICAL FUNCTIONS (ALL FUNCTIONS)
 //BILL MOVEMENT
-void moveBillsOut(int *transactionBills);			//L641
+void moveBillsOut(int *transactionBills);			//L640
 
-void masterTransverse(int initial, int final);		//1001
-void pickUpBill();									//1051
-void GantryTransverse(int position);				//1028
-void dropBill();									//1064
-void zeroGantry();									//1020
+void masterTransverse(int initial, int final);		//1000
+void pickUpBill();									//1050
+void GantryTransverse(int position);				//1027
+void dropBill();									//1063
+void zeroGantry();									//1019
 
-void sendTray(int trayLocation);					//1090
-void conveyorReturn();								//1101
+void sendTray(int trayLocation);					//1089
+void conveyorReturn();								//1100
 
-void moveSelectMotor(int motorPort, int power, float encoderDistMult, 
-	float encoderDistLimit, int waitTime, int direction);				//1117
+void moveSelectMotor(int motorPort, int power, float encoderDistMult, float encoderDistLimit, int waitTime, int direction);				//1116
 
 //COLOUR SENSING
-int senseBill();	//246
-int senseCard();	//188
+int senseBill();	//245
+int senseCard();	//187
 
 //FUNCTION BODIES
 //**************************
