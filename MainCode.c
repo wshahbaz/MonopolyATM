@@ -138,7 +138,7 @@ void sensorConfig()
 //function prompts user for total number of players, sets up each player's account
 void setupPlayers(int &numPlayers, int *accountBalance, bool *isPlaying)
 {
-		//graphical interface
+	//graphical interface
     eraseDisplay();
     displayString(2, "CHOOSE NUMBER OF PLAYER");
     displayString(5, "a) 2 PLAYERS");
@@ -180,7 +180,7 @@ void setupPlayers(int &numPlayers, int *accountBalance, bool *isPlaying)
 //returns int corresponding to player number
 int senseCard()
 {
-		enum CARD_COLOURS {
+	enum CARD_COLOURS {
         BROWN, PINK, BLUE, RED, GREEN
     };
 		//initialization variables
@@ -305,13 +305,13 @@ int senseBill()
 //calls senseCard function and associates player number (index) based on reading
 void setCurrPlayer(int &currPlayer, bool *isPlaying)
 {
-		//set current reads to -1 to indicate no player
+	//set current reads to -1 to indicate no player
     int readPlayer = -1;
     currPlayer = -1;
     //keep reading until seeing valid player
     while (currPlayer == -1)
     {
-    		//read card
+    	//read card
         readPlayer = senseCard();
 
         //checking for validity
@@ -349,7 +349,7 @@ void displayMainMenu(int currPlayer, int *accountBalance)
 //resets the player balance to starting value for keeping track of total cash value in endgame
 void resetPlayerBalance(int currPlayer, int *playerBalances)
 {
-		//re-balances monopoly man account and current player account
+	//re-balances monopoly man account and current player account
     playerBalances[0] += playerBalances[currPlayer] - START_BALANCE;
     playerBalances[currPlayer] = START_BALANCE;
 }
@@ -357,9 +357,8 @@ void resetPlayerBalance(int currPlayer, int *playerBalances)
 //allows user to exit the game
 void declareBankruptcy (int currPlayer, int &numPlayers, bool *isPlaying,
 	int *accountBalance, bool &continueTransaction)
-	{
-
-		//graphical interface
+{
+	//graphical interface
     eraseDisplay();
     displayString(2, "Declare Bankrupt?");
     displayString(4, "1: Yes");
@@ -417,10 +416,10 @@ void promptCancel(bool &continueTransaction)
 	eraseDisplay();
 	displayString(2, "CONFIRM CANCEL");
 	displayString(5, "a) Yes");
-  displayString(6, "b) No");
+  	displayString(6, "b) No");
 
-  //recieve button input, determine whether to cancel transaction or not
-  while (!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)) {}
+  	//recieve button input, determine whether to cancel transaction or not
+  	while (!getButtonPress(buttonUp) && !getButtonPress(buttonLeft)) {}
 
     if (getButtonPress(buttonUp))
   	{
@@ -491,8 +490,8 @@ void doTransaction(int currPlayer, int &numPlayers, bool *isPlaying, int *accoun
 int declareWinner(bool *isPlaying)
 {
     eraseDisplay();
-		int winnerIndex = 0;
-		//find final player remaining and display that they won
+	int winnerIndex = 0;
+	//find final player remaining and display that they won
     for (int index = 0; index < 4; index++)
     {
         if (isPlaying[index] == 1)
@@ -540,8 +539,8 @@ void deposit(int currPlayer, int *accountBalance, bool isPlayerDone)
 	    {
 	    	if(isClearOrCancel())
 	    	{
-	       	isCancelled = true;
-	       	noButtonPress = false;
+	       		isCancelled = true;
+	       		noButtonPress = false;
 	      }
 	    }
 	  }
@@ -553,7 +552,7 @@ void deposit(int currPlayer, int *accountBalance, bool isPlayerDone)
         if (!isPlayerDone)
             accountBalance[currPlayer] += depositAmount;
         else
-        		//considering final deposits to Monopoly Man (interal account balancing)
+        	//considering final deposits to Monopoly Man (interal account balancing)
             accountBalance[0] += depositAmount;
 
         displayText_Wait("DEPOSIT COMPLETE");
@@ -721,7 +720,7 @@ void getLowerOptions(int playerBalance, int *transactionBills, bool &isCancelled
 false if user clicks "confirm transaction" button. It allows users to pick higher amount bills*/
 bool getHigherOptions(int playerBalance, int *transactionBills, bool &isCancelled)
 {
-		//display options for higher values
+	//display options for higher values
     displayHigherOptions(transactionBills, playerBalance);
     while (getButtonPress(buttonAny)) {}
 
@@ -875,7 +874,7 @@ void transfer(int transferor, int playersInGame, int *playerBalance, bool *isPla
     //initialize array for transfer options
     int transferOption[MAX_PLAYERS] = {0, 0, 0, 0, 0};
 
-		//calls functions to display transfer options
+	//calls functions to display transfer options
     displayTransferOptions(transferor, transferOption, isPlaying);
     //calls functions to get valid user input for transferee
     transferee = getTransferee(playersInGame, transferOption);
@@ -926,7 +925,7 @@ void waitButtonPress(int playersInGame)
 //gets the transferee of the transfer function
 int getTransferee(int playersInGame, int *transferOption)
 {
-		//initializes variable
+	//initializes variable
     int transferee = -1;
     //waits for valid button press
     waitButtonPress(playersInGame);
@@ -955,7 +954,7 @@ int getTransferee(int playersInGame, int *transferOption)
 //updates appropriate balances based on transfer amount
 void transferAmount(int transferor, int transferee, int *accountBalance, bool &isTransferCancelled)
 {
-		//graphical interface
+	//graphical interface
     eraseDisplay();
     displayString(4, "TRANSFER TO PLAYER %d", transferee);
     wait1Msec(1200);
@@ -973,7 +972,7 @@ void transferAmount(int transferor, int transferee, int *accountBalance, bool &i
 //finds the amoutn of a transfer; calls getLowerOptions (used in withdrawal function). returns value of transfer
 int getTransferAmount(int playerBalance, bool &isTransferCancelled)
 {
-		//declare array for bills
+	//declare array for bills
     int transferBills[NUM_BINS] = {0, 0, 0, 0, 0, 0, 0, 0};
 
     //calls function to display bill options, get user input, check validity of input
@@ -987,10 +986,10 @@ int getTransferAmount(int playerBalance, bool &isTransferCancelled)
 //displays transferee options based on if they're playing
 void displayTransferOptions(int transferor, int *transferOption, bool *isPlaying)
 {
-		const string OPTIONS[NUM_TRANSFER_OPTIONS] = { "a)", "b)", "c)", "d)" };
+	const string OPTIONS[NUM_TRANSFER_OPTIONS] = { "a)", "b)", "c)", "d)" };
 
-		//initialize variables
-		int index = 0, row = DISPLAYSTART, optionNum = 0;
+	//initialize variables
+	int index = 0, row = DISPLAYSTART, optionNum = 0;
 
     eraseDisplay();
 		displayString(2, "TRANSFER");
@@ -1067,20 +1066,20 @@ void pickUpBill()
 //drops a bill with combination of motor tasks
 void dropBill()
 {
-		//lower arm
+	//lower arm
     moveSelectMotor(VERT_ACTUATOR_MOTOR, -VERT_ACTUATOR_POWER, PI * 3.2 / 180.0, -5, 0, 1);
-		//deactivate suction
+	//deactivate suction
     moveSelectMotor(END_EFFECTOR_MOTOR, END_EFFECTOR_POWER_HIGH, PI / 180.0, 1.5, 150, 0);
-		//raise arm
+	//raise arm
     moveSelectMotor(VERT_ACTUATOR_MOTOR, VERT_ACTUATOR_POWER, PI * 3.2 / 180.0, 0, 0, 0);
-		//reset end effector motor
+	//reset end effector motor
     moveSelectMotor(END_EFFECTOR_MOTOR, -END_EFFECTOR_POWER_LOW, PI / 180.0, 0, 150, 1);
 }
 
 //main mechanical movement function. calls other mechanical functions to complete tasks for bill transffers
 void masterTransverse(int initial, int final)
 {
-		//moves gantry to initial bill location
+	//moves gantry to initial bill location
     GantryTransverse(initial);
     //picks up bill
     pickUpBill();
@@ -1133,7 +1132,7 @@ void moveSelectMotor(int motorPort, int power, float encoderDistMult, float enco
 //redistribute into slots, state any discrepancies in the count
 void endGame(int currPlayer, int *playerBalances)
 {
-		//Balances virtual currency in player and monopoly man accounts
+	//Balances virtual currency in player and monopoly man accounts
     resetPlayerBalance(currPlayer, playerBalances);
     //Reuturns all cash to monopoly man
     deposit(currPlayer, playerBalances, true);
@@ -1174,7 +1173,7 @@ task main()
 
         do
         {
-        //player selects transactions
+        	//player selects transactions
             displayMainMenu(currPlayer, accountBalance);
             doTransaction(currPlayer, numPlayers, isPlaying, accountBalance, false);
 
