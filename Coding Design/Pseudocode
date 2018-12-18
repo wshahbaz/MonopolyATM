@@ -360,11 +360,12 @@ void transfer(int transferer, int balance*, bool isPlaying*)
 	int transferee = -1;
 	bool stillTransfer = true;
 	while (transfee == -1 && stillTransfer)
-	if (buttonPres(buttonUP))
+	if (buttonPress(buttonUP))
 	{
 		if (checkStatus(0, isPlaying))
 		{
 			transferAmount(balance*())
+			tran
 		}
 	}
 }
