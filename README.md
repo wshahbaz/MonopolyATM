@@ -30,4 +30,6 @@ The program is coded in a hierarchy style: each function calls smaller functions
 
 The codebase can be found in github in [MainCode.c](https://github.com/wshahbaz/MonopolyATM/blob/master/MainCode.c)
 
+Check out the [website](https://wshahbaz.github.io/MonopolyATM/) for additional details! 
+
 
