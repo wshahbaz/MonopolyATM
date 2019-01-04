@@ -29,6 +29,6 @@ It was decided that the program would be function based due to having such a bro
 The program is coded in a hierarchy style: each function calls smaller functions until reaching a trivial function, where a calculation is performed, input from the user is converted to data, or the robot makes a mechanical movement
 
 The codebase can be found in github in the "MainCode.c" file or  
-[here:]([https://github.com/wshahbaz/MonopolyATM/blob/master/MainCode.c)
+[here:](MainCode.c)
 
 
