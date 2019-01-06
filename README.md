@@ -1,8 +1,6 @@
 # MonopolyATM
 MTE 100 Final Project
 
-This project is a four person final summative project for 1A mechatronics engineering at the University of Waterloo.
-
 Overview
 
 In the game of Monopoly, the objective is to amass the highest amount of money possible, while bankrupting any opponents. Unfortunately, it is straightforward to cheat the financial system of the game, and therefore a need exists for a way to better manage the game’s money. The proposed solution is an Automated Teller Machine (ATM) that would store players’ money and allow players to complete the necessary transactions for the game’s completion.
