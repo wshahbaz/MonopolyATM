@@ -18,7 +18,7 @@ In order to fulfill the functionality described in the project scope, the final 
 ![Image of Pneumatic Housing](Images/pneumatic%20housing.jpg)
 
 #### Carraige Implementation
-![Image of Overall Assembly](Images/overall%20assembly.jpg)
+![Image of Overall Assembly](Images/carraige%20overall.jpg)
 
 ## Software Design
 
